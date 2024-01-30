@@ -6,19 +6,24 @@ class Button extends StatelessWidget {
   final String buttonText;
   final Color textColor; // Add this line
   Function()? onPressed;
+  final double widthButton;
+  final double heightButton;
+
 
   Button(
       {required this.buttonColor,
       required this.buttonText,
       this.textColor = Colors.black, // Default text color is black
       this.onPressed,
+      this.widthButton=180,
+      this.heightButton=60
       });
 
   @override
   Widget build(BuildContext context) {
     return MaterialButton(
-      minWidth: 180.0,
-      height: 60,
+      minWidth: widthButton,
+      height: heightButton,
       onPressed: onPressed,
       color: buttonColor,
       textColor: textColor, // Set text color

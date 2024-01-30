@@ -11,9 +11,7 @@ void main() {
   // ));
 
   runApp(
-    MaterialApp(
-      home: MyApp(),
-    ),
+     MyApp()
   );
 }
 

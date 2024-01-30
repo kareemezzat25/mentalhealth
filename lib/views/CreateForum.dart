@@ -35,7 +35,7 @@ class createForum extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         body: Padding(
-      padding: EdgeInsets.symmetric(horizontal: 10),
+      padding: EdgeInsets.symmetric(horizontal: 15),
       child: SingleChildScrollView(
         child: Column(
           children: [
@@ -117,8 +117,8 @@ class createForum extends StatelessWidget {
                 Row(
                   children: [
                     MaterialButton(
-                      minWidth: 11,
-                      height: 60,
+                      minWidth: 9,
+                      height: 50,
                       onPressed: UploadImage,
                       color: Color.fromARGB(255, 0, 0, 0),
                       textColor: Color.fromARGB(255, 255, 255, 255),
@@ -126,13 +126,13 @@ class createForum extends StatelessWidget {
                         side: BorderSide(color: Colors.grey),
                         borderRadius: BorderRadius.circular(30),
                       ),
-                      child: Row(
+                      child:const Row(
                         children: [
                           Icon(
                             Icons.upload,
                             color: Colors.white,
                           ),
-                          SizedBox(width: 10),
+                          SizedBox(width: 5),
                           Text(
                             "Upload Image",
                             style: TextStyle(
@@ -148,6 +148,8 @@ class createForum extends StatelessWidget {
                       buttonColor: Color(0xff0B570E),
                       buttonText: 'Submit',
                       textColor: Colors.white,
+                      widthButton: 160,
+                      heightButton:50,
                       onPressed: () async {
                         // Get token
                         String? token = await Auth.getToken();

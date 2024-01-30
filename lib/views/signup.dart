@@ -19,6 +19,7 @@ class _SignupState extends State<Signup> {
   TextEditingController passwordController = TextEditingController();
   TextEditingController birthDateController = TextEditingController();
   TextEditingController genderController = TextEditingController();
+  TextEditingController UsernameController = TextEditingController();
 
   void signup() async {
     try {
@@ -34,6 +35,7 @@ class _SignupState extends State<Signup> {
         "password": passwordController.text,
         "birthDate": birthDateController.text,
         "gender": genderController.text,
+        "username":UsernameController.text
       };
 
       // Convert data to JSON
@@ -112,7 +114,7 @@ class _SignupState extends State<Signup> {
                     ),
                   ),
                   SizedBox(
-                    height: 10,
+                    height: 5,
                   ),
                   Text(
                     "Create an account, it's free",
@@ -121,6 +123,19 @@ class _SignupState extends State<Signup> {
                 ],
               ),
               SizedBox(height: 10),
+              const Padding(
+                padding: EdgeInsets.only(left: 12),
+                child: Row(
+                  children: [
+                    Text(
+                      "Enter Username",
+                      style: TextStyle(fontSize: 15, color: Colors.grey),
+                    ),
+                  ],
+                ),
+              ),
+              TextForm(hintText: "Username", controller: UsernameController),
+              SizedBox(height: 5),
               Row(
                 children: [
                   Expanded(
@@ -144,7 +159,7 @@ class _SignupState extends State<Signup> {
                       ),
                     ),
                   ),
-                  SizedBox(width: 15),
+                  SizedBox(width: 5),
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.only(left: 12),
@@ -168,7 +183,7 @@ class _SignupState extends State<Signup> {
                   ),
                 ],
               ),
-              SizedBox(height: 7.5),
+              SizedBox(height:5),
               const Padding(
                 padding: EdgeInsets.only(left: 12),
                 child: Row(
@@ -181,7 +196,7 @@ class _SignupState extends State<Signup> {
                 ),
               ),
               TextForm(hintText: "Email", controller: emailController),
-              SizedBox(height: 7.5),
+              SizedBox(height: 5),
               const Padding(
                 padding: EdgeInsets.only(left: 12),
                 child: Row(
@@ -197,7 +212,7 @@ class _SignupState extends State<Signup> {
                   hintText: "Password",
                   controller: passwordController,
                   isPassword: true),
-              SizedBox(height: 7.5),
+              SizedBox(height: 5),
               const Padding(
                 padding: EdgeInsets.only(left: 12),
                 child: Row(
@@ -210,7 +225,7 @@ class _SignupState extends State<Signup> {
                 ),
               ),
               TextForm(hintText: "yyyy-mm-dd", controller: birthDateController),
-              SizedBox(height: 7.5),
+              SizedBox(height: 5),
               const Padding(
                 padding: EdgeInsets.only(left: 12),
                 child: Row(
@@ -223,7 +238,7 @@ class _SignupState extends State<Signup> {
                 ),
               ),
               TextForm(hintText: "Male/Female", controller: genderController),
-              SizedBox(height: 7.5),
+              SizedBox(height: 5),
               Button(
                 buttonColor: Color(0xff0B570E),
                 buttonText: 'Sign up',
