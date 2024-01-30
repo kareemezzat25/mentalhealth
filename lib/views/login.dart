@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:mentalhealthh/authentication/auth.dart';
 import 'dart:convert';
 import 'Formview.dart';
 import 'package:mentalhealthh/models/button.dart';
@@ -46,21 +47,11 @@ class _LoginState extends State<Login> {
 
       print(response.body);
       // Check response status code
+      // Inside the login() function
       if (response.statusCode == 200) {
         // Login successful, handle the response accordingly
-        print('Login successful');
         String token = json.decode(response.body)['token'];
-        /*await DefaultCacheManager().putFile(
-          'token'
-          //utf8.encode(token),
-          key: 'tokenKey',
-        );*/
-        //using the token
-        FileInfo? tokenFile =
-            await DefaultCacheManager().getFileFromCache('tokenKey');
-        //String token = utf8.decode(await tokenFile.readAsBytes());
-        print("token : $token");
-        //store token in cache
+        await Auth.setToken(token, emailController.text);
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => MainHome()));
       } else {

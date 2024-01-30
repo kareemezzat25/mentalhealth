@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'loginview.dart';
+import 'login.dart';
 import 'signup.dart';
 
 class HomePage extends StatelessWidget {

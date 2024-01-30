@@ -4,8 +4,14 @@ import 'package:mentalhealthh/widgets/Iconpost.dart';
 import 'package:mentalhealthh/widgets/userpost.dart';
 
 class Forum extends StatelessWidget {
+  final String? postTitle;
+  final String? postContent;
+  final String? username;
+  final String? postedOn;
 
-  List<Iconofpost>iconsList=[
+  Forum({this.postTitle, this.postContent, this.username, this.postedOn});
+
+  List<Iconofpost> iconsList = [
     Iconofpost(iconData: Icons.favorite),
     Iconofpost(iconData: Icons.comment),
     Iconofpost(iconData: Icons.share),
@@ -21,11 +27,11 @@ class Forum extends StatelessWidget {
         child: Row(
           children: [
             Container(
-              width: screenWidth * 0.9, // Adjust the width as a percentage of screen width
+              width: screenWidth * 0.9,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  SizedBox(height:25),
+                  SizedBox(height: 25),
                   Container(
                     height: 80,
                     child: Row(
@@ -35,9 +41,11 @@ class Forum extends StatelessWidget {
                           height: 40,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(40),
-                            border: Border.all(color: Colors.brown, style: BorderStyle.solid),
+                            border: Border.all(
+                                color: Colors.brown, style: BorderStyle.solid),
                             image: DecorationImage(
-                              image: AssetImage('assets/images/Illustration.png'),
+                              image:
+                                  AssetImage('assets/images/Illustration.png'),
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -47,11 +55,14 @@ class Forum extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text("Ali ATTIA", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                            Text("yesterday at 11 am", style: TextStyle(fontSize: 12)),
+                            Text(username ?? "",
+                                style: TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.bold)),
+                            Text(postedOn ?? "",
+                                style: TextStyle(fontSize: 12)),
                           ],
                         ),
-                        Spacer(flex:1),
+                        Spacer(flex: 1),
                         IconButton(
                           icon: Icon(Icons.more_horiz),
                           onPressed: () {},
@@ -61,15 +72,29 @@ class Forum extends StatelessWidget {
                   ),
                   SizedBox(height: 10),
                   //title
-                  userPost(),
+                  Text(
+                    postTitle ?? "",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  ),
                   SizedBox(height: 10),
+                  //description
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Text(
+                        postContent ?? "",
+                        style: TextStyle(fontSize: 18),
+                      ),
+                    ),
+                  ),
                   Container(
                     height: 40,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        for(int index=0;index<iconsList.length;index++)
-                          IconPost(iconreaction: iconsList[index],)
+                        for (int index = 0; index < iconsList.length; index++)
+                          IconPost(
+                            iconreaction: iconsList[index],
+                          )
                       ],
                     ),
                   ),
