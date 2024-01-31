@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mentalhealthh/views/Formview.dart';
+import 'package:mentalhealthh/views/textForm.dart';
 import 'package:mentalhealthh/views/createForum.dart';
 import 'package:mentalhealthh/widgets/CommonDrawer.dart';
 import 'Posts.dart';
@@ -9,7 +9,7 @@ class ForumsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 3,
+      length: 2,
       child: Scaffold(
         appBar: AppBar(
           title: Text(
@@ -20,7 +20,6 @@ class ForumsPage extends StatelessWidget {
             tabs: [
               Tab(text: 'Create Forum'),
               Tab(text: 'Posts'),
-              Tab(text: 'Post Comment'),
             ],
           ),
         ),
@@ -29,7 +28,6 @@ class ForumsPage extends StatelessWidget {
           children: [
             createForum(),
             Posts(),
-            PostComment(),
           ],
         ),
       ),

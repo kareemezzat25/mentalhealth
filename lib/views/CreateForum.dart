@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mentalhealthh/api/postsApi.dart';
 import 'package:mentalhealthh/authentication/auth.dart';
 import 'package:mentalhealthh/models/button.dart';
-import 'package:mentalhealthh/views/Formview.dart';
+import 'package:mentalhealthh/views/textForm.dart';
 
 class createForum extends StatelessWidget {
   TextEditingController TitleController = TextEditingController();
@@ -126,7 +126,7 @@ class createForum extends StatelessWidget {
                         side: BorderSide(color: Colors.grey),
                         borderRadius: BorderRadius.circular(30),
                       ),
-                      child:const Row(
+                      child: const Row(
                         children: [
                           Icon(
                             Icons.upload,
@@ -149,7 +149,7 @@ class createForum extends StatelessWidget {
                       buttonText: 'Submit',
                       textColor: Colors.white,
                       widthButton: 160,
-                      heightButton:50,
+                      heightButton: 50,
                       onPressed: () async {
                         // Get token
                         String? token = await Auth.getToken();

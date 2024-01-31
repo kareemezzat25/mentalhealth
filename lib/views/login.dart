@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:mentalhealthh/authentication/auth.dart';
 import 'dart:convert';
-import 'Formview.dart';
+import 'textForm.dart';
 import 'package:mentalhealthh/models/button.dart';
 import 'package:mentalhealthh/views/signup.dart';
 import 'package:mentalhealthh/views/MainHomeview.dart';

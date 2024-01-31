@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mentalhealthh/authentication/auth.dart';
 import 'login.dart';
-import 'Formview.dart';
+import 'textForm.dart';
 import 'dart:convert';
 import "package:http/http.dart" as http;
 
@@ -35,7 +35,7 @@ class _SignupState extends State<Signup> {
         "password": passwordController.text,
         "birthDate": birthDateController.text,
         "gender": genderController.text,
-        "username":UsernameController.text
+        "username": UsernameController.text
       };
 
       // Convert data to JSON
@@ -183,7 +183,7 @@ class _SignupState extends State<Signup> {
                   ),
                 ],
               ),
-              SizedBox(height:5),
+              SizedBox(height: 5),
               const Padding(
                 padding: EdgeInsets.only(left: 12),
                 child: Row(

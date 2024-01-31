@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:mentalhealthh/api/postsApi.dart';
 import 'package:mentalhealthh/models/Icon.dart';
+import 'package:mentalhealthh/views/PostComment.dart';
 import 'package:mentalhealthh/widgets/Iconpost.dart';
 import 'package:http/http.dart' as http;
 
@@ -10,8 +12,15 @@ class Forum extends StatelessWidget {
   final String? username;
   final String? postedOn;
   final Function(String)? onDelete;
+  final String? postId; // Add postId parameter
 
-  Forum({this.postTitle, this.postContent, this.username, this.postedOn,this.onDelete});
+  Forum(
+      {this.postTitle,
+      this.postContent,
+      this.username,
+      this.postedOn,
+      this.onDelete,
+      this.postId});
 
   List<Iconofpost> iconsList = [
     Iconofpost(iconData: Icons.favorite),
@@ -20,7 +29,9 @@ class Forum extends StatelessWidget {
   ];
   Future<void> deletePost(String postId) async {
     try {
-      final response = await http.delete(Uri.parse('https://mentalmediator.somee.com/api/posts/$postId'));
+      // Send a delete request to the API
+      final response = await http.delete(
+          Uri.parse('https://mentalmediator.somee.com/api/posts/$postId'));
 
       if (response.statusCode == 200) {
         // Post deleted successfully
@@ -41,14 +52,13 @@ class Forum extends StatelessWidget {
 
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.only(left:20,right:10, top:5,bottom: 5),
+        padding: const EdgeInsets.only(left: 20, right: 10, top: 5, bottom: 5),
         child: Row(
           children: [
             Container(
-              decoration:BoxDecoration(
-                color: Color(0xffEEEEEE),
-                borderRadius: BorderRadius.circular(15)
-              ),
+              decoration: BoxDecoration(
+                  color: Color(0xffEEEEEE),
+                  borderRadius: BorderRadius.circular(15)),
               width: screenWidth * 0.9,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -70,7 +80,8 @@ class Forum extends StatelessWidget {
                                 style: BorderStyle.solid,
                               ),
                               image: DecorationImage(
-                                image: AssetImage('assets/images/Illustration.png'),
+                                image: AssetImage(
+                                    'assets/images/Illustration.png'),
                                 fit: BoxFit.cover,
                               ),
                             ),
@@ -101,12 +112,13 @@ class Forum extends StatelessWidget {
                                 // Perform edit action
                               } else if (value == 'delete') {
                                 // Perform delete action
+                                deletePost(postId ?? '');
                               }
                             },
-                            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                            itemBuilder: (BuildContext context) =>
+                                <PopupMenuEntry<String>>[
                               const PopupMenuItem<String>(
                                 value: 'edit',
-                                
                                 child: ListTile(
                                   leading: Icon(Icons.edit),
                                   title: Text('Edit'),
@@ -120,7 +132,6 @@ class Forum extends StatelessWidget {
                                 ),
                               ),
                             ],
-                            
                             child: Icon(Icons.more_horiz),
                           ),
                         ],
@@ -133,7 +144,8 @@ class Forum extends StatelessWidget {
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
                       postTitle ?? "",
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                     ),
                   ),
                   SizedBox(height: 5),
@@ -157,7 +169,24 @@ class Forum extends StatelessWidget {
                         for (int index = 0; index < iconsList.length; index++)
                           IconPost(
                             iconreaction: iconsList[index],
-                          )
+                          ),
+                        // GestureDetector for navigating to PostComment
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => PostComment(
+                                    postId: int.parse(
+                                        postId ?? '0')), // Convert to int
+                              ),
+                            );
+                          },
+                          child: Icon(
+                            Icons.comment,
+                            color: Colors.blue,
+                          ),
+                        ),
                       ],
                     ),
                   ),

@@ -22,6 +22,18 @@ class _Posts extends State<Posts> {
     });
   }
 
+  Future<void> _deletePost(String postId) async {
+    try {
+      // Delete post and fetch updated posts
+      await PostsApi.deletePost(postId);
+      _refreshPosts();
+    } catch (error) {
+      // Handle errors
+      print('Error during post deletion: $error');
+      // You may want to show an error message to the user
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
@@ -45,10 +57,13 @@ class _Posts extends State<Posts> {
                 return Container(
                   height: 550,
                   child: Forum(
+                    postId: postsData[index]['id']
+                        .toString(), // Pass postId to Forum
                     postTitle: postsData[index]['title'],
                     postContent: postsData[index]['content'],
                     username: postsData[index]['username'],
                     postedOn: postsData[index]['postedOn'],
+                    onDelete: _deletePost, // Pass delete function
                   ),
                 );
               },
