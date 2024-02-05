@@ -10,9 +10,7 @@ void main() {
   //   maxNrOfCacheObjects: 100,
   // ));
 
-  runApp(
-     MyApp()
-  );
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {

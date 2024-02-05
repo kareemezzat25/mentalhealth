@@ -51,7 +51,10 @@ class _LoginState extends State<Login> {
       if (response.statusCode == 200) {
         // Login successful, handle the response accordingly
         String token = json.decode(response.body)['token'];
-        await Auth.setToken(token, emailController.text);
+        String userId =
+            json.decode(response.body)['userId']; // Add this line to get userId
+        await Auth.setToken(
+            token, emailController.text, userId); // Update this line
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => MainHome()));
       } else {

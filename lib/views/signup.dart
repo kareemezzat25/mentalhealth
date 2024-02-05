@@ -67,8 +67,6 @@ class _SignupState extends State<Signup> {
       } else if (response.statusCode == 201) {
         // Signup successful, handle the response accordingly
         print('Signup successful');
-        String token = json.decode(response.body)['token'];
-        await Auth.setToken(token, emailController.text);
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => Login()));
       } else {

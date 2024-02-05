@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:mentalhealthh/api/postsApi.dart';
 import 'package:mentalhealthh/models/Icon.dart';
@@ -5,49 +7,59 @@ import 'package:mentalhealthh/views/PostComment.dart';
 import 'package:mentalhealthh/widgets/Iconpost.dart';
 import 'package:http/http.dart' as http;
 
-// ignore: must_be_immutable
-class Forum extends StatelessWidget {
+class Forum extends StatefulWidget {
+  // Change to StatefulWidget
   final String? postTitle;
   final String? postContent;
   final String? username;
   final String? postedOn;
   final Function(String)? onDelete;
-  final String? postId; // Add postId parameter
+  final String? postId;
+  final String? appUserId;
+  final String? userId;
 
-  Forum(
-      {this.postTitle,
-      this.postContent,
-      this.username,
-      this.postedOn,
-      this.onDelete,
-      this.postId});
+  Forum({
+    this.postTitle,
+    this.postContent,
+    this.username,
+    this.postedOn,
+    this.onDelete,
+    this.postId,
+    this.appUserId,
+    required this.userId,
+  });
 
+  @override
+  _ForumState createState() => _ForumState();
+}
+
+class _ForumState extends State<Forum> {
+  // Create State class
   List<Iconofpost> iconsList = [
     Iconofpost(iconData: Icons.favorite),
     Iconofpost(iconData: Icons.comment),
     Iconofpost(iconData: Icons.share),
   ];
+
   Future<void> deletePost(String postId) async {
     try {
-      // Send a delete request to the API
       final response = await http.delete(
           Uri.parse('https://mentalmediator.somee.com/api/posts/$postId'));
 
       if (response.statusCode == 200) {
-        // Post deleted successfully
-        onDelete?.call(postId); // Notify parent widget about deletion
+        widget.onDelete?.call(
+            postId); // Use widget to access the properties of the parent widget
       } else {
         // Handle other status codes
-        // You may want to show an error message
       }
     } catch (error) {
       // Handle network errors
-      // You may want to show an error message
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    log('Forum - userId: ${widget.userId}, appUserId: ${widget.appUserId}');
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
@@ -92,70 +104,39 @@ class Forum extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                username ?? "",
+                                widget.username ?? "",
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                               Text(
-                                postedOn ?? "",
+                                widget.postedOn ?? "",
                                 style: TextStyle(fontSize: 12),
                               ),
                             ],
                           ),
                           Spacer(),
-                          PopupMenuButton<String>(
-                            onSelected: (value) {
-                              // Handle menu item selection
-                              if (value == 'edit') {
-                                // Perform edit action
-                              } else if (value == 'delete') {
-                                // Perform delete action
-                                deletePost(postId ?? '');
-                              }
-                            },
-                            itemBuilder: (BuildContext context) =>
-                                <PopupMenuEntry<String>>[
-                              const PopupMenuItem<String>(
-                                value: 'edit',
-                                child: ListTile(
-                                  leading: Icon(Icons.edit),
-                                  title: Text('Edit'),
-                                ),
-                              ),
-                              const PopupMenuItem<String>(
-                                value: 'delete',
-                                child: ListTile(
-                                  leading: Icon(Icons.delete),
-                                  title: Text('Delete'),
-                                ),
-                              ),
-                            ],
-                            child: Icon(Icons.more_horiz),
-                          ),
                         ],
                       ),
                     ),
                   ),
                   SizedBox(height: 10),
-                  //title
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      postTitle ?? "",
+                      widget.postTitle ?? "",
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                     ),
                   ),
                   SizedBox(height: 5),
-                  //description
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: SingleChildScrollView(
                         child: Text(
-                          postContent ?? "",
+                          widget.postContent ?? "",
                           style: TextStyle(fontSize: 18),
                         ),
                       ),
@@ -170,17 +151,22 @@ class Forum extends StatelessWidget {
                           IconPost(
                             iconreaction: iconsList[index],
                           ),
-                        // GestureDetector for navigating to PostComment
                         GestureDetector(
                           onTap: () {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => PostComment(
-                                    postId: int.parse(
-                                        postId ?? '0')), // Convert to int
+                                  postId: int.parse(widget.postId ?? '0'),
+                                  userId: widget.userId,
+                                ),
                               ),
-                            );
+                            ).then((result) async {
+                              // This code will be executed when returning from the second page
+                              if (result != null) {
+                                // Reload the data or perform any other actions you need
+                              }
+                            });
                           },
                           child: Icon(
                             Icons.comment,
