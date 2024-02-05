@@ -14,6 +14,7 @@ class _Posts extends State<Posts> {
   late String userId;
   int currentPage = 1;
   int pageSize = 30;
+  //int totalPages
 
   void changeData() {
     setState(() {
