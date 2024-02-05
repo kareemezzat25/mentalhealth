@@ -93,13 +93,19 @@ class _PostCommentState extends State<PostComment> {
                           onSelected: (value) async {
                             // Handle menu item selection
                             if (value == 'edit') {
+                              // Fetch old title and content
+                              String oldTitle = postDetailsData['title'];
+                              String oldContent = postDetailsData['content'];
                               // Navigate to PostEdit.dart and wait for the result
                               Map<String, dynamic>? result =
                                   await Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) =>
-                                      PostEdit(postId: widget.postId),
+                                  builder: (context) => PostEdit(
+                                    postId: widget.postId,
+                                    oldTitle: oldTitle,
+                                    oldContent: oldContent,
+                                  ),
                                 ),
                               );
                               if (true) {

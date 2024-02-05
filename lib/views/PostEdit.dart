@@ -3,8 +3,14 @@ import 'package:mentalhealthh/api/postsApi.dart';
 
 class PostEdit extends StatefulWidget {
   final int postId;
+  final String oldTitle;
+  final String oldContent;
 
-  PostEdit({required this.postId});
+  PostEdit({
+    required this.postId,
+    required this.oldTitle,
+    required this.oldContent,
+  });
 
   @override
   _PostEditState createState() => _PostEditState();
@@ -13,6 +19,15 @@ class PostEdit extends StatefulWidget {
 class _PostEditState extends State<PostEdit> {
   TextEditingController titleController = TextEditingController();
   TextEditingController contentController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Initialize text fields with old title and content
+    titleController.text = widget.oldTitle;
+    contentController.text = widget.oldContent;
+  }
 
   @override
   Widget build(BuildContext context) {
