@@ -6,6 +6,7 @@ import 'package:mentalhealthh/api/commentsApi.dart';
 import 'package:mentalhealthh/api/postsApi.dart';
 import 'package:mentalhealthh/authentication/auth.dart';
 import 'package:mentalhealthh/models/button.dart';
+import 'package:mentalhealthh/views/PostEdit.dart';
 import 'package:mentalhealthh/views/textForm.dart';
 
 class PostComment extends StatefulWidget {
@@ -41,6 +42,13 @@ class _PostCommentState extends State<PostComment> {
         // Check if the logged-in user is the author of the post
         isCurrentUserPostAuthor = userId == postDetailsData['appUserId'];
       });
+    });
+  }
+
+  void changePostData() {
+    setState(() {
+      postDetails = PostsApi.fetchPostDetails(widget.postId);
+      //posts = PostsApi.fetchPosts();
     });
   }
 
@@ -85,6 +93,24 @@ class _PostCommentState extends State<PostComment> {
                           onSelected: (value) async {
                             // Handle menu item selection
                             if (value == 'edit') {
+                              // Navigate to PostEdit.dart and wait for the result
+                              Map<String, dynamic>? result =
+                                  await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      PostEdit(postId: widget.postId),
+                                ),
+                              );
+                              if (true) {
+                                changePostData();
+                                // Result is not null, indicating a successful edit
+                                // Refresh the UI with the updated post details
+                                setState(() {
+                                  postDetailsData = snapshot.data ?? {};
+                                  ;
+                                });
+                              }
                               // Perform edit action
                             } else if (value == 'delete') {
                               // Perform delete action
@@ -92,9 +118,7 @@ class _PostCommentState extends State<PostComment> {
                               await PostsApi.deletePost(
                                 context: context,
                                 postId: widget.postId,
-                                onPostDeleted: () {
-                                  PostsApi.fetchPosts();
-                                },
+                                onPostDeleted: () {},
                               );
                               // Navigator.of(context).pushReplacement(
                               //   MaterialPageRoute(

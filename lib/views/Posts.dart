@@ -17,6 +17,13 @@ class _Posts extends State<Posts> {
   void changeData() {
     setState(() {
       _refreshPosts();
+      //posts = PostsApi.fetchPosts();
+    });
+  }
+
+  Future<void> _refreshPosts() async {
+    setState(() {
+      posts = PostsApi.fetchPosts();
     });
   }
 
@@ -31,12 +38,6 @@ class _Posts extends State<Posts> {
     String? fetchedUserId = await Auth.getUserId();
     setState(() {
       userId = fetchedUserId ?? "";
-    });
-  }
-
-  Future<void> _refreshPosts() async {
-    setState(() {
-      posts = PostsApi.fetchPosts();
     });
   }
 

@@ -54,6 +54,50 @@ class PostsApi {
     }
   }
 
+  static Future<Map<String, dynamic>> editPost(
+      int postId, String newTitle, String newContent) async {
+    try {
+      final String? authToken = await Auth.getToken();
+
+      if (authToken == null) {
+        print('Error editing post. Authentication token is null.');
+        return Map<String, dynamic>(); // Return an empty map
+      }
+
+      final Map<String, dynamic> requestData = {
+        "title": newTitle,
+        "content": newContent,
+      };
+
+      final String requestBody = jsonEncode(requestData);
+      final Map<String, String> headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $authToken',
+      };
+
+      final http.Response response = await http.put(
+        Uri.parse('$apiUrl/$postId'),
+        headers: headers,
+        body: requestBody,
+      );
+
+      if (response.statusCode == 200) {
+        // Return the updated post details if successful
+        final Map<String, dynamic> updatedPost = json.decode(response.body);
+
+        return updatedPost;
+      } else {
+        // Handle other status codes
+        print('Failed to edit post. Status Code: ${response.statusCode}');
+        print('Response Body: ${response.body}');
+        return Map<String, dynamic>(); // Return an empty map
+      }
+    } catch (error) {
+      print('Error during editPost: $error');
+      return Map<String, dynamic>(); // Return an empty map
+    }
+  }
+
   static Future<List<Map<String, dynamic>>> fetchPosts() async {
     final response = await http.get(Uri.parse(apiUrl));
 
