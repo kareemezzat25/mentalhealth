@@ -104,4 +104,71 @@ class CommentApi {
       print('Error during deleteComment: $error');
     }
   }
+
+  static Future<void> updateReply(
+    int postId,
+    int commentId,
+    int replyId,
+    String newContent,
+  ) async {
+    try {
+      final Map<String, dynamic> requestData = {
+        "content": newContent,
+      };
+
+      final String requestBody = jsonEncode(requestData);
+      final String? token = await Auth.getToken();
+
+      if (token != null) {
+        final Map<String, String> headers = {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        };
+
+        final http.Response response = await http.put(
+          Uri.parse('$apiUrl/$postId/comments/$commentId/replies/$replyId'),
+          headers: headers,
+          body: requestBody,
+        );
+
+        if (response.statusCode != 200) {
+          throw Exception('Failed to update reply');
+        }
+      } else {
+        print('Token not available');
+        // Handle case where token is not available
+      }
+    } catch (error) {
+      // Handle any network or other errors
+      print('Error during updateReply: $error');
+    }
+  }
+
+  static Future<void> deleteReply(
+      int postId, int commentId, int replyId) async {
+    try {
+      final String? token = await Auth.getToken();
+
+      if (token != null) {
+        final Map<String, String> headers = {
+          'Authorization': 'Bearer $token',
+        };
+
+        final http.Response response = await http.delete(
+          Uri.parse('$apiUrl/$postId/comments/$commentId/replies/$replyId'),
+          headers: headers,
+        );
+
+        if (response.statusCode != 200) {
+          throw Exception('Failed to delete reply');
+        }
+      } else {
+        print('Token not available');
+        // Handle case where token is not available
+      }
+    } catch (error) {
+      // Handle any network or other errors
+      print('Error during deleteReply: $error');
+    }
+  }
 }

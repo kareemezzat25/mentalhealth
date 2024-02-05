@@ -8,9 +8,22 @@ import 'package:mentalhealthh/views/Posts.dart';
 class PostsApi {
   static const apiUrl = 'https://mentalmediator.somee.com/api/posts';
   static List<Map<String, dynamic>> posts = []; // List to store posts
+  static const pageSize = 30; // Set the page size to 30
 
   // New method to reload posts
   static Future<void> reloadPosts() async {}
+  static Future<List<Map<String, dynamic>>> fetchPaginatedPosts(
+      int pageNumber, int pageSize) async {
+    final response = await http
+        .get(Uri.parse('$apiUrl?pageNumber=$pageNumber&pageSize=$pageSize'));
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      return data.cast<Map<String, dynamic>>();
+    } else {
+      throw Exception('Failed to load paginated posts');
+    }
+  }
 
   // Inside deletePost function
   static Future<void> deletePost({

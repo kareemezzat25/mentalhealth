@@ -11,19 +11,19 @@ class Posts extends StatefulWidget {
 
 class _Posts extends State<Posts> {
   late Future<List<Map<String, dynamic>>> posts;
-  late String userId; // Add this line
-  bool value = false;
+  late String userId;
+  int currentPage = 1;
+  int pageSize = 30;
 
   void changeData() {
     setState(() {
       _refreshPosts();
-      //posts = PostsApi.fetchPosts();
     });
   }
 
   Future<void> _refreshPosts() async {
     setState(() {
-      posts = PostsApi.fetchPosts();
+      posts = PostsApi.fetchPaginatedPosts(currentPage, pageSize);
     });
   }
 
@@ -31,7 +31,7 @@ class _Posts extends State<Posts> {
   void initState() {
     super.initState();
     initUser();
-    posts = PostsApi.fetchPosts();
+    posts = PostsApi.fetchPaginatedPosts(currentPage, pageSize);
   }
 
   Future<void> initUser() async {
@@ -41,72 +41,105 @@ class _Posts extends State<Posts> {
     });
   }
 
-  // Future<void> _deletePost(String postId) async {
-  //   try {
-  //     // Delete post and fetch updated posts
-  //     await PostsApi.deletePost(postId);
-  //     _refreshPosts();
-  //   } catch (error) {
-  //     // Handle errors
-  //     print('Error during post deletion: $error');
-  //     // You may want to show an error message to the user
-  //   }
-  // }
+  Future<void> _loadNextPage() async {
+    setState(() {
+      currentPage++;
+      _refreshPosts();
+    });
+  }
+
+  Future<void> _loadPreviousPage() async {
+    if (currentPage > 1) {
+      setState(() {
+        currentPage--;
+        _refreshPosts();
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return RefreshIndicator(
-      onRefresh: _refreshPosts,
-      child: FutureBuilder<List<Map<String, dynamic>>>(
-        future: posts,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          } else if (snapshot.hasError) {
-            return Center(
-              child: Text('Error: ${snapshot.error}'),
-            );
-          } else {
-            List<Map<String, dynamic>> postsData = snapshot.data ?? [];
-            return ListView.builder(
-              itemCount: postsData.length,
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  onTap: () async {
-                    String? refresh = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PostComment(
-                          postId: postsData[index]['id'],
-                          userId: userId,
-                          appUserId: postsData[index]['appUserId'],
-                        ),
-                      ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Posts'),
+      ),
+      body: RefreshIndicator(
+        onRefresh: _refreshPosts,
+        child: Column(
+          children: [
+            Expanded(
+              child: FutureBuilder<List<Map<String, dynamic>>>(
+                future: posts,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(
+                      child: CircularProgressIndicator(),
                     );
+                  } else if (snapshot.hasError) {
+                    return Center(
+                      child: Text('Error: ${snapshot.error}'),
+                    );
+                  } else {
+                    List<Map<String, dynamic>> postsData = snapshot.data ?? [];
+                    return ListView.builder(
+                      itemCount: postsData.length,
+                      itemBuilder: (context, index) {
+                        return GestureDetector(
+                          onTap: () async {
+                            String? refresh = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => PostComment(
+                                  postId: postsData[index]['id'],
+                                  userId: userId,
+                                  appUserId: postsData[index]['appUserId'],
+                                ),
+                              ),
+                            );
 
-                    if (true) {
-                      changeData();
-                    }
-                  },
-                  child: Container(
-                    height: 550,
-                    child: Forum(
-                      postId: postsData[index]['id'].toString(),
-                      postTitle: postsData[index]['title'],
-                      postContent: postsData[index]['content'],
-                      username: postsData[index]['username'],
-                      postedOn: postsData[index]['postedOn'],
-                      appUserId: postsData[index]['appUserId'],
-                      userId: userId,
-                    ),
+                            if (true) {
+                              changeData();
+                            }
+                          },
+                          child: Container(
+                            height: 550,
+                            child: Forum(
+                              postId: postsData[index]['id'].toString(),
+                              postTitle: postsData[index]['title'],
+                              postContent: postsData[index]['content'],
+                              username: postsData[index]['username'],
+                              postedOn: postsData[index]['postedOn'],
+                              appUserId: postsData[index]['appUserId'],
+                              userId: userId,
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  }
+                },
+              ),
+            ),
+            // Row with page number and arrow buttons
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.arrow_back),
+                    onPressed: _loadPreviousPage,
                   ),
-                );
-              },
-            );
-          }
-        },
+                  Text('Page $currentPage'),
+                  IconButton(
+                    icon: Icon(Icons.arrow_forward),
+                    onPressed: _loadNextPage,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

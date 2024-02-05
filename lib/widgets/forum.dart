@@ -59,7 +59,7 @@ class _ForumState extends State<Forum> {
 
   @override
   Widget build(BuildContext context) {
-    log('Forum - userId: ${widget.userId}, appUserId: ${widget.appUserId}');
+    //log('Forum - userId: ${widget.userId}, appUserId: ${widget.appUserId}');
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(

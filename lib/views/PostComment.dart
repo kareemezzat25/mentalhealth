@@ -8,6 +8,7 @@ import 'package:mentalhealthh/authentication/auth.dart';
 import 'package:mentalhealthh/models/button.dart';
 import 'package:mentalhealthh/views/CommentEdit.dart';
 import 'package:mentalhealthh/views/PostEdit.dart';
+import 'package:mentalhealthh/views/ReplayEdit.dart';
 import 'package:mentalhealthh/views/textForm.dart';
 
 class PostComment extends StatefulWidget {
@@ -55,7 +56,7 @@ class _PostCommentState extends State<PostComment> {
 
   @override
   Widget build(BuildContext context) {
-    log('PostComment - userId: ${widget.userId}, appUserId: ${postDetailsData['appUserId']}'); // Add this line
+    //log('PostComment - userId: ${widget.userId}, appUserId: ${postDetailsData['appUserId']}'); // Add this line
     return Scaffold(
       appBar: AppBar(
         title: Text('Post Details and Comments'),
@@ -73,7 +74,7 @@ class _PostCommentState extends State<PostComment> {
             );
           } else {
             Map<String, dynamic> postDetailsData = snapshot.data ?? {};
-            log('PostComment body  - userId: ${widget.userId}, appUserId: ${postDetailsData['appUserId']}'); // Add this line
+            //log('PostComment body  - userId: ${widget.userId}, appUserId: ${postDetailsData['appUserId']}'); // Add this line
             return SingleChildScrollView(
               padding: EdgeInsets.all(16),
               child: Column(
@@ -356,18 +357,116 @@ class _PostCommentState extends State<PostComment> {
                                           shrinkWrap: true,
                                           itemCount: repliesData.length,
                                           itemBuilder: (context, replyIndex) {
-                                            return ListTile(
-                                              title: Text(
-                                                  'Reply by: ${repliesData[replyIndex]['username']}'),
-                                              subtitle: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
+                                            int replyId =
+                                                repliesData[replyIndex]['id'];
+
+                                            return Card(
+                                              margin: EdgeInsets.symmetric(
+                                                  vertical: 8),
+                                              child: Column(
                                                 children: [
-                                                  Text(
-                                                      'Replied On: ${repliesData[replyIndex]['repliedAt']}'),
-                                                  SizedBox(height: 5),
-                                                  Text(
-                                                      'Content: ${repliesData[replyIndex]['content']}'),
+                                                  ListTile(
+                                                    title: Row(
+                                                      children: [
+                                                        Text(
+                                                            'Reply by: ${repliesData[replyIndex]['username']}'),
+                                                        if (isCurrentUserCommentAuthor)
+                                                          PopupMenuButton<
+                                                              String>(
+                                                            onSelected:
+                                                                (value) async {
+                                                              // Handle menu item selection for comments
+                                                              if (value ==
+                                                                  'edit') {
+                                                                // Navigate to CommentEdit.dart
+                                                                await Navigator
+                                                                    .push(
+                                                                  context,
+                                                                  MaterialPageRoute(
+                                                                    builder:
+                                                                        (context) =>
+                                                                            ReplyEdit(
+                                                                      postId: widget
+                                                                          .postId,
+                                                                      commentId:
+                                                                          commentId,
+                                                                      replyId:
+                                                                          replyId,
+                                                                      oldContent:
+                                                                          repliesData[replyIndex]
+                                                                              [
+                                                                              'content'],
+                                                                    ),
+                                                                  ),
+                                                                );
+
+                                                                // Refresh UI after returning from CommentEdit.dart
+                                                                setState(() {
+                                                                  postDetails =
+                                                                      PostsApi.fetchPostDetails(
+                                                                          widget
+                                                                              .postId);
+                                                                });
+                                                              } else if (value ==
+                                                                  'delete') {
+                                                                // Perform delete action for comments
+                                                                await CommentApi
+                                                                    .deleteReply(
+                                                                        widget
+                                                                            .postId,
+                                                                        commentId,
+                                                                        replyId);
+                                                                setState(() {
+                                                                  // Refresh UI after deleting comment
+                                                                  repliesData =
+                                                                      snapshot.data ??
+                                                                          [];
+                                                                });
+                                                              }
+                                                            },
+                                                            itemBuilder: (BuildContext
+                                                                    context) =>
+                                                                <PopupMenuEntry<
+                                                                    String>>[
+                                                              const PopupMenuItem<
+                                                                  String>(
+                                                                value: 'edit',
+                                                                child: ListTile(
+                                                                  leading: Icon(
+                                                                      Icons
+                                                                          .edit),
+                                                                  title: Text(
+                                                                      'Edit'),
+                                                                ),
+                                                              ),
+                                                              const PopupMenuItem<
+                                                                  String>(
+                                                                value: 'delete',
+                                                                child: ListTile(
+                                                                  leading: Icon(
+                                                                      Icons
+                                                                          .delete),
+                                                                  title: Text(
+                                                                      'Delete'),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                      ],
+                                                    ),
+                                                    subtitle: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text(
+                                                            'Replied On: ${repliesData[replyIndex]['repliedAt']}'),
+                                                        SizedBox(height: 5),
+                                                        Text(
+                                                            'Content: ${repliesData[replyIndex]['content']}'),
+                                                      ],
+                                                    ),
+                                                  ),
                                                 ],
                                               ),
                                             );
