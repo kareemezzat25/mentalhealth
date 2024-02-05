@@ -12,6 +12,13 @@ class Posts extends StatefulWidget {
 class _Posts extends State<Posts> {
   late Future<List<Map<String, dynamic>>> posts;
   late String userId; // Add this line
+  bool value = false;
+
+  void changeData() {
+    setState(() {
+      _refreshPosts();
+    });
+  }
 
   @override
   void initState() {
@@ -66,8 +73,8 @@ class _Posts extends State<Posts> {
               itemCount: postsData.length,
               itemBuilder: (context, index) {
                 return GestureDetector(
-                  onTap: () {
-                    Navigator.push(
+                  onTap: () async {
+                    String? refresh = await Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => PostComment(
@@ -77,6 +84,10 @@ class _Posts extends State<Posts> {
                         ),
                       ),
                     );
+
+                    if (true) {
+                      changeData();
+                    }
                   },
                   child: Container(
                     height: 550,

@@ -42,7 +42,7 @@ class PostsApi {
         onPostDeleted();
 
         // Navigate back to the previous screen
-        Navigator.pop(context);
+        Navigator.pop(context, 'refresh');
       } else {
         // Handle other status codes
         print('Error deleting post. Status code: ${response.statusCode}');

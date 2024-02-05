@@ -93,8 +93,7 @@ class _PostCommentState extends State<PostComment> {
                                 context: context,
                                 postId: widget.postId,
                                 onPostDeleted: () {
-                                  // Callback function to reload posts
-                                  //reloadPosts();
+                                  PostsApi.fetchPosts();
                                 },
                               );
                               // Navigator.of(context).pushReplacement(
