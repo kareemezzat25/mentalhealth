@@ -6,6 +6,40 @@ import 'package:mentalhealthh/authentication/auth.dart';
 class CommentApi {
   static const apiUrl = 'https://mentalmediator.somee.com/api/posts';
 
+  static Future<Map<String, dynamic>> fetchCommentDetails(
+    int postId,
+    int commentId,
+  ) async {
+    try {
+      final String? token = await Auth.getToken();
+
+      if (token != null) {
+        final Map<String, String> headers = {
+          'Authorization': 'Bearer $token',
+        };
+
+        final http.Response response = await http.get(
+          Uri.parse('$apiUrl/$postId/comments/$commentId'),
+          headers: headers,
+        );
+
+        if (response.statusCode == 200) {
+          final Map<String, dynamic> data = json.decode(response.body);
+          return data;
+        } else {
+          throw Exception('Failed to fetch comment details');
+        }
+      } else {
+        print('Token not available');
+        throw Exception('Token not available');
+      }
+    } catch (error) {
+      // Handle any network or other errors
+      print('Error during fetchCommentDetails: $error');
+      throw error;
+    }
+  }
+
   static Future<void> updateComment(
     int postId,
     int commentId,
@@ -169,6 +203,41 @@ class CommentApi {
     } catch (error) {
       // Handle any network or other errors
       print('Error during deleteReply: $error');
+    }
+  }
+
+  static Future<Map<String, dynamic>> fetchReplyDetails(
+    int postId,
+    int commentId,
+    int replyId,
+  ) async {
+    try {
+      final String? token = await Auth.getToken();
+
+      if (token != null) {
+        final Map<String, String> headers = {
+          'Authorization': 'Bearer $token',
+        };
+
+        final http.Response response = await http.get(
+          Uri.parse('$apiUrl/$postId/comments/$commentId/replies/$replyId'),
+          headers: headers,
+        );
+
+        if (response.statusCode == 200) {
+          final Map<String, dynamic> data = json.decode(response.body);
+          return data;
+        } else {
+          throw Exception('Failed to fetch reply details');
+        }
+      } else {
+        print('Token not available');
+        throw Exception('Token not available');
+      }
+    } catch (error) {
+      // Handle any network or other errors
+      print('Error during fetchReplyDetails: $error');
+      throw error;
     }
   }
 }

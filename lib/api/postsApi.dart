@@ -111,8 +111,14 @@ class PostsApi {
     }
   }
 
-  static Future<List<Map<String, dynamic>>> fetchPosts() async {
-    final response = await http.get(Uri.parse(apiUrl));
+  // Inside postsApi.dart
+
+  static Future<List<Map<String, dynamic>>> fetchPosts({
+    int page = 1,
+    int pageSize = 30,
+  }) async {
+    final response =
+        await http.get(Uri.parse('$apiUrl?page=$page&pageSize=$pageSize'));
 
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);
