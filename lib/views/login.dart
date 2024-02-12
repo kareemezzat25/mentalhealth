@@ -6,8 +6,6 @@ import 'textForm.dart';
 import 'package:mentalhealthh/models/button.dart';
 import 'package:mentalhealthh/views/signup.dart';
 import 'package:mentalhealthh/views/MainHomeview.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-
 import 'package:mentalhealthh/widgets/signinwithgoogle.dart';
 
 class Login extends StatefulWidget {
@@ -18,6 +16,10 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+
+  String emailError = '';
+  String passwordError = '';
+  String genericError = ''; // Added to store generic error message
 
   void login() async {
     try {
@@ -45,9 +47,7 @@ class _LoginState extends State<Login> {
         body: requestBody,
       );
 
-      print(response.body);
       // Check response status code
-      // Inside the login() function
       if (response.statusCode == 200) {
         // Login successful, handle the response accordingly
         String token = json.decode(response.body)['token'];
@@ -61,6 +61,26 @@ class _LoginState extends State<Login> {
         // Login failed, handle the error
         print('Login failed. Status code: ${response.statusCode}');
         print('Response body: ${response.body}');
+
+        try {
+          final Map<String, dynamic> errorBody = jsonDecode(response.body);
+
+          if (errorBody.containsKey('errors') &&
+              errorBody['errors'].isNotEmpty) {
+            final List<dynamic> errors = errorBody['errors'];
+
+            for (var error in errors) {
+              if (error.containsKey('description')) {
+                setState(() {
+                  genericError = error['description'];
+                });
+              }
+            }
+          }
+        } catch (e) {
+          // Handle JSON decoding error
+          print('Error decoding error response: $e');
+        }
       }
     } catch (error) {
       // Handle any network or other errors
@@ -71,129 +91,155 @@ class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          elevation: 0,
-          backgroundColor: Colors.transparent,
-          leading: IconButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            icon: Icon(
-              Icons.arrow_back,
-              size: 20,
-              color: Colors.black,
-            ),
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: Icon(
+            Icons.arrow_back,
+            size: 20,
+            color: Colors.black,
           ),
         ),
-        body: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 10),
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                const SizedBox(height: 60),
-                const Text(
-                  "Sign in",
-                  style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold,
-                  ),
+      ),
+      body: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 10),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              const SizedBox(height: 60),
+              const Text(
+                "Sign in",
+                style: TextStyle(
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
                 ),
-                const SizedBox(
-                  height: 10,
-                ),
-                const Text("Login to your account",
-                    style: TextStyle(fontSize: 15, color: Colors.grey)),
-                SizedBox(height: 60),
-                Padding(
-                    padding: const EdgeInsets.only(left: 12, right: 120),
-                    child: GoogleSignInButton(
-                      onPressed: () {
-                        // Handle Google Sign-In
-                      },
-                    )),
-                SizedBox(height: 15),
-                const Padding(
-                  padding: EdgeInsets.only(left: 14),
-                  child: Row(
-                    children: [
-                      Text("Enter Email or username",
-                          style: TextStyle(fontSize: 15, color: Colors.grey)),
-                    ],
-                  ),
-                ),
-                TextForm(
-                  hintText: "Email",
-                  controller: emailController,
-                ),
-                SizedBox(height: 15),
-                Padding(
-                  padding: EdgeInsets.only(left: 14),
-                  child: Row(
-                    children: [
-                      Text("Enter password",
-                          style: TextStyle(fontSize: 15, color: Colors.grey)),
-                    ],
-                  ),
-                ),
-                TextForm(
-                  hintText: "Password",
-                  controller: passwordController,
-                  isPassword: true,
-                ),
-                SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              const Text("Login to your account",
+                  style: TextStyle(fontSize: 15, color: Colors.grey)),
+              SizedBox(height: 60),
+              Padding(
+                  padding: const EdgeInsets.only(left: 12, right: 120),
+                  child: GoogleSignInButton(
+                    onPressed: () {
+                      // Handle Google Sign-In
+                    },
+                  )),
+              SizedBox(height: 15),
+              const Padding(
+                padding: EdgeInsets.only(left: 14),
+                child: Row(
                   children: [
-                    GestureDetector(
-                      onTap: () {
-                        // we edit it later
-                        // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Signup()));
-                      },
-                      child: Text(
-                        "Forgot Password?",
-                        style: TextStyle(color: Color(0xff4285F4)),
-                      ),
-                    ),
-                    SizedBox(width: 20),
+                    Text("Enter Email",
+                        style: TextStyle(fontSize: 15, color: Colors.grey)),
                   ],
                 ),
-                SizedBox(height: 10),
-                Button(
-                  buttonColor: Color(0xff0B570E),
-                  buttonText: 'Sign in',
-                  textColor: Colors.white,
-                  onPressed: login,
+              ),
+              TextForm(
+                hintText: "Email",
+                controller: emailController,
+              ),
+              if (emailError.isNotEmpty)
+                Padding(
+                  padding: EdgeInsets.only(left: 14),
+                  child: Text(
+                    "emailError",
+                    style: TextStyle(color: Colors.red, fontSize: 14),
+                  ),
                 ),
-                SizedBox(height: 20),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
+              SizedBox(height: 15),
+              // Display generic error message for any other errors
+              if (genericError.isNotEmpty)
+                Padding(
+                  padding: EdgeInsets.only(left: 14),
+                  child: Text(
+                    genericError,
+                    style: TextStyle(color: Colors.red, fontSize: 14),
+                  ),
+                ),
+              Padding(
+                padding: EdgeInsets.only(left: 14),
+                child: Row(
                   children: [
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pushReplacement(context,
-                            MaterialPageRoute(builder: (context) {
-                          return Signup();
-                        }));
-                      },
-                      child: const Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "Don't have an account? ",
-                            style: TextStyle(color: Color(0xff8D8D8D)),
-                          ),
-                          Text(
-                            "Sign up",
-                            style: TextStyle(color: Color(0xff0B570E)),
-                          ),
-                        ],
-                      ),
-                    ),
+                    Text("Enter password",
+                        style: TextStyle(fontSize: 15, color: Colors.grey)),
                   ],
                 ),
-              ],
-            ),
+              ),
+              TextForm(
+                hintText: "Password",
+                controller: passwordController,
+                isPassword: true,
+              ),
+              if (passwordError.isNotEmpty)
+                Padding(
+                  padding: EdgeInsets.only(left: 14),
+                  child: Text(
+                    "passwordError",
+                    style: TextStyle(color: Colors.red, fontSize: 14),
+                  ),
+                ),
+              SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      // we edit it later
+                      // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Signup()));
+                    },
+                    child: Text(
+                      "Forgot Password?",
+                      style: TextStyle(color: Color(0xff4285F4)),
+                    ),
+                  ),
+                  SizedBox(width: 20),
+                ],
+              ),
+              SizedBox(height: 10),
+              Button(
+                buttonColor: Color(0xff0B570E),
+                buttonText: 'Sign in',
+                textColor: Colors.white,
+                onPressed: login,
+              ),
+              SizedBox(height: 20),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pushReplacement(context,
+                          MaterialPageRoute(builder: (context) {
+                        return Signup();
+                      }));
+                    },
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Don't have an account? ",
+                          style: TextStyle(color: Color(0xff8D8D8D)),
+                        ),
+                        Text(
+                          "Sign up",
+                          style: TextStyle(color: Color(0xff0B570E)),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
-        ));
+        ),
+      ),
+    );
   }
 }

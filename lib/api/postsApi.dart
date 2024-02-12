@@ -130,7 +130,7 @@ class PostsApi {
 
   // Inside the createPost function
   static Future<void> createPost(
-      String title, String content, String token) async {
+      String title, String content, String token, BuildContext context) async {
     try {
       final Map<String, dynamic> requestData = {
         "title": title,
@@ -149,7 +149,18 @@ class PostsApi {
         body: requestBody,
       );
 
-      if (response.statusCode != 201) {
+      if (response.statusCode == 201) {
+        // Post created successfully, switch to the Posts tab
+        DefaultTabController.of(context)
+            ?.animateTo(1); // 1 is the index of the Posts tab
+      } else if (response.statusCode != 201) {
+        try {
+          final Map<String, dynamic> errorBody = jsonDecode(response.body);
+        } catch (e) {
+          // Handle JSON decoding error
+          print('Error decoding error response: $e');
+        }
+
         throw Exception('Failed to create post');
       }
     } catch (error) {

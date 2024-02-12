@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:mentalhealthh/authentication/auth.dart';
 import 'login.dart';
@@ -58,7 +60,7 @@ class _SignupState extends State<Signup> {
 
       // Print the response for debugging
       print('Response Status Code: ${response.statusCode}');
-      print('Response Body: ${response.body}');
+      log('Response Body: ${response.body}');
 
       // Check response status code
       if (response.statusCode == 200) {

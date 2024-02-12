@@ -5,12 +5,14 @@ class TextForm extends StatefulWidget {
   final TextEditingController controller;
   final bool isPassword;
   final bool largerHint;
+  final Function(String)? onChanged; // Added onChanged property
 
   TextForm({
     required this.hintText,
     required this.controller,
     this.isPassword = false,
     this.largerHint = false,
+    this.onChanged,
   });
 
   @override
@@ -36,8 +38,13 @@ class _TextFormState extends State<TextForm> {
         height: textFieldHeight,
         child: TextField(
           controller: widget.controller,
+          onChanged: (text) {
+            // Call the onChanged callback with the current text
+            widget.onChanged?.call(text);
+            setState(() {}); // Update the local state if needed
+          },
           obscureText: widget.isPassword ? isObscure : false,
-          maxLines: textFieldHeight > 75 ? 8 : 1, // Allow multiple lines if height is greater than default
+          maxLines: textFieldHeight > 75 ? 8 : 1,
           decoration: InputDecoration(
             hintText: widget.hintText,
             hintStyle: TextStyle(color: Colors.grey),
