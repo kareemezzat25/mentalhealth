@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:mentalhealthh/authentication/auth.dart';
@@ -51,16 +53,21 @@ class _LoginState extends State<Login> {
       if (response.statusCode == 200) {
         // Login successful, handle the response accordingly
         String token = json.decode(response.body)['token'];
-        String userId =
-            json.decode(response.body)['userId']; // Add this line to get userId
-        await Auth.setToken(
-            token, emailController.text, userId); // Update this line
+        String userId = json.decode(response.body)['userId'];
+        String userName =
+            json.decode(response.body)['userName']; // Add this line
+
+        await Auth.setToken(token, emailController.text, userId);
+        await Auth.setUserName(userName); // Add this line
+
+        log('Response body: ${response.body}');
+
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => MainHome()));
       } else {
         // Login failed, handle the error
         print('Login failed. Status code: ${response.statusCode}');
-        print('Response body: ${response.body}');
+        log('Response body: ${response.body}');
 
         try {
           final Map<String, dynamic> errorBody = jsonDecode(response.body);

@@ -4,6 +4,7 @@ class Auth {
   static const String _tokenKey = 'token';
   static const String _emailKey = 'email';
   static const String _userIdKey = 'userId'; // Add this line
+  static const String _userNameKey = 'userName'; // Add this line
 
   static Future<String?> getUserId() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -39,13 +40,24 @@ class Auth {
     return prefs.getString(_emailKey);
   }
 
-  static Future<String?> getUsername() async {
-    try {
-      String? email = await getEmail();
-      return email ?? "UnknownUser";
-    } catch (error) {
-      print('Error during getUsername: $error');
-      throw Exception('Failed to fetch username');
-    }
+  static Future<void> setUserName(String userName) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString(_userNameKey, userName);
+  }
+
+  static Future<String?> getUserName() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_userNameKey);
   }
 }
+
+  // static Future<String?> getUsername() async {
+  //   try {
+  //     String? email = await getEmail();
+  //     return email ?? "UnknownUser";
+  //   } catch (error) {
+  //     print('Error during getUsername: $error');
+  //     throw Exception('Failed to fetch username');
+  //   }
+  // }
+// }

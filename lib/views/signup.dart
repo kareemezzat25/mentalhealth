@@ -21,7 +21,11 @@ class _SignupState extends State<Signup> {
   TextEditingController passwordController = TextEditingController();
   TextEditingController birthDateController = TextEditingController();
   TextEditingController genderController = TextEditingController();
-  TextEditingController UsernameController = TextEditingController();
+
+  String emailError = '';
+  String passwordError = '';
+  String genderError = '';
+  String birthDateError = '';
 
   void signup() async {
     try {
@@ -37,7 +41,6 @@ class _SignupState extends State<Signup> {
         "password": passwordController.text,
         "birthDate": birthDateController.text,
         "gender": genderController.text,
-        "username": UsernameController.text
       };
 
       // Convert data to JSON
@@ -75,6 +78,44 @@ class _SignupState extends State<Signup> {
         // Signup failed, handle the error
         print('Signup failed. Status code: ${response.statusCode}');
         print('Response body: ${response.body}');
+
+        try {
+          final Map<String, dynamic> errorBody = jsonDecode(response.body);
+
+          if (errorBody.containsKey('errors') &&
+              errorBody['errors'].isNotEmpty) {
+            final Map<String, dynamic> errors = errorBody['errors'];
+
+            if (errors.containsKey('Email')) {
+              setState(() {
+                emailError = errors['Email'][0];
+                passwordError = ''; // Reset password error
+              });
+            }
+
+            if (errors.containsKey('Password')) {
+              setState(() {
+                passwordError = errors['Password'][0];
+                emailError = ''; // Reset email error
+              });
+            }
+
+            if (errors.containsKey('Gender')) {
+              setState(() {
+                genderError = errors['Gender'][0];
+              });
+            }
+
+            if (errors.containsKey('birthDate')) {
+              setState(() {
+                birthDateError = errors['birthDate'][0];
+              });
+            }
+          }
+        } catch (e) {
+          // Handle JSON decoding error
+          print('Error decoding error response: $e');
+        }
       }
     } catch (error) {
       // Handle any network or other errors
@@ -123,19 +164,6 @@ class _SignupState extends State<Signup> {
                 ],
               ),
               SizedBox(height: 10),
-              const Padding(
-                padding: EdgeInsets.only(left: 12),
-                child: Row(
-                  children: [
-                    Text(
-                      "Enter Username",
-                      style: TextStyle(fontSize: 15, color: Colors.grey),
-                    ),
-                  ],
-                ),
-              ),
-              TextForm(hintText: "Username", controller: UsernameController),
-              SizedBox(height: 5),
               Row(
                 children: [
                   Expanded(
@@ -196,6 +224,14 @@ class _SignupState extends State<Signup> {
                 ),
               ),
               TextForm(hintText: "Email", controller: emailController),
+              if (emailError.isNotEmpty)
+                Padding(
+                  padding: EdgeInsets.only(left: 12),
+                  child: Text(
+                    emailError,
+                    style: TextStyle(color: Colors.red, fontSize: 14),
+                  ),
+                ),
               SizedBox(height: 5),
               const Padding(
                 padding: EdgeInsets.only(left: 12),
@@ -212,6 +248,14 @@ class _SignupState extends State<Signup> {
                   hintText: "Password",
                   controller: passwordController,
                   isPassword: true),
+              if (passwordError.isNotEmpty)
+                Padding(
+                  padding: EdgeInsets.only(left: 12),
+                  child: Text(
+                    "Password Must be at least 8 characters , have ('0'-'9') & ('A'-'Z'),  ",
+                    style: TextStyle(color: Colors.red, fontSize: 14),
+                  ),
+                ),
               SizedBox(height: 5),
               const Padding(
                 padding: EdgeInsets.only(left: 12),
@@ -225,6 +269,14 @@ class _SignupState extends State<Signup> {
                 ),
               ),
               TextForm(hintText: "yyyy-mm-dd", controller: birthDateController),
+              if (birthDateError.isNotEmpty)
+                Padding(
+                  padding: EdgeInsets.only(left: 12),
+                  child: Text(
+                    birthDateError,
+                    style: TextStyle(color: Colors.red, fontSize: 14),
+                  ),
+                ),
               SizedBox(height: 5),
               const Padding(
                 padding: EdgeInsets.only(left: 12),
@@ -238,6 +290,14 @@ class _SignupState extends State<Signup> {
                 ),
               ),
               TextForm(hintText: "Male/Female", controller: genderController),
+              if (genderError.isNotEmpty)
+                Padding(
+                  padding: EdgeInsets.only(left: 12),
+                  child: Text(
+                    genderError,
+                    style: TextStyle(color: Colors.red, fontSize: 14),
+                  ),
+                ),
               SizedBox(height: 5),
               Button(
                 buttonColor: Color(0xff0B570E),
