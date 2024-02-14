@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:mentalhealthh/authentication/auth.dart';
 import 'dart:convert';
@@ -22,7 +23,57 @@ class _LoginState extends State<Login> {
   String emailError = '';
   String passwordError = '';
   String genericError = ''; // Added to store generic error message
+void signInWithGoogle() async {
+    try {
+      final GoogleSignIn _googleSignIn = GoogleSignIn();
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
 
+      if (googleUser != null) {
+        final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+        final String accessToken = googleAuth.accessToken!;
+
+        // Call External Login API
+        final String apiUrl = 'https://mentalmediator.somee.com/api/auth/external-login';
+        final http.Response response = await http.get(
+          Uri.parse(apiUrl),
+          headers: {
+            'Authorization': 'Bearer $accessToken',
+          },
+ );
+
+        if (response.statusCode == 200) {
+          print("login Successful");  
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => MainHome()),
+          );
+        } else {
+          print('Login failed. Status code: ${response.statusCode}');
+          log('Response body: ${response.body}');
+
+        }
+      } else {
+        print("User canceled Google Sign-In");
+      }
+    } catch (error) {
+      // Handle any errors
+    }
+  }
+
+  // Function to handle confirming email (optional)
+  void confirmEmail(String id, String token) async {
+    try {
+      final String apiUrl = 'https://mentalmediator.somee.com/api/auth/confirm-email';
+      final http.Response response = await http.get(
+        Uri.parse('$apiUrl?id=$id&token=$token'),
+        // Optionally, you may need to pass additional headers or parameters
+      );
+
+      // Handle the response accordingly
+    } catch (error) {
+      // Handle any errors
+    }
+  }
   void login() async {
     try {
       // API endpoint
@@ -134,9 +185,7 @@ class _LoginState extends State<Login> {
               Padding(
                   padding: const EdgeInsets.only(left: 12, right: 120),
                   child: GoogleSignInButton(
-                    onPressed: () {
-                      // Handle Google Sign-In
-                    },
+                    onPressed:signInWithGoogle
                   )),
               SizedBox(height: 15),
               const Padding(

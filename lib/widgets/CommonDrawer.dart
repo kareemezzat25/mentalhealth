@@ -37,31 +37,57 @@ class _CommonDrawerState extends State<CommonDrawer> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      width: 180,
+      width: 200,
       child: ListView(
         children: [
           DrawerHeader(
             decoration: BoxDecoration(
-              color: Colors.blue,
+              color: Color(0xffD2DFD2),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  userName,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical:20),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(40),
+                    border: Border.all(color: Colors.grey, style: BorderStyle.solid),
+                    image: const DecorationImage(
+                      image: AssetImage('assets/images/Illustration.png'),
+                      fit: BoxFit.cover,
+                    ),
                   ),
-                ),
-                Text(
-                  userEmail,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
+                ),SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          userName,
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 18,
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 2,),
+                      Flexible(
+                        child: Text(
+                          userEmail,
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                    ],
+                                    ),
                   ),
-                ),
-              ],
+                      ]),
             ),
           ),
           const ListTile(
