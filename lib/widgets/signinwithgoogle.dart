@@ -21,11 +21,11 @@ class GoogleSignInButton extends StatelessWidget {
         child: Row(
           children: <Widget>[
             Padding(
-              padding: EdgeInsets.only(left: 12), // Adjust the padding as needed
-              child: Image.network(
-                'http://pngimg.com/uploads/google/google_PNG19635.png',
+              padding: EdgeInsets.only(left: 10), // Adjust the padding as needed
+              child: Image.asset(
+                "assets/images/google_logo.png",
                 fit: BoxFit.cover,
-                width: 24, // Adjust the width of the image
+                width: 28, // Adjust the width of the image
                 height: 40, // Adjust the height of the image
               ),
             ),

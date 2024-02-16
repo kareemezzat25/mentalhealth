@@ -14,7 +14,7 @@ class _Posts extends State<Posts> {
   late String userId;
   int currentPage = 1;
   int pageSize = 30;
-  //int totalPages
+  double maxHeight = 200.0; // Set the maximum height for the container
 
   void changeData() {
     setState(() {
@@ -84,6 +84,7 @@ class _Posts extends State<Posts> {
                     List<Map<String, dynamic>> postsData = snapshot.data ?? [];
                     return ListView.builder(
                       itemCount: postsData.length,
+                      shrinkWrap: true,
                       itemBuilder: (context, index) {
                         return GestureDetector(
                           onTap: () async {
@@ -103,7 +104,7 @@ class _Posts extends State<Posts> {
                             }
                           },
                           child: Container(
-                            height: 550,
+                            height:310, 
                             child: Forum(
                               postId: postsData[index]['id'].toString(),
                               postTitle: postsData[index]['title'],

@@ -50,44 +50,46 @@ class _CommonDrawerState extends State<CommonDrawer> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(40),
-                    border: Border.all(color: Colors.grey, style: BorderStyle.solid),
-                    image: const DecorationImage(
-                      image: AssetImage('assets/images/Illustration.png'),
-                      fit: BoxFit.cover,
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(40),
+                      border: Border.all(color: Colors.grey, style: BorderStyle.solid),
+                      image: const DecorationImage(
+                        image: AssetImage('assets/images/Memoji Boys 3-15.png'),
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
-                ),SizedBox(width: 10),
+                  SizedBox(width: 10),
                   Expanded(
                     child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Flexible(
-                        child: Text(
-                          userName,
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 18,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Flexible(
+                          child: Text(
+                            userName,
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 18,
+                            ),
                           ),
                         ),
-                      ),
-                      SizedBox(height: 2,),
-                      Flexible(
-                        child: Text(
-                          userEmail,
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 14,
+                        SizedBox(height: 2,),
+                        Flexible(
+                          child: Text(
+                            userEmail,
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 14,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                                    ),
+                      ],
+                    ),
                   ),
-                      ]),
+                ],
+              ),
             ),
           ),
           const ListTile(
@@ -95,7 +97,7 @@ class _CommonDrawerState extends State<CommonDrawer> {
             title: Text("Home"),
           ),
           const ListTile(
-            leading: Icon(Icons.edit_outlined),
+            leading: Icon(Icons.article_outlined),
             title: Text("Depression Test"),
           ),
           ListTile(
@@ -111,6 +113,21 @@ class _CommonDrawerState extends State<CommonDrawer> {
           const ListTile(
             leading: Icon(Icons.dark_mode_outlined),
             title: Text("Night mode"),
+          ),
+          ListTile(
+            tileColor: Color(0xff000000),
+            leading: const Icon(Icons.logout,color: Colors.white,),
+            title: const Text("Logout",style:TextStyle(
+              color: Colors.white
+            )),
+            onTap: () {
+              // Perform logout action
+              //Auth.signOut();
+              // Navigate to login page or initial screen after logout
+              Navigator.pop(context); // Close the drawer
+              // Navigate to login screen or any other screen after logout
+              // Example: Navigator.pushReplacementNamed(context, '/login');
+            },
           ),
         ],
       ),

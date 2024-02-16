@@ -33,7 +33,7 @@ void signInWithGoogle() async {
         final String accessToken = googleAuth.accessToken!;
 
         // Call External Login API
-        final String apiUrl = 'https://mentalmediator.somee.com/api/auth/external-login';
+        final String apiUrl = 'https://mentalmediator.somee.com/api/auth/external-login-callback';
         final http.Response response = await http.get(
           Uri.parse(apiUrl),
           headers: {
@@ -60,20 +60,7 @@ void signInWithGoogle() async {
     }
   }
 
-  // Function to handle confirming email (optional)
-  void confirmEmail(String id, String token) async {
-    try {
-      final String apiUrl = 'https://mentalmediator.somee.com/api/auth/confirm-email';
-      final http.Response response = await http.get(
-        Uri.parse('$apiUrl?id=$id&token=$token'),
-        // Optionally, you may need to pass additional headers or parameters
-      );
-
-      // Handle the response accordingly
-    } catch (error) {
-      // Handle any errors
-    }
-  }
+ 
   void login() async {
     try {
       // API endpoint
