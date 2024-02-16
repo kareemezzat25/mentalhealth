@@ -114,20 +114,23 @@ class _CommonDrawerState extends State<CommonDrawer> {
             leading: Icon(Icons.dark_mode_outlined),
             title: Text("Night mode"),
           ),
-          ListTile(
-            tileColor: Color(0xff000000),
-            leading: const Icon(Icons.logout,color: Colors.white,),
-            title: const Text("Logout",style:TextStyle(
-              color: Colors.white
-            )),
-            onTap: () {
-              // Perform logout action
-              //Auth.signOut();
-              // Navigate to login page or initial screen after logout
-              Navigator.pop(context); // Close the drawer
-              // Navigate to login screen or any other screen after logout
-              // Example: Navigator.pushReplacementNamed(context, '/login');
-            },
+          Padding(
+            padding: const EdgeInsets.only(top:200),
+            child: ListTile(
+              tileColor: Color(0xff000000),
+              leading: const Icon(Icons.logout,color: Colors.white,),
+              title: const Text("Logout",style:TextStyle(
+                color: Colors.white
+              )),
+              onTap: () {
+                // Perform logout action
+                //Auth.signOut();
+                // Navigate to login page or initial screen after logout
+                Navigator.pop(context); // Close the drawer
+                // Navigate to login screen or any other screen after logout
+                // Example: Navigator.pushReplacementNamed(context, '/login');
+              },
+            ),
           ),
         ],
       ),
