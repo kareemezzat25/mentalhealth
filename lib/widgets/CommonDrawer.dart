@@ -1,8 +1,11 @@
 // CommonDrawer.dart
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mentalhealthh/authentication/auth.dart';
 import 'package:mentalhealthh/views/ForumsPage.dart';
+import 'package:mentalhealthh/views/homeview.dart';
+import 'package:mentalhealthh/views/login.dart';
 
 class CommonDrawer extends StatefulWidget {
   @override
@@ -45,7 +48,7 @@ class _CommonDrawerState extends State<CommonDrawer> {
               color: Color(0xffD2DFD2),
             ),
             child: Padding(
-              padding: const EdgeInsets.symmetric(vertical:20),
+              padding: const EdgeInsets.symmetric(vertical: 20),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -54,7 +57,8 @@ class _CommonDrawerState extends State<CommonDrawer> {
                     height: 40,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(40),
-                      border: Border.all(color: Colors.grey, style: BorderStyle.solid),
+                      border: Border.all(
+                          color: Colors.grey, style: BorderStyle.solid),
                       image: const DecorationImage(
                         image: AssetImage('assets/images/Memoji Boys 3-15.png'),
                         fit: BoxFit.cover,
@@ -75,7 +79,9 @@ class _CommonDrawerState extends State<CommonDrawer> {
                             ),
                           ),
                         ),
-                        SizedBox(height: 2,),
+                        SizedBox(
+                          height: 2,
+                        ),
                         Flexible(
                           child: Text(
                             userEmail,
@@ -104,7 +110,11 @@ class _CommonDrawerState extends State<CommonDrawer> {
             leading: const Icon(Icons.bookmark_outline_outlined),
             title: Text("Forums"),
             onTap: () {
-              Navigator.push(
+              // Close the drawer
+              Navigator.pop(context);
+
+              // Navigate to forums screen and replace the current route
+              Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(builder: (context) => ForumsPage()),
               );
@@ -115,13 +125,15 @@ class _CommonDrawerState extends State<CommonDrawer> {
             title: Text("Night mode"),
           ),
           Padding(
-            padding: const EdgeInsets.only(top:200),
+            padding: const EdgeInsets.only(top: 200),
             child: ListTile(
               tileColor: Color(0xff000000),
-              leading: const Icon(Icons.logout,color: Colors.white,),
-              title: const Text("Logout",style:TextStyle(
-                color: Colors.white
-              )),
+              leading: const Icon(
+                Icons.logout,
+                color: Colors.white,
+              ),
+              title:
+                  const Text("Logout", style: TextStyle(color: Colors.white)),
               onTap: () {
                 // Perform logout action
                 //Auth.signOut();
@@ -129,6 +141,20 @@ class _CommonDrawerState extends State<CommonDrawer> {
                 Navigator.pop(context); // Close the drawer
                 // Navigate to login screen or any other screen after logout
                 // Example: Navigator.pushReplacementNamed(context, '/login');
+                // Navigate to login screen and replace the current route
+                // Navigate to login screen and remove all previous routes
+                // Navigate to login page and remove all previous routes from the stack
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          Login()), // Replace LoginPage with the actual login page class
+                  (route) =>
+                      false, // This line removes all previous routes from the stack
+                );
+
+                // // Exit the app
+                // SystemNavigator.pop();
               },
             ),
           ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mentalhealthh/authentication/auth.dart';
+import 'package:mentalhealthh/views/MainHomeview.dart';
 import 'package:mentalhealthh/views/PostComment.dart';
 import 'package:mentalhealthh/widgets/forum.dart';
 import 'package:mentalhealthh/api/postsApi.dart';
@@ -60,87 +61,98 @@ class _Posts extends State<Posts> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Posts'),
-      ),
-      body: RefreshIndicator(
-        onRefresh: _refreshPosts,
-        child: Column(
-          children: [
-            Expanded(
-              child: FutureBuilder<List<Map<String, dynamic>>>(
-                future: posts,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  } else if (snapshot.hasError) {
-                    return Center(
-                      child: Text('Error: ${snapshot.error}'),
-                    );
-                  } else {
-                    List<Map<String, dynamic>> postsData = snapshot.data ?? [];
-                    return ListView.builder(
-                      itemCount: postsData.length,
-                      shrinkWrap: true,
-                      itemBuilder: (context, index) {
-                        return GestureDetector(
-                          onTap: () async {
-                            String? refresh = await Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => PostComment(
-                                  postId: postsData[index]['id'],
-                                  userId: userId,
-                                  appUserId: postsData[index]['appUserId'],
+    return WillPopScope(
+      onWillPop: () async {
+        // Handle back button press
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) {
+          return MainHome();
+        }));
+        return false; // prevent default behavior
+      },
+      child: Scaffold(
+        // appBar: AppBar(
+        //   title: Text('Posts'),
+        // ),
+        body: RefreshIndicator(
+          onRefresh: _refreshPosts,
+          child: Column(
+            children: [
+              Expanded(
+                child: FutureBuilder<List<Map<String, dynamic>>>(
+                  future: posts,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    } else if (snapshot.hasError) {
+                      return Center(
+                        child: Text('Error: ${snapshot.error}'),
+                      );
+                    } else {
+                      List<Map<String, dynamic>> postsData =
+                          snapshot.data ?? [];
+                      return ListView.builder(
+                        itemCount: postsData.length,
+                        shrinkWrap: true,
+                        itemBuilder: (context, index) {
+                          return GestureDetector(
+                            onTap: () async {
+                              String? refresh = await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => PostComment(
+                                    postId: postsData[index]['id'],
+                                    userId: userId,
+                                    appUserId: postsData[index]['appUserId'],
+                                  ),
                                 ),
-                              ),
-                            );
+                              );
 
-                            if (true) {
-                              changeData();
-                            }
-                          },
-                          child: Container(
-                            height:310, 
-                            child: Forum(
-                              postId: postsData[index]['id'].toString(),
-                              postTitle: postsData[index]['title'],
-                              postContent: postsData[index]['content'],
-                              username: postsData[index]['username'],
-                              postedOn: postsData[index]['postedOn'],
-                              appUserId: postsData[index]['appUserId'],
-                              userId: userId,
+                              if (true) {
+                                changeData();
+                              }
+                            },
+                            child: Container(
+                              height: 310,
+                              child: Forum(
+                                postId: postsData[index]['id'].toString(),
+                                postTitle: postsData[index]['title'],
+                                postContent: postsData[index]['content'],
+                                username: postsData[index]['username'],
+                                postedOn: postsData[index]['postedOn'],
+                                appUserId: postsData[index]['appUserId'],
+                                userId: userId,
+                              ),
                             ),
-                          ),
-                        );
-                      },
-                    );
-                  }
-                },
+                          );
+                        },
+                      );
+                    }
+                  },
+                ),
               ),
-            ),
-            // Row with page number and arrow buttons
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.arrow_back),
-                    onPressed: _loadPreviousPage,
-                  ),
-                  Text('Page $currentPage'),
-                  IconButton(
-                    icon: Icon(Icons.arrow_forward),
-                    onPressed: _loadNextPage,
-                  ),
-                ],
+              // Row with page number and arrow buttons
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.arrow_back),
+                      onPressed: _loadPreviousPage,
+                    ),
+                    Text('Page $currentPage'),
+                    IconButton(
+                      icon: Icon(Icons.arrow_forward),
+                      onPressed: _loadNextPage,
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
