@@ -67,13 +67,46 @@ class _SignupState extends State<Signup> {
 
       // Check response status code
       if (response.statusCode == 200) {
+        // Show a snackbar with a message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Please confirm your Gmail email"),
+            duration: Duration(seconds: 10),
+            action: SnackBarAction(
+              label: "OK",
+              onPressed: () {
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+              },
+            ),
+          ),
+        );
         // Signup successful, handle the response accordingly
         print('Signup successful');
       } else if (response.statusCode == 201) {
         // Signup successful, handle the response accordingly
         print('Signup successful');
-        Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => Login()));
+
+        // Show a snackbar with a message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content:
+                Text("Signup successful , Please go and confirm your email"),
+            duration: Duration(seconds: 7),
+            action: SnackBarAction(
+              label: "OK",
+              onPressed: () {
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+              },
+            ),
+          ),
+        );
+        // Navigate to login page after a delay
+        Future.delayed(Duration(seconds: 7), () {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => Login()),
+          );
+        });
       } else {
         // Signup failed, handle the error
         print('Signup failed. Status code: ${response.statusCode}');
