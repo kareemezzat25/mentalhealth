@@ -103,7 +103,7 @@ class _CommonDrawerState extends State<CommonDrawer> {
             title: Text("Home"),
           ),
           const ListTile(
-            leading: Icon(Icons.article_outlined),
+            leading: Icon(Icons.assignment_outlined ),
             title: Text("Depression Test"),
           ),
           ListTile(
@@ -121,11 +121,19 @@ class _CommonDrawerState extends State<CommonDrawer> {
             },
           ),
           const ListTile(
+            leading: Icon(Icons.article_outlined),
+            title: Text("Discover Articles"),
+          ),
+          const ListTile(
+            leading: Icon(Icons.article_outlined),
+            title: Text("Discover Doctors"),
+          ),
+          const ListTile(
             leading: Icon(Icons.dark_mode_outlined),
             title: Text("Night mode"),
           ),
           Padding(
-            padding: const EdgeInsets.only(top: 200),
+            padding: const EdgeInsets.only(top: 100),
             child: ListTile(
               tileColor: Color(0xff000000),
               leading: const Icon(
@@ -135,22 +143,16 @@ class _CommonDrawerState extends State<CommonDrawer> {
               title:
                   const Text("Logout", style: TextStyle(color: Colors.white)),
               onTap: () {
-                // Perform logout action
-                //Auth.signOut();
-                // Navigate to login page or initial screen after logout
+        
                 Navigator.pop(context); // Close the drawer
-                // Navigate to login screen or any other screen after logout
-                // Example: Navigator.pushReplacementNamed(context, '/login');
-                // Navigate to login screen and replace the current route
-                // Navigate to login screen and remove all previous routes
-                // Navigate to login page and remove all previous routes from the stack
+
                 Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(
                       builder: (context) =>
                           Login()), // Replace LoginPage with the actual login page class
                   (route) =>
-                      false, // This line removes all previous routes from the stack
+                      false, 
                 );
 
                 // // Exit the app

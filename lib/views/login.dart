@@ -4,11 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:mentalhealthh/authentication/auth.dart';
+import 'package:mentalhealthh/views/ForumsPage.dart';
 import 'dart:convert';
 import 'textForm.dart';
 import 'package:mentalhealthh/models/button.dart';
 import 'package:mentalhealthh/views/signup.dart';
-import 'package:mentalhealthh/views/MainHomeview.dart';
+//import 'package:mentalhealthh/views/MainHomeview.dart';
 import 'package:mentalhealthh/widgets/signinwithgoogle.dart';
 
 class Login extends StatefulWidget {
@@ -45,7 +46,7 @@ void signInWithGoogle() async {
           print("login Successful");  
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => MainHome()),
+            MaterialPageRoute(builder: (context) => ForumsPage()),
           );
         } else {
           print('Login failed. Status code: ${response.statusCode}');
@@ -101,7 +102,7 @@ void signInWithGoogle() async {
         log('Response body: ${response.body}');
 
         Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => MainHome()));
+            context, MaterialPageRoute(builder: (context) => ForumsPage()));
       } else {
         // Login failed, handle the error
         print('Login failed. Status code: ${response.statusCode}');
@@ -175,6 +176,14 @@ void signInWithGoogle() async {
                     onPressed:signInWithGoogle
                   )),
               SizedBox(height: 15),
+               if (genericError.isNotEmpty)
+                Padding(
+                  padding: EdgeInsets.only(left: 14),
+                  child: Text(
+                    genericError,
+                    style: TextStyle(color: Colors.red, fontSize: 14),
+                  ),
+                ),
               const Padding(
                 padding: EdgeInsets.only(left: 14),
                 child: Row(
@@ -188,24 +197,10 @@ void signInWithGoogle() async {
                 hintText: "Email",
                 controller: emailController,
               ),
-              if (emailError.isNotEmpty)
-                Padding(
-                  padding: EdgeInsets.only(left: 14),
-                  child: Text(
-                    "emailError",
-                    style: TextStyle(color: Colors.red, fontSize: 14),
-                  ),
-                ),
+             
               SizedBox(height: 15),
               // Display generic error message for any other errors
-              if (genericError.isNotEmpty)
-                Padding(
-                  padding: EdgeInsets.only(left: 14),
-                  child: Text(
-                    genericError,
-                    style: TextStyle(color: Colors.red, fontSize: 14),
-                  ),
-                ),
+              
               Padding(
                 padding: EdgeInsets.only(left: 14),
                 child: Row(
@@ -220,14 +215,7 @@ void signInWithGoogle() async {
                 controller: passwordController,
                 isPassword: true,
               ),
-              if (passwordError.isNotEmpty)
-                Padding(
-                  padding: EdgeInsets.only(left: 14),
-                  child: Text(
-                    "passwordError",
-                    style: TextStyle(color: Colors.red, fontSize: 14),
-                  ),
-                ),
+             
               SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,

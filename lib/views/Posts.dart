@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mentalhealthh/authentication/auth.dart';
-import 'package:mentalhealthh/views/MainHomeview.dart';
+import 'package:mentalhealthh/views/ForumsPage.dart';
+//import 'package:mentalhealthh/views/MainHomeview.dart';
 import 'package:mentalhealthh/views/PostComment.dart';
 import 'package:mentalhealthh/widgets/forum.dart';
 import 'package:mentalhealthh/api/postsApi.dart';
@@ -66,7 +67,7 @@ class _Posts extends State<Posts> {
         // Handle back button press
         Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (context) {
-          return MainHome();
+          return ForumsPage();
         }));
         return false; // prevent default behavior
       },
@@ -139,6 +140,7 @@ class _Posts extends State<Posts> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    if(currentPage!=1)
                     IconButton(
                       icon: Icon(Icons.arrow_back),
                       onPressed: _loadPreviousPage,

@@ -1,5 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:mentalhealthh/views/MainHomeview.dart';
+//import 'package:mentalhealthh/views/MainHomeview.dart';
 import 'login.dart';
 import 'signup.dart';
 
@@ -13,7 +15,7 @@ class HomePage extends StatelessWidget {
         // Handle back button press
         Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (context) {
-          return MainHome();
+          return exit(0);
         }));
         return false; // prevent default behavior
       },

@@ -135,7 +135,7 @@ class _PostCommentState extends State<PostComment> {
                                               fontWeight: FontWeight.bold),
                                         ),
                                         Text(
-                                          '${calculateTimeDifference(postDetailsData['postedOn'])} ago',
+                                          '${calculateTimeDifference(postDetailsData['postedOn'])} ',
                                           style: TextStyle(fontSize: 12),
                                         ),
                                       ],
@@ -341,7 +341,7 @@ class _PostCommentState extends State<PostComment> {
                                                                       .bold),
                                                         ),
                                                         Text(
-                                                          '${calculateTimeDifference(commentsData[index]['commentedAt'])} ago',
+                                                          '${calculateTimeDifference(commentsData[index]['commentedAt'])} ',
                                                           style: TextStyle(
                                                               fontSize: 12),
                                                         ),
@@ -366,10 +366,7 @@ class _PostCommentState extends State<PostComment> {
                                                                       .postId,
                                                                   commentId:
                                                                       commentId,
-                                                                  oldContent: commentsData[
-                                                                          index]
-                                                                      [
-                                                                      'content'],
+                                                                  oldContent: commentsData[index] ['content'],
                                                                 ),
                                                               ),
                                                             );
@@ -434,9 +431,7 @@ class _PostCommentState extends State<PostComment> {
                                                       const EdgeInsets.only(
                                                           top: 10),
                                                   child: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
+                                                    crossAxisAlignment:CrossAxisAlignment.start,
                                                     children: [
                                                       Text(
                                                         '${commentsData[index]['content']}',
@@ -531,7 +526,7 @@ class _PostCommentState extends State<PostComment> {
                                                                               FontWeight.bold),
                                                                     ),
                                                                     Text(
-                                                                      '${calculateTimeDifference(repliesData[replyIndex]['repliedAt'])} ago',
+                                                                      '${calculateTimeDifference(repliesData[replyIndex]['repliedAt'])} ',
                                                                       style: TextStyle(
                                                                           fontSize:
                                                                               12),
@@ -662,27 +657,28 @@ class _PostCommentState extends State<PostComment> {
   }
 
   // Add this function outside the build method
-  String calculateTimeDifference(String commentDateTime) {
-    // Parse the commentDateTime string to a DateTime object
-    DateTime commentTime = DateTime.parse(commentDateTime);
+   String calculateTimeDifference(String postDateTime) {
+    DateTime postTime = DateTime.parse(postDateTime);
 
-    // Calculate the time difference
-    Duration difference = DateTime.now().difference(commentTime);
+    // Consider UTC+2 time zone offset (2 hours)
+    DateTime adjustedPostTime = postTime.add(Duration(hours: 2));
 
-    // Determine the appropriate unit (minutes, hours, days, etc.)
+    Duration difference = DateTime.now().difference(adjustedPostTime);
+
     if (difference.inDays > 365) {
-      return '${(difference.inDays / 365).floor()} ${(difference.inDays / 365).floor() == 1 ? 'year' : 'years'}';
+      return '${(difference.inDays / 365).floor()} ${(difference.inDays / 365).floor() == 1 ? 'year ago' : 'years ago'}';
     } else if (difference.inDays > 30) {
-      return '${(difference.inDays / 30).floor()} ${(difference.inDays / 30).floor() == 1 ? 'month' : 'months'}';
+      return '${(difference.inDays / 30).floor()} ${(difference.inDays / 30).floor() == 1 ? 'month ago' : 'months ago'}';
     } else if (difference.inDays > 7) {
-      return '${(difference.inDays / 7).floor()} ${(difference.inDays / 7).floor() == 1 ? 'week' : 'weeks'}';
+      return '${(difference.inDays / 7).floor()} ${(difference.inDays / 7).floor() == 1 ? 'week ago' : 'weeks ago'}';
     } else if (difference.inDays > 0) {
-      return '${difference.inDays} ${difference.inDays == 1 ? 'day' : 'days'}';
+      return '${difference.inDays} ${difference.inDays == 1 ? 'day ago' : 'days ago'}';
     } else if (difference.inHours > 0) {
-      return '${difference.inHours} ${difference.inHours == 1 ? 'hour' : 'hours'}';
-    } else {
-      return '${difference.inMinutes} ${difference.inMinutes == 1 ? 'minute' : 'minutes'}';
-    }
+      return '${difference.inHours} ${difference.inHours == 1 ? 'hour ago' : 'hours ago'}';
+    } else if (difference.inMinutes > 0) {
+      return '${difference.inMinutes} ${difference.inMinutes == 1 ? 'minute ago' : 'minutes ago'}';
+    } else
+      return 'now';
   }
 
   void showReplyTextField(int commentId) {

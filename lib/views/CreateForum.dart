@@ -1,8 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:mentalhealthh/api/postsApi.dart';
 import 'package:mentalhealthh/authentication/auth.dart';
 import 'package:mentalhealthh/models/button.dart';
-import 'package:mentalhealthh/views/MainHomeview.dart';
+//import 'package:mentalhealthh/views/MainHomeview.dart';
 import 'package:mentalhealthh/views/textForm.dart';
 
 class createForum extends StatefulWidget {
@@ -35,15 +37,16 @@ class _createForumState extends State<createForum> {
         // Handle back button press
         Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (context) {
-          return MainHome();
+          return exit(0);
         }));
         return false; // prevent default behavior
       },
       child: Scaffold(
         body: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 15),
+          padding: EdgeInsets.only(right: 15,left:15,top:45),
           child: SingleChildScrollView(
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 SizedBox(height: 10),
                 Text(
@@ -83,7 +86,7 @@ class _createForumState extends State<createForum> {
                   controller: TitleController,
                 ),
                 SizedBox(height: 15),
-                const Padding(
+                /*const Padding(
                   padding: EdgeInsets.only(left: 16),
                   child: Row(
                     children: [
@@ -97,7 +100,7 @@ class _createForumState extends State<createForum> {
                 TextForm(
                   hintText: "Tag1,Tag2.etc.",
                   controller: TagsController,
-                ),
+                ),*/
                 SizedBox(height: 15),
                 if (descriptionError.isNotEmpty)
                   Padding(
@@ -119,7 +122,7 @@ class _createForumState extends State<createForum> {
                   ),
                 ),
                 TextForm(
-                  hintText: "add Description to your Forum",
+                  hintText: "Add Description to your Forum",
                   controller: DescriptionController,
                   largerHint: true,
                 ),

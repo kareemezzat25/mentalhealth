@@ -31,8 +31,7 @@ class Forum extends StatefulWidget {
 class _ForumState extends State<Forum> {
   List<Iconofpost> iconsList = [
     Iconofpost(iconData: Icons.favorite),
-    Iconofpost(iconData: Icons.comment),
-    Iconofpost(iconData: Icons.share),
+    Iconofpost(iconData: Icons.comment_outlined),
   ];
 
   @override
@@ -137,28 +136,7 @@ class _ForumState extends State<Forum> {
                           for (int index = 0; index < iconsList.length; index++)
                             IconPost(
                               iconreaction: iconsList[index],
-                            ),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => PostComment(
-                                    postId: int.parse(widget.postId ?? '0'),
-                                    userId: widget.userId,
-                                  ),
-                                ),
-                              ).then((result) async {
-                                if (result != null) {
-                                  // Reload the data or perform any other actions you need
-                                }
-                              });
-                            },
-                            child: Icon(
-                              Icons.comment,
-                              color: Colors.blue,
-                            ),
-                          ),
+                            ),  
                         ],
                       ),
                     ),
@@ -175,20 +153,25 @@ class _ForumState extends State<Forum> {
 
   String calculateTimeDifference(String postDateTime) {
     DateTime postTime = DateTime.parse(postDateTime);
-    Duration difference = DateTime.now().difference(postTime);
+
+    // Consider UTC+2 time zone offset (2 hours)
+    DateTime adjustedPostTime = postTime.add(Duration(hours: 2));
+
+    Duration difference = DateTime.now().difference(adjustedPostTime);
 
     if (difference.inDays > 365) {
-      return '${(difference.inDays / 365).floor()} ${(difference.inDays / 365).floor() == 1 ? 'year' : 'years'}';
+      return '${(difference.inDays / 365).floor()} ${(difference.inDays / 365).floor() == 1 ? 'year ago' : 'years ago'}';
     } else if (difference.inDays > 30) {
-      return '${(difference.inDays / 30).floor()} ${(difference.inDays / 30).floor() == 1 ? 'month' : 'months'}';
+      return '${(difference.inDays / 30).floor()} ${(difference.inDays / 30).floor() == 1 ? 'month ago' : 'months ago'}';
     } else if (difference.inDays > 7) {
-      return '${(difference.inDays / 7).floor()} ${(difference.inDays / 7).floor() == 1 ? 'week' : 'weeks'}';
+      return '${(difference.inDays / 7).floor()} ${(difference.inDays / 7).floor() == 1 ? 'week ago' : 'weeks ago'}';
     } else if (difference.inDays > 0) {
-      return '${difference.inDays} ${difference.inDays == 1 ? 'day' : 'days'}';
+      return '${difference.inDays} ${difference.inDays == 1 ? 'day ago' : 'days ago'}';
     } else if (difference.inHours > 0) {
-      return '${difference.inHours} ${difference.inHours == 1 ? 'hour' : 'hours'}';
-    } else {
-      return '${difference.inMinutes} ${difference.inMinutes == 1 ? 'minute' : 'minutes'}';
-    }
+      return '${difference.inHours} ${difference.inHours == 1 ? 'hour ago' : 'hours ago'}';
+    } else if (difference.inMinutes > 0) {
+      return '${difference.inMinutes} ${difference.inMinutes == 1 ? 'minute ago' : 'minutes ago'}';
+    } else
+      return 'now';
   }
 }
