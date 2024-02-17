@@ -289,7 +289,7 @@ class _SignupState extends State<Signup> {
                   ],
                 ),
               ),
-              TextForm(hintText: "Male/Female", controller: genderController),
+              TextForm(hintText: "male/female", controller: genderController),
               if (genderError.isNotEmpty)
                 Padding(
                   padding: EdgeInsets.only(left: 12),
