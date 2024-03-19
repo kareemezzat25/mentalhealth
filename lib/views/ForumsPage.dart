@@ -4,6 +4,10 @@ import 'package:mentalhealthh/widgets/CommonDrawer.dart';
 import 'Posts.dart';
 
 class ForumsPage extends StatelessWidget {
+  final String userId; // Add userId parameter
+
+  ForumsPage({required this.userId}); // Update constructor
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -21,7 +25,8 @@ class ForumsPage extends StatelessWidget {
             ],
           ),
         ),
-        drawer: CommonDrawer(),
+        // Pass userId to CommonDrawer
+        drawer: CommonDrawer(userId: userId),
         body: TabBarView(
           children: [
             createForum(),

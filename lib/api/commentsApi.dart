@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:mentalhealthh/authentication/auth.dart';
 
 class CommentApi {
-  static const apiUrl = 'https://mentalmediator.somee.com/api/posts';
+  static const apiUrl = 'https://nexus-api-h3ik.onrender.com/api/posts';
 
   static Future<Map<String, dynamic>> fetchCommentDetails(
     int postId,

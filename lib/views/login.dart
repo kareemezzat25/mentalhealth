@@ -24,34 +24,35 @@ class _LoginState extends State<Login> {
   String emailError = '';
   String passwordError = '';
   String genericError = ''; // Added to store generic error message
-void signInWithGoogle() async {
+  void signInWithGoogle() async {
     try {
       final GoogleSignIn _googleSignIn = GoogleSignIn();
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
 
       if (googleUser != null) {
-        final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+        final GoogleSignInAuthentication googleAuth =
+            await googleUser.authentication;
         final String accessToken = googleAuth.accessToken!;
 
         // Call External Login API
-        final String apiUrl = 'https://mentalmediator.somee.com/api/auth/external-login-callback';
+        final String apiUrl =
+            'https://mentalmediator.somee.com/api/auth/external-login-callback';
         final http.Response response = await http.get(
           Uri.parse(apiUrl),
           headers: {
             'Authorization': 'Bearer $accessToken',
           },
- );
+        );
 
         if (response.statusCode == 200) {
-          print("login Successful");  
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => ForumsPage()),
-          );
+          print("login Successful");
+          // Navigator.pushReplacement(
+          //   context,
+          //   MaterialPageRoute(builder: (context) => ForumsPage()),
+          // );
         } else {
           print('Login failed. Status code: ${response.statusCode}');
           log('Response body: ${response.body}');
-
         }
       } else {
         print("User canceled Google Sign-In");
@@ -61,11 +62,11 @@ void signInWithGoogle() async {
     }
   }
 
- 
   void login() async {
     try {
       // API endpoint
-      final String apiUrl = 'https://mentalmediator.somee.com/api/auth/signin';
+      final String apiUrl =
+          'https://nexus-api-h3ik.onrender.com/api/auth/signin';
 
       // Request data
       Map<String, dynamic> requestData = {
@@ -102,7 +103,9 @@ void signInWithGoogle() async {
         log('Response body: ${response.body}');
 
         Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => ForumsPage()));
+            context,
+            MaterialPageRoute(
+                builder: (context) => ForumsPage(userId: userId)));
       } else {
         // Login failed, handle the error
         print('Login failed. Status code: ${response.statusCode}');
@@ -172,11 +175,9 @@ void signInWithGoogle() async {
               SizedBox(height: 60),
               Padding(
                   padding: const EdgeInsets.only(left: 12, right: 120),
-                  child: GoogleSignInButton(
-                    onPressed:signInWithGoogle
-                  )),
+                  child: GoogleSignInButton(onPressed: signInWithGoogle)),
               SizedBox(height: 15),
-               if (genericError.isNotEmpty)
+              if (genericError.isNotEmpty)
                 Padding(
                   padding: EdgeInsets.only(left: 14),
                   child: Text(
@@ -197,10 +198,10 @@ void signInWithGoogle() async {
                 hintText: "Email",
                 controller: emailController,
               ),
-             
+
               SizedBox(height: 15),
               // Display generic error message for any other errors
-              
+
               Padding(
                 padding: EdgeInsets.only(left: 14),
                 child: Row(
@@ -215,7 +216,7 @@ void signInWithGoogle() async {
                 controller: passwordController,
                 isPassword: true,
               ),
-             
+
               SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,

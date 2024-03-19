@@ -67,7 +67,7 @@ class _Posts extends State<Posts> {
         // Handle back button press
         Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (context) {
-          return ForumsPage();
+          return ForumsPage(userId: "123");
         }));
         return false; // prevent default behavior
       },
@@ -140,11 +140,11 @@ class _Posts extends State<Posts> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    if(currentPage!=1)
-                    IconButton(
-                      icon: Icon(Icons.arrow_back),
-                      onPressed: _loadPreviousPage,
-                    ),
+                    if (currentPage != 1)
+                      IconButton(
+                        icon: Icon(Icons.arrow_back),
+                        onPressed: _loadPreviousPage,
+                      ),
                     Text('Page $currentPage'),
                     IconButton(
                       icon: Icon(Icons.arrow_forward),

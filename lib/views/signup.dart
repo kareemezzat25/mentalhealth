@@ -31,7 +31,7 @@ class _SignupState extends State<Signup> {
     try {
       // API endpoint
       final String apiUrl =
-          'https://mentalmediator.somee.com/api/auth/register';
+          'https://nexus-api-h3ik.onrender.com/api/auth/register';
 
       // Request data
       Map<String, dynamic> requestData = {

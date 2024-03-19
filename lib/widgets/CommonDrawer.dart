@@ -6,8 +6,12 @@ import 'package:mentalhealthh/authentication/auth.dart';
 import 'package:mentalhealthh/views/ForumsPage.dart';
 import 'package:mentalhealthh/views/homeview.dart';
 import 'package:mentalhealthh/views/login.dart';
+import 'package:mentalhealthh/views/UserProfile.dart'; // Import UserProfile.dart
 
 class CommonDrawer extends StatefulWidget {
+  final String userId; // Add userId parameter
+
+  CommonDrawer({required this.userId}); // Update constructor
   @override
   _CommonDrawerState createState() => _CommonDrawerState();
 }
@@ -103,7 +107,7 @@ class _CommonDrawerState extends State<CommonDrawer> {
             title: Text("Home"),
           ),
           const ListTile(
-            leading: Icon(Icons.assignment_outlined ),
+            leading: Icon(Icons.assignment_outlined),
             title: Text("Depression Test"),
           ),
           ListTile(
@@ -116,7 +120,23 @@ class _CommonDrawerState extends State<CommonDrawer> {
               // Navigate to forums screen and replace the current route
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => ForumsPage()),
+                MaterialPageRoute(
+                    builder: (context) => ForumsPage(userId: widget.userId)),
+              );
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.account_circle_outlined),
+            title: Text("User Profile"),
+            onTap: () {
+              // Close the drawer
+              Navigator.pop(context);
+
+              // Navigate to UserProfile screen
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => UserProfile(userId: widget.userId)),
               );
             },
           ),
@@ -143,7 +163,6 @@ class _CommonDrawerState extends State<CommonDrawer> {
               title:
                   const Text("Logout", style: TextStyle(color: Colors.white)),
               onTap: () {
-        
                 Navigator.pop(context); // Close the drawer
 
                 Navigator.pushAndRemoveUntil(
@@ -151,8 +170,7 @@ class _CommonDrawerState extends State<CommonDrawer> {
                   MaterialPageRoute(
                       builder: (context) =>
                           Login()), // Replace LoginPage with the actual login page class
-                  (route) =>
-                      false, 
+                  (route) => false,
                 );
 
                 // // Exit the app

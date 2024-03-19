@@ -6,7 +6,7 @@ import 'package:mentalhealthh/authentication/auth.dart';
 import 'package:mentalhealthh/views/Posts.dart';
 
 class PostsApi {
-  static const apiUrl = 'https://mentalmediator.somee.com/api/posts';
+  static const apiUrl = 'https://nexus-api-h3ik.onrender.com/api/posts';
   static List<Map<String, dynamic>> posts = []; // List to store posts
   static const pageSize = 30; // Set the page size to 30
 
