@@ -1,6 +1,10 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:mentalhealthh/api/UserProfileApi.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:mentalhealthh/views/UserInfoEdit.dart';
+
+final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
 class UserProfile extends StatefulWidget {
   final String userId;
@@ -13,11 +17,23 @@ class UserProfile extends StatefulWidget {
 
 class _UserProfileState extends State<UserProfile> {
   late Future<Map<String, dynamic>> _userDataFuture;
+  File? _image;
 
   @override
   void initState() {
     super.initState();
     _userDataFuture = fetchUserProfile(widget.userId);
+  }
+
+  Future<void> _getImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        _image = File(pickedFile.path);
+      });
+    }
   }
 
   void _navigateToEditPage(Map<String, dynamic> userData) {
@@ -30,6 +46,7 @@ class _UserProfileState extends State<UserProfile> {
           lastName: userData['lastName'],
           gender: userData['gender'],
           birthDate: userData['birthDate'],
+          photoUrl: userData['photoUrl'], // Pass photoUrl to UserInfoEdit
         ),
       ),
     );
@@ -38,6 +55,7 @@ class _UserProfileState extends State<UserProfile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: Text('User Profile'),
       ),
@@ -56,27 +74,79 @@ class _UserProfileState extends State<UserProfile> {
             Map<String, dynamic> userData =
                 snapshot.data as Map<String, dynamic>;
             return ListView(
-              padding: EdgeInsets.all(16.0),
               children: [
+                SizedBox(height: 20),
+                Center(
+                  child: CircleAvatar(
+                    radius: 122,
+                    backgroundImage: _image != null
+                        ? FileImage(_image!)
+                        : NetworkImage(userData['photoUrl']) as ImageProvider,
+                  ),
+                ),
+                SizedBox(height: 20),
                 ListTile(
-                  title: Text('First Name: ${userData['firstName']}'),
+                  title: Text(
+                    'Email:',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: Text('${userData['email']}'),
                 ),
                 ListTile(
-                  title: Text('Last Name: ${userData['lastName']}'),
+                  title: Text(
+                    'First Name:',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: Text('${userData['firstName']}'),
                 ),
                 ListTile(
-                  title: Text('Email: ${userData['email']}'),
+                  title: Text(
+                    'Last Name:',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: Text('${userData['lastName']}'),
                 ),
                 ListTile(
-                  title: Text('Birthdate: ${userData['birthDate']}'),
+                  title: Text(
+                    'Birthdate:',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: Text('${userData['birthDate']}'),
                 ),
                 ListTile(
-                  title: Text('Gender: ${userData['gender']}'),
+                  title: Text(
+                    'Gender:',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: Text('${userData['gender']}'),
                 ),
                 SizedBox(height: 20.0),
-                ElevatedButton(
-                  onPressed: () => _navigateToEditPage(userData),
-                  child: Text('Edit'),
+                Center(
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      String? result = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => UserInfoEdit(
+                            userId: widget.userId,
+                            firstName: userData['firstName'],
+                            lastName: userData['lastName'],
+                            gender: userData['gender'],
+                            birthDate: userData['birthDate'],
+                            photoUrl: userData[
+                                'photoUrl'], // Pass photoUrl to UserInfoEdit
+                          ),
+                        ),
+                      );
+                      if (result != null) {
+                        // Refresh UI after returning from UserInfoEdit
+                        setState(() {
+                          _userDataFuture = fetchUserProfile(widget.userId);
+                        });
+                      }
+                    },
+                    child: Text('Edit'),
+                  ),
                 ),
               ],
             );

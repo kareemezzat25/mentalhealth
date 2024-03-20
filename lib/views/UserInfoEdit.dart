@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:mentalhealthh/api/UserProfileApi.dart';
 
 class UserInfoEdit extends StatefulWidget {
@@ -7,6 +9,7 @@ class UserInfoEdit extends StatefulWidget {
   final String lastName;
   final String gender;
   final String birthDate;
+  final String photoUrl;
 
   UserInfoEdit({
     required this.userId,
@@ -14,6 +17,7 @@ class UserInfoEdit extends StatefulWidget {
     required this.lastName,
     required this.gender,
     required this.birthDate,
+    required this.photoUrl,
   });
 
   @override
@@ -25,8 +29,7 @@ class _UserInfoEditState extends State<UserInfoEdit> {
   TextEditingController _lastNameController = TextEditingController();
   TextEditingController _genderController = TextEditingController();
   TextEditingController _birthDateController = TextEditingController();
-
-  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  File? _image;
 
   @override
   void initState() {
@@ -38,25 +41,31 @@ class _UserInfoEditState extends State<UserInfoEdit> {
   }
 
   void _updateProfile() async {
-    if (_formKey.currentState!.validate()) {
-      try {
-        await updateUserProfile(
-          widget.userId,
-          _firstNameController.text,
-          _lastNameController.text,
-          _genderController.text,
-          _birthDateController.text,
-        );
-        // Navigate back to UserProfile.dart page after successful update
-        Navigator.pop(context, true); // Pass true to indicate success
-      } catch (error) {
-        print('Error updating user profile: $error');
-        // Handle error updating user profile
-        // Show error message to the user
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to update user profile')),
-        );
-      }
+    try {
+      await updateUserProfile(
+        widget.userId,
+        _firstNameController.text,
+        _lastNameController.text,
+        _genderController.text,
+        _birthDateController.text,
+        _image,
+      );
+      Navigator.pop(context, 'refresh');
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to update user profile')),
+      );
+    }
+  }
+
+  Future<void> _getImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        _image = File(pickedFile.path);
+      });
     }
   }
 
@@ -68,61 +77,44 @@ class _UserInfoEditState extends State<UserInfoEdit> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              TextFormField(
-                controller: _firstNameController,
-                decoration: InputDecoration(labelText: 'First Name'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your first name';
-                  }
-                  return null;
-                },
+        child: ListView(
+          children: [
+            Center(
+              child: CircleAvatar(
+                radius: 122,
+                backgroundColor:
+                    Colors.grey[300], // Add a background color for the avatar
+                backgroundImage: _image != null
+                    ? FileImage(_image!)
+                    : NetworkImage(widget.photoUrl) as ImageProvider<Object>?,
               ),
-              TextFormField(
-                controller: _lastNameController,
-                decoration: InputDecoration(labelText: 'Last Name'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your last name';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _genderController,
-                decoration: InputDecoration(labelText: 'Gender'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your gender';
-                  }
-                  if (value != 'male' && value != 'female') {
-                    return 'Gender must be either "male" or "female"';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _birthDateController,
-                decoration: InputDecoration(labelText: 'Birthdate'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your birthdate';
-                  }
-                  // Add more validation if needed
-                  return null;
-                },
-              ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _updateProfile,
-                child: Text('Update'),
-              ),
-            ],
-          ),
+            ),
+            ElevatedButton(
+              onPressed: _getImage,
+              child: Text('Select Photo'),
+            ),
+            TextFormField(
+              controller: _firstNameController,
+              decoration: InputDecoration(labelText: 'First Name'),
+            ),
+            TextFormField(
+              controller: _lastNameController,
+              decoration: InputDecoration(labelText: 'Last Name'),
+            ),
+            TextFormField(
+              controller: _genderController,
+              decoration: InputDecoration(labelText: 'Gender'),
+            ),
+            TextFormField(
+              controller: _birthDateController,
+              decoration: InputDecoration(labelText: 'Birthdate'),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _updateProfile,
+              child: Text('Update'),
+            ),
+          ],
         ),
       ),
     );

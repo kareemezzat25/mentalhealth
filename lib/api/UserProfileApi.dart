@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:io';
+
 import 'package:http/http.dart' as http;
 import 'package:mentalhealthh/authentication/auth.dart';
 
@@ -24,6 +26,7 @@ Future<void> updateUserProfile(
   String lastName,
   String gender,
   String birthDate,
+  File? photo,
 ) async {
   try {
     String apiUrl = 'https://nexus-api-h3ik.onrender.com/api/profiles/$userId';
@@ -33,28 +36,37 @@ Future<void> updateUserProfile(
       throw Exception('Token not available');
     }
 
-    Map<String, dynamic> requestBody = {
-      'FirstName': firstName,
-      'LastName': lastName,
-      'Gender': gender,
-      'BirthDate': birthDate,
-    };
+    var request = http.MultipartRequest('PUT', Uri.parse(apiUrl));
+    request.headers['Authorization'] = 'Bearer $token';
 
-    http.Response response = await http.put(
-      Uri.parse(apiUrl),
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode(requestBody),
-    );
+    // Add form fields
+    request.fields['FirstName'] = firstName;
+    request.fields['LastName'] = lastName;
+    request.fields['Gender'] = gender;
+    request.fields['BirthDate'] = birthDate;
 
+    // Add photo file if available
+    if (photo != null) {
+      request.files.add(
+        http.MultipartFile(
+          'Photo',
+          photo.readAsBytes().asStream(),
+          photo.lengthSync(),
+          filename: photo.path.split('/').last,
+        ),
+      );
+    }
+
+    var response = await request.send();
     if (response.statusCode == 200) {
-      print('User profile updated successfully');
+      // If the request is successful, parse the response JSON
+      var responseBody = await response.stream.bytesToString();
+      var userData = jsonDecode(responseBody);
+      print('User profile updated successfully: $userData');
     } else {
       print(
           'Failed to update user profile. Status code: ${response.statusCode}');
-      print('Response body: ${response.body}');
+      print('Response body: ${await response.stream.bytesToString()}');
       throw Exception('Failed to update user profile');
     }
   } catch (e) {
