@@ -1,9 +1,7 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:mentalhealthh/authentication/auth.dart';
-import 'package:mentalhealthh/views/Posts.dart';
 
 class PostsApi {
   static const apiUrl = 'https://nexus-api-h3ik.onrender.com/api/posts';

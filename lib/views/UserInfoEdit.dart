@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mentalhealthh/api/UserProfileApi.dart';
+import 'package:mentalhealthh/authentication/auth.dart';
 
 class UserInfoEdit extends StatefulWidget {
   final String userId;
@@ -50,6 +51,9 @@ class _UserInfoEditState extends State<UserInfoEdit> {
         _birthDateController.text,
         _image,
       );
+      if (_image != null) {
+      await Auth.setPhotoUrl(widget.photoUrl);
+    }
       Navigator.pop(context, 'refresh');
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(

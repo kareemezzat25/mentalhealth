@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mentalhealthh/authentication/auth.dart';
 import 'package:mentalhealthh/views/ForumsPage.dart';
-import 'package:mentalhealthh/views/homeview.dart';
 import 'package:mentalhealthh/views/login.dart';
 import 'package:mentalhealthh/views/UserProfile.dart'; // Import UserProfile.dart
 
@@ -19,6 +18,7 @@ class CommonDrawer extends StatefulWidget {
 class _CommonDrawerState extends State<CommonDrawer> {
   String userName = '';
   String userEmail = '';
+  String photoUrl= '';
 
   @override
   void initState() {
@@ -26,20 +26,23 @@ class _CommonDrawerState extends State<CommonDrawer> {
     _loadUserData();
   }
 
-  _loadUserData() async {
-    try {
-      // Fetch user data
-      String? userName = await Auth.getUserName();
-      String? userEmail = await Auth.getEmail();
+ _loadUserData() async {
+  try {
+    // Fetch user data
+    String? retrievedUserName = await Auth.getUserName();
+    String? retrievedUserEmail = await Auth.getEmail();
+    String? retrievedPhotoUrl = await Auth.getPhotoUrl();
 
-      setState(() {
-        this.userName = userName ?? '';
-        this.userEmail = userEmail ?? '';
-      });
-    } catch (error) {
-      print('Error loading user data: $error');
-    }
+    setState(() {
+      this.userName = retrievedUserName ?? '';
+      this.userEmail = retrievedUserEmail ?? '';
+      this.photoUrl = retrievedPhotoUrl ?? '';
+    });
+  } catch (error) {
+    print('Error loading user data: $error');
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -57,18 +60,21 @@ class _CommonDrawerState extends State<CommonDrawer> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    width: 40,
-                    height: 40,
+                    width: 50,
+                    height: 50,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(40),
                       border: Border.all(
                           color: Colors.grey, style: BorderStyle.solid),
-                      image: const DecorationImage(
-                        image: AssetImage('assets/images/Memoji Boys 3-15.png'),
-                        fit: BoxFit.cover,
-                      ),
+                      image: photoUrl.isNotEmpty // Check if photoUrl is not empty
+                ? DecorationImage(  
+                    image: NetworkImage(photoUrl), // Use NetworkImage with photoUrl
+                    fit: BoxFit.cover, ): null, // If photoUrl is empty, don't display any image
+          ),
+          child: photoUrl.isEmpty // If photoUrl is empty, display a default icon
+              ? Icon(Icons.account_circle_outlined, size: 40)
+              : null,
                     ),
-                  ),
                   SizedBox(width: 10),
                   Expanded(
                     child: Column(

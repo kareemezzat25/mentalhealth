@@ -37,6 +37,7 @@ class _UserProfileState extends State<UserProfile> {
   }
 
   void _navigateToEditPage(Map<String, dynamic> userData) {
+    String photoUrl = userData['photoUrl'] ?? ''; 
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -46,7 +47,7 @@ class _UserProfileState extends State<UserProfile> {
           lastName: userData['lastName'],
           gender: userData['gender'],
           birthDate: userData['birthDate'],
-          photoUrl: userData['photoUrl'], // Pass photoUrl to UserInfoEdit
+          photoUrl:photoUrl, // Pass photoUrl to UserInfoEdit
         ),
       ),
     );
