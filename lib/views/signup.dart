@@ -20,12 +20,13 @@ class _SignupState extends State<Signup> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController birthDateController = TextEditingController();
-  TextEditingController genderController = TextEditingController();
+  //TextEditingController genderController = TextEditingController();
 
   String emailError = '';
   String passwordError = '';
   String genderError = '';
   String birthDateError = '';
+  String selectedGender = '';
 
   void signup() async {
     try {
@@ -40,7 +41,7 @@ class _SignupState extends State<Signup> {
         "email": emailController.text,
         "password": passwordController.text,
         "birthDate": birthDateController.text,
-        "gender": genderController.text,
+        "gender":selectedGender,
       };
 
       // Convert data to JSON
@@ -316,13 +317,41 @@ class _SignupState extends State<Signup> {
                 child: Row(
                   children: [
                     Text(
-                      "Enter Gender",
+                      "Select Gender",
                       style: TextStyle(fontSize: 15, color: Colors.grey),
                     ),
                   ],
                 ),
               ),
-              TextForm(hintText: "male/female", controller: genderController),
+              //TextForm(hintText: "male/female", controller: genderController),
+            
+                 Row(
+                  children: [
+                    Radio(
+                      value: 'male',
+                      groupValue: selectedGender,
+                      onChanged: (value) {
+                        setState(() {
+                          selectedGender = value as String;
+                        });
+                      },
+                    ),
+                    Text('Male',
+                    style: TextStyle(color:Colors.grey,fontSize:15),),
+                    Radio(
+                      value: 'female',
+                      groupValue: selectedGender,
+                      onChanged: (value) {
+                        setState(() {
+                          selectedGender = value as String;
+                        });
+                      },
+                    ),
+                    Text('Female',
+                    style:TextStyle(color:Colors.grey,fontSize:15)),
+                  ],
+                ),
+             
               if (genderError.isNotEmpty)
                 Padding(
                   padding: EdgeInsets.only(left: 12),
@@ -333,7 +362,7 @@ class _SignupState extends State<Signup> {
                 ),
               SizedBox(height: 5),
               Button(
-                buttonColor: Color(0xff0B570E),
+                buttonColor: Color(0xff01579B),
                 buttonText: 'Sign up',
                 textColor: Colors.white,
                 onPressed: signup,
@@ -352,7 +381,7 @@ class _SignupState extends State<Signup> {
                       },
                       child: Text(
                         " Sign in",
-                        style: TextStyle(color: Color(0xff0B570E)),
+                        style: TextStyle(color: Color(0xff01579B)),
                       ),
                     ),
                   ],

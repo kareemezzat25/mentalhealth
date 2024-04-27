@@ -15,7 +15,7 @@ class ForumsPage extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            'Mentality',
+            'Nexus',
             style: TextStyle(fontSize: 33, fontWeight: FontWeight.bold),
           ),
           bottom: TabBar(

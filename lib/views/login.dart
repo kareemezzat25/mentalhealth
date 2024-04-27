@@ -236,7 +236,7 @@ class _LoginState extends State<Login> {
               ),
               SizedBox(height: 10),
               Button(
-                buttonColor: Color(0xff0B570E),
+                buttonColor: Color(0xff01579B),
                 buttonText: 'Sign in',
                 textColor: Colors.white,
                 onPressed: login,
@@ -261,7 +261,7 @@ class _LoginState extends State<Login> {
                         ),
                         Text(
                           "Sign up",
-                          style: TextStyle(color: Color(0xff0B570E)),
+                          style: TextStyle(color: Color(0xff4285F4)),
                         ),
                       ],
                     ),

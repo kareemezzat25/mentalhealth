@@ -49,7 +49,7 @@ class _CommonDrawerState extends State<CommonDrawer> {
         children: [
           DrawerHeader(
             decoration: BoxDecoration(
-              color: Color(0xffD2DFD2),
+              color: Color(0xffCAE7EF),
             ),
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 20),
@@ -153,7 +153,7 @@ class _CommonDrawerState extends State<CommonDrawer> {
             title: Text("Night mode"),
           ),
           Padding(
-            padding: const EdgeInsets.only(top: 100),
+            padding: const EdgeInsets.only(top: 80),
             child: ListTile(
               tileColor: Color(0xff000000),
               leading: const Icon(

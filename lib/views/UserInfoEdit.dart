@@ -74,6 +74,9 @@ class _UserInfoEditState extends State<UserInfoEdit> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Edit User Profile'),
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+         // Custom app bar color
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -81,39 +84,72 @@ class _UserInfoEditState extends State<UserInfoEdit> {
           children: [
             Center(
               child: CircleAvatar(
-                radius: 122,
-                backgroundColor:
-                    Colors.grey[300], // Add a background color for the avatar
+                radius: 120,
+                backgroundColor: Colors.grey[300],
                 backgroundImage: _image != null
                     ? FileImage(_image!)
                     : NetworkImage(widget.photoUrl) as ImageProvider<Object>?,
               ),
             ),
+            SizedBox(height: 10), // Add some space
             ElevatedButton(
-              onPressed: _getImage,
-              child: Text('Select Photo'),
-            ),
+                onPressed: _getImage,
+                child: Text('Select Photo'),
+                style: ButtonStyle(
+                  minimumSize: MaterialStateProperty.all(Size(50, 40)), // Set minimum width and height
+                  backgroundColor: MaterialStateProperty.all(Color(0xff01579B)), // Custom button color
+                  foregroundColor: MaterialStateProperty.all(Colors.white), // Custom text color
+                ),
+              ),
+
+            SizedBox(height: 20), // Add some space
             TextFormField(
               controller: _firstNameController,
-              decoration: InputDecoration(labelText: 'First Name'),
+              decoration: InputDecoration(
+                labelText: 'First Name',
+                border: OutlineInputBorder(borderRadius:BorderRadius.circular(15)), // Add border to text field
+              ),
             ),
+            SizedBox(height: 10), // Add some space
             TextFormField(
               controller: _lastNameController,
-              decoration: InputDecoration(labelText: 'Last Name'),
+              decoration: InputDecoration(
+                labelText: 'Last Name',
+                border: OutlineInputBorder(borderRadius:BorderRadius.circular(15)), // Add border to text field
+              ),
             ),
+            SizedBox(height: 10), // Add some space
             TextFormField(
               controller: _genderController,
-              decoration: InputDecoration(labelText: 'Gender'),
+              decoration: InputDecoration(
+                labelText: 'Gender',
+                border: OutlineInputBorder(borderRadius:BorderRadius.circular(15)), // Add border to text field
+              ),
             ),
+            SizedBox(height: 10), // Add some space
             TextFormField(
               controller: _birthDateController,
-              decoration: InputDecoration(labelText: 'Birthdate'),
+              decoration: InputDecoration(
+                labelText: 'Birthdate',
+                border: OutlineInputBorder(borderRadius:BorderRadius.circular(15)), // Add border to text field
+              ),
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 20), // Add some space
             ElevatedButton(
               onPressed: _updateProfile,
-              child: Text('Update'),
+              child: SizedBox(
+                width: 100, // Set width to match parent
+                child: Center(
+                  child: Text('Update'),
+                ),
+              ),
+              style: ButtonStyle(
+                minimumSize: MaterialStateProperty.all(Size(200, 50)), // Set minimum width and height
+                backgroundColor: MaterialStateProperty.all(Color(0xff01579B)), // Custom button color
+                foregroundColor: MaterialStateProperty.all(Colors.white), // Custom text color
+              ),
             ),
+
           ],
         ),
       ),

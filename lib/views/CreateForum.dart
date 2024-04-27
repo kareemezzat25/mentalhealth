@@ -43,7 +43,7 @@ class _createForumState extends State<createForum> {
       },
       child: Scaffold(
         body: Padding(
-          padding: EdgeInsets.only(right: 15,left:15,top:45),
+          padding: EdgeInsets.only(right: 15,left:15,top:15),
           child: SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -85,8 +85,8 @@ class _createForumState extends State<createForum> {
                   hintText: "Enter Forum Title",
                   controller: TitleController,
                 ),
-                SizedBox(height: 15),
-                /*const Padding(
+               
+             const Padding(
                   padding: EdgeInsets.only(left: 16),
                   child: Row(
                     children: [
@@ -100,7 +100,7 @@ class _createForumState extends State<createForum> {
                 TextForm(
                   hintText: "Tag1,Tag2.etc.",
                   controller: TagsController,
-                ),*/
+                ),
                 SizedBox(height: 15),
                 if (descriptionError.isNotEmpty)
                   Padding(
@@ -175,7 +175,7 @@ class _createForumState extends State<createForum> {
                         ),
                         SizedBox(width: 10), // Add spacing between the buttons
                         Button(
-                          buttonColor: Color(0xff0B570E),
+                          buttonColor: Color(0xff01579B),
                           buttonText: 'Submit',
                           textColor: Colors.white,
                           widthButton: 160,

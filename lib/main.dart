@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
                 fontSize: 36,
                 fontFamily: 'Hurricane',
                 fontWeight: FontWeight.bold,
-                color: Color(0xff0B570E))),
+                color: Color(0xff01579B))),
         splashTransition: SplashTransition.fadeTransition,
         backgroundColor: Colors.white,
         nextScreen: HomePage(),

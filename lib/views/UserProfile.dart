@@ -56,8 +56,16 @@ class _UserProfileState extends State<UserProfile> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      appBar: AppBar(
-        title: Text('User Profile'),
+      appBar: AppBar(        
+        title: Text(
+          'User Profile',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        backgroundColor: Colors.transparent, // Custom app bar color
+        elevation: 0,
       ),
       body: FutureBuilder(
         future: _userDataFuture,
@@ -68,90 +76,93 @@ class _UserProfileState extends State<UserProfile> {
             );
           } else if (snapshot.hasError) {
             return Center(
-              child: Text('Error fetching user profile'),
+              child: Text(
+                'Error fetching user profile',
+                style: TextStyle(color: Colors.red), // Custom error text color
+              ),
             );
           } else {
             Map<String, dynamic> userData =
                 snapshot.data as Map<String, dynamic>;
             return ListView(
+              padding: EdgeInsets.all(20),
               children: [
                 SizedBox(height: 20),
                 Center(
                   child: CircleAvatar(
-                    radius: 122,
+                    radius: 100,
+                    backgroundColor: Colors.grey[300],
                     backgroundImage: _image != null
                         ? FileImage(_image!)
                         : NetworkImage(userData['photoUrl']) as ImageProvider,
                   ),
                 ),
                 SizedBox(height: 20),
-                ListTile(
-                  title: Text(
-                    'Email:',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Text('${userData['email']}'),
-                ),
-                ListTile(
-                  title: Text(
-                    'First Name:',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Text('${userData['firstName']}'),
-                ),
-                ListTile(
-                  title: Text(
-                    'Last Name:',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Text('${userData['lastName']}'),
-                ),
-                ListTile(
-                  title: Text(
-                    'Birthdate:',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Text('${userData['birthDate']}'),
-                ),
-                ListTile(
-                  title: Text(
-                    'Gender:',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Text('${userData['gender']}'),
-                ),
-                SizedBox(height: 20.0),
+                _buildInfoTile('Email:', userData['email']),
+                _buildInfoTile('First Name:', userData['firstName']),
+                _buildInfoTile('Last Name:', userData['lastName']),
+                _buildInfoTile('Birthdate:', userData['birthDate']),
+                _buildInfoTile('Gender:', userData['gender']),
+                SizedBox(height: 20),
                 Center(
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      String? result = await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => UserInfoEdit(
-                            userId: widget.userId,
-                            firstName: userData['firstName'],
-                            lastName: userData['lastName'],
-                            gender: userData['gender'],
-                            birthDate: userData['birthDate'],
-                            photoUrl: userData[
-                                'photoUrl'], // Pass photoUrl to UserInfoEdit
+                  child: SizedBox(
+                    width: 170, // Set the desired width
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        String? result = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => UserInfoEdit(
+                              userId: widget.userId,
+                              firstName: userData['firstName'],
+                              lastName: userData['lastName'],
+                              gender: userData['gender'],
+                              birthDate: userData['birthDate'],
+                              photoUrl: userData['photoUrl'],
+                            ),
                           ),
-                        ),
-                      );
-                      if (result != null) {
-                        // Refresh UI after returning from UserInfoEdit
-                        setState(() {
-                          _userDataFuture = fetchUserProfile(widget.userId);
-                        });
-                      }
-                    },
-                    child: Text('Edit'),
+                        );
+                        if (result != null) {
+                          setState(() {
+                            _userDataFuture = fetchUserProfile(widget.userId);
+                          });
+                        }
+                      },
+                      child: Text('Edit'),
+                      style: ElevatedButton.styleFrom(
+                        primary: Color(0xff01579B), // Custom button color
+                        onPrimary: Colors.white, // Custom text color
+                        padding: EdgeInsets.symmetric(horizontal: 40, vertical: 16), // Custom padding
+                        textStyle: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ), // Custom text style
+                      ),
+                    ),
                   ),
                 ),
               ],
             );
           }
         },
+      ),
+    );
+  }
+
+  Widget _buildInfoTile(String title, String value) {
+    return ListTile(
+      title: Text(
+        title,
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 18,
+        ),
+      ),
+      subtitle: Text(
+        value,
+        style: TextStyle(
+          fontSize: 16,
+        ),
       ),
     );
   }

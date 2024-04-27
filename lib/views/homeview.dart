@@ -71,7 +71,7 @@ class HomePage extends StatelessWidget {
                     ),
                     SizedBox(height: 20),
                     MaterialButton(
-                      color: Color(0xff4CAF50),
+                      color: Color(0xff01579B),
                       minWidth: double.infinity,
                       height: 60,
                       onPressed: () {
@@ -86,6 +86,7 @@ class HomePage extends StatelessWidget {
                       ),
                       child: const Text("Signup",
                           style: TextStyle(
+                            color: Colors.white,
                               fontWeight: FontWeight.bold, fontSize: 18)),
                     ),
                   ],
