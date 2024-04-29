@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:mentalhealthh/authentication/auth.dart';
 
 Future<Map<String, dynamic>> fetchUserProfile(String userId) async {
-  String apiUrl = 'https://nexus-api-h3ik.onrender.com/api/profiles/$userId';
+  String apiUrl = 'https://nexus-api-h3ik.onrender.com/api/users/$userId';
   String? token = await Auth.getToken();
 
   http.Response response = await http.get(

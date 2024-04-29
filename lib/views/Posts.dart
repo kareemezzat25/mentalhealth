@@ -124,6 +124,7 @@ class _Posts extends State<Posts> {
                                 username: postsData[index]['username'],
                                 postedOn: postsData[index]['postedOn'],
                                 appUserId: postsData[index]['appUserId'],
+                                isAnonymous: postsData[index]['isAnonymous'],
                                 userId: userId,
                               ),
                             ),
@@ -159,4 +160,5 @@ class _Posts extends State<Posts> {
       ),
     );
   }
+  
 }

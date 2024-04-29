@@ -129,7 +129,7 @@ class _PostCommentState extends State<PostComment> {
                                           MainAxisAlignment.center,
                                       children: [
                                         Text(
-                                          '${postDetailsData['username']}',
+                                          '${postDetailsData['username'] ?? 'Anonymous'}',
                                           style: TextStyle(
                                               fontSize: 18,
                                               fontWeight: FontWeight.bold),

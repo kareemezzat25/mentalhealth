@@ -5,6 +5,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:mentalhealthh/authentication/auth.dart';
 import 'package:mentalhealthh/views/ForumsPage.dart';
+import 'package:mentalhealthh/views/Posts.dart';
 import 'dart:convert';
 import 'textForm.dart';
 import 'package:mentalhealthh/models/button.dart';
@@ -106,7 +107,7 @@ class _LoginState extends State<Login> {
         Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-                builder: (context) => ForumsPage(userId: userId)));
+                builder: (context) => Posts()));
       } else {
         // Login failed, handle the error
         print('Login failed. Status code: ${response.statusCode}');

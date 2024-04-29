@@ -12,10 +12,12 @@ class createForum extends StatefulWidget {
   _createForumState createState() => _createForumState();
 }
 
-class _createForumState extends State<createForum> {
+class _createForumState extends State<createForum> 
+{
   TextEditingController TitleController = TextEditingController();
   TextEditingController TagsController = TextEditingController();
   TextEditingController DescriptionController = TextEditingController();
+  bool isAnonymous = false; 
 
   String titleError = '';
   String descriptionError = '';
@@ -86,7 +88,7 @@ class _createForumState extends State<createForum> {
                   controller: TitleController,
                 ),
                
-             const Padding(
+                const Padding(
                   padding: EdgeInsets.only(left: 16),
                   child: Row(
                     children: [
@@ -129,80 +131,87 @@ class _createForumState extends State<createForum> {
                 SizedBox(
                   height: 20,
                 ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                Padding(
+                  padding: const EdgeInsets.only(left:16,right:16),
+                  child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  
                   children: [
-                    const Padding(
-                      padding: EdgeInsets.only(left: 16),
-                      child: Row(
+                   /* Text(
+                      "Anonymous Identity?",
+                      style: TextStyle(fontSize: 18, color: Colors.black),
+                    ),*/
+                    Switch(
+                      activeColor: Color(0xff4285F4),
+                      inactiveTrackColor: Color.fromARGB(171, 163, 164, 183),
+                      value: isAnonymous,
+                      onChanged: (value) {
+                        setState(() {
+                          isAnonymous = value;
+                        });
+                      },
+                    ),
+                  ],
+                              ),
+                ),
+                SizedBox(height: 20), // Added spacing
+                Row(
+                  children: [
+                    MaterialButton(
+                      minWidth: 9,
+                      height: 50,
+                      onPressed: UploadImage,
+                      color: Color.fromARGB(255, 0, 0, 0),
+                      textColor: Color.fromARGB(255, 255, 255, 255),
+                      shape: RoundedRectangleBorder(
+                        side: BorderSide(color: Colors.grey),
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      child: const Row(
                         children: [
+                          Icon(
+                            Icons.upload,
+                            color: Colors.white,
+                          ),
+                          SizedBox(width: 5),
                           Text(
-                            "Image",
-                            style: TextStyle(fontSize: 15, color: Colors.black),
+                            "Upload Image",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                            ),
                           ),
                         ],
                       ),
                     ),
-                    SizedBox(height: 10),
-                    Row(
-                      children: [
-                        MaterialButton(
-                          minWidth: 9,
-                          height: 50,
-                          onPressed: UploadImage,
-                          color: Color.fromARGB(255, 0, 0, 0),
-                          textColor: Color.fromARGB(255, 255, 255, 255),
-                          shape: RoundedRectangleBorder(
-                            side: BorderSide(color: Colors.grey),
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                          child: const Row(
-                            children: [
-                              Icon(
-                                Icons.upload,
-                                color: Colors.white,
-                              ),
-                              SizedBox(width: 5),
-                              Text(
-                                "Upload Image",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 15,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(width: 10), // Add spacing between the buttons
-                        Button(
-                          buttonColor: Color(0xff01579B),
-                          buttonText: 'Submit',
-                          textColor: Colors.white,
-                          widthButton: 160,
-                          heightButton: 50,
-                          onPressed: () async {
-                            validateInputs();
+                    SizedBox(width: 10), // Add spacing between the buttons
+                    Button(
+                      buttonColor: Color(0xff01579B),
+                      buttonText: 'Submit',
+                      textColor: Colors.white,
+                      widthButton: 160,
+                      heightButton: 50,
+                      onPressed: () async {
+                        validateInputs();
 
-                            if (titleError.isEmpty &&
-                                descriptionError.isEmpty) {
-                              // Get token
-                              String? token = await Auth.getToken();
+                        if (titleError.isEmpty &&
+                            descriptionError.isEmpty) {
+                          // Get token
+                          String? token = await Auth.getToken();
 
-                              if (token != null) {
-                                // Call the createPost function here
-                                PostsApi.createPost(TitleController.text,
-                                    DescriptionController.text, token, context);
-                                // You may also want to refresh the forums content here
-                                // You can achieve this by calling a function to reload the posts
-                                // or by using a state management solution.
-                              } else {
-                                print('Token not available');
-                                // Handle case where token is not available
-                              }
-                            }
-                          },
-                        ),
-                      ],
+                          if (token != null) {
+                            // Call the createPost function here
+                            PostsApi.createPost(TitleController.text,
+                                DescriptionController.text, token, context,isAnonymous);
+                            // You may also want to refresh the forums content here
+                            // You can achieve this by calling a function to reload the posts
+                            // or by using a state management solution.
+                          } else {
+                            print('Token not available');
+                            // Handle case where token is not available
+                          }
+                        }
+                      },
                     ),
                   ],
                 ),
