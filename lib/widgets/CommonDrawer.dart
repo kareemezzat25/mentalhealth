@@ -1,51 +1,20 @@
-// CommonDrawer.dart
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:mentalhealthh/authentication/auth.dart';
+import 'package:mentalhealthh/models/user_model.dart';
 import 'package:mentalhealthh/views/ForumsPage.dart';
+import 'package:mentalhealthh/views/UserProfile.dart';
 import 'package:mentalhealthh/views/login.dart';
-import 'package:mentalhealthh/views/UserProfile.dart'; // Import UserProfile.dart
+import 'package:provider/provider.dart';
+import 'package:mentalhealthh/authentication/auth.dart';
 
-class CommonDrawer extends StatefulWidget {
-  final String userId; // Add userId parameter
+class CommonDrawer extends StatelessWidget {
+  final String userId;
 
-  CommonDrawer({required this.userId}); // Update constructor
-  @override
-  _CommonDrawerState createState() => _CommonDrawerState();
-}
-
-class _CommonDrawerState extends State<CommonDrawer> {
-  String userName = '';
-  String userEmail = '';
-  String photoUrl= '';
-
-  @override
-  void initState() {
-    super.initState();
-    _loadUserData();
-  }
-
- _loadUserData() async {
-  try {
-    // Fetch user data
-    String? retrievedUserName = await Auth.getUserName();
-    String? retrievedUserEmail = await Auth.getEmail();
-    String? retrievedPhotoUrl = await Auth.getPhotoUrl();
-
-    setState(() {
-      this.userName = retrievedUserName ?? '';
-      this.userEmail = retrievedUserEmail ?? '';
-      this.photoUrl = retrievedPhotoUrl ?? '';
-    });
-  } catch (error) {
-    print('Error loading user data: $error');
-  }
-}
-
+  CommonDrawer({required this.userId});
 
   @override
   Widget build(BuildContext context) {
+    UserModel userModel = Provider.of<UserModel>(context); // Access UserModel
+
     return Drawer(
       width: 200,
       child: ListView(
@@ -60,21 +29,24 @@ class _CommonDrawerState extends State<CommonDrawer> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    width: 50,
-                    height: 50,
+                    width: 60,
+                    height: 60,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(40),
                       border: Border.all(
                           color: Colors.grey, style: BorderStyle.solid),
-                      image: photoUrl.isNotEmpty // Check if photoUrl is not empty
-                ? DecorationImage(  
-                    image: NetworkImage(photoUrl), // Use NetworkImage with photoUrl
-                    fit: BoxFit.cover, ): null, // If photoUrl is empty, don't display any image
-          ),
-          child: photoUrl.isEmpty // If photoUrl is empty, display a default icon
-              ? Icon(Icons.account_circle_outlined, size: 40)
-              : null,
+                      image: userModel.photoUrl.isNotEmpty
+                          ? DecorationImage(
+                              image: NetworkImage(userModel.photoUrl),
+                              fit: BoxFit.cover,
+                            )
+                          : const DecorationImage(
+                              image: AssetImage(
+                                  'assets/images/Memoji Boys 3-15.png'),
+                              fit: BoxFit.cover,
+                            ),
                     ),
+                  ),
                   SizedBox(width: 10),
                   Expanded(
                     child: Column(
@@ -82,7 +54,7 @@ class _CommonDrawerState extends State<CommonDrawer> {
                       children: [
                         Flexible(
                           child: Text(
-                            userName,
+                            userModel.userName,
                             style: TextStyle(
                               color: Colors.black,
                               fontSize: 18,
@@ -94,7 +66,7 @@ class _CommonDrawerState extends State<CommonDrawer> {
                         ),
                         Flexible(
                           child: Text(
-                            userEmail,
+                            userModel.userEmail,
                             style: TextStyle(
                               color: Colors.black,
                               fontSize: 14,
@@ -120,14 +92,11 @@ class _CommonDrawerState extends State<CommonDrawer> {
             leading: const Icon(Icons.bookmark_outline_outlined),
             title: Text("Forums"),
             onTap: () {
-              // Close the drawer
               Navigator.pop(context);
-
-              // Navigate to forums screen and replace the current route
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => ForumsPage(userId: widget.userId)),
+                    builder: (context) => ForumsPage(userId: userId)),
               );
             },
           ),
@@ -135,14 +104,11 @@ class _CommonDrawerState extends State<CommonDrawer> {
             leading: Icon(Icons.account_circle_outlined),
             title: Text("User Profile"),
             onTap: () {
-              // Close the drawer
               Navigator.pop(context);
-
-              // Navigate to UserProfile screen
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => UserProfile(userId: widget.userId)),
+                    builder: (context) => UserProfile(userId: userId)),
               );
             },
           ),
@@ -159,7 +125,7 @@ class _CommonDrawerState extends State<CommonDrawer> {
             title: Text("Night mode"),
           ),
           Padding(
-            padding: const EdgeInsets.only(top: 80),
+            padding: const EdgeInsets.only(top: 100),
             child: ListTile(
               tileColor: Color(0xff000000),
               leading: const Icon(
@@ -170,17 +136,11 @@ class _CommonDrawerState extends State<CommonDrawer> {
                   const Text("Logout", style: TextStyle(color: Colors.white)),
               onTap: () {
                 Navigator.pop(context); // Close the drawer
-
                 Navigator.pushAndRemoveUntil(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          Login()), // Replace LoginPage with the actual login page class
+                  MaterialPageRoute(builder: (context) => Login()),
                   (route) => false,
                 );
-
-                // // Exit the app
-                // SystemNavigator.pop();
               },
             ),
           ),

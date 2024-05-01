@@ -1,12 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:mentalhealthh/views/createForum.dart';
+import 'package:mentalhealthh/views/CreateForum.dart';
+import 'package:mentalhealthh/views/Posts.dart';
 import 'package:mentalhealthh/widgets/CommonDrawer.dart';
-import 'Posts.dart';
 
-class ForumsPage extends StatelessWidget {
+class ForumsPage extends StatefulWidget {
   final String userId; // Add userId parameter
 
   ForumsPage({required this.userId}); // Update constructor
+
+  @override
+  _ForumsPageState createState() => _ForumsPageState();
+}
+
+class _ForumsPageState extends State<ForumsPage>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,21 +39,27 @@ class ForumsPage extends StatelessWidget {
             style: TextStyle(fontSize: 33, fontWeight: FontWeight.bold),
           ),
           bottom: TabBar(
+            controller: _tabController,
             tabs: [
-              Tab(text: 'Create Forum'),
               Tab(text: 'Posts'),
+              Tab(text: 'Create Forum'),
             ],
           ),
         ),
         // Pass userId to CommonDrawer
-        drawer: CommonDrawer(userId: userId),
+        drawer: CommonDrawer(userId: widget.userId),
         body: TabBarView(
+          controller: _tabController,
           children: [
-            createForum(),
             Posts(),
+            createForum(
+              tabController: _tabController,
+            ),
           ],
         ),
       ),
     );
   }
 }
+
+//_tabController.animateTo(0);

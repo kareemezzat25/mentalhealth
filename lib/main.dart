@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:mentalhealthh/models/user_model.dart';
 import 'package:mentalhealthh/views/homeview.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  //  final cacheManager = CacheManager(Config(
-  //   'customCacheKey',
-  //   stalePeriod: Duration(days: 30),
-  //   maxNrOfCacheObjects: 100,
-  // ));
-
-  runApp(MyApp());
+  runApp(
+    ChangeNotifierProvider<UserModel>(
+      create: (context) => UserModel(),
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {

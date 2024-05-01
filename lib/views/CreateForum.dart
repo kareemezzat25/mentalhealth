@@ -4,20 +4,23 @@ import 'package:flutter/material.dart';
 import 'package:mentalhealthh/api/postsApi.dart';
 import 'package:mentalhealthh/authentication/auth.dart';
 import 'package:mentalhealthh/models/button.dart';
-//import 'package:mentalhealthh/views/MainHomeview.dart';
+import 'package:mentalhealthh/views/Posts.dart';
 import 'package:mentalhealthh/views/textForm.dart';
 
 class createForum extends StatefulWidget {
+  final TabController tabController;
+
+  createForum({required this.tabController});
+
   @override
   _createForumState createState() => _createForumState();
 }
 
-class _createForumState extends State<createForum> 
-{
+class _createForumState extends State<createForum> {
   TextEditingController TitleController = TextEditingController();
   TextEditingController TagsController = TextEditingController();
   TextEditingController DescriptionController = TextEditingController();
-  bool isAnonymous = false; 
+  bool isAnonymous = false;
 
   String titleError = '';
   String descriptionError = '';
@@ -36,16 +39,15 @@ class _createForumState extends State<createForum>
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        // Handle back button press
         Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (context) {
           return exit(0);
         }));
-        return false; // prevent default behavior
+        return false;
       },
       child: Scaffold(
         body: Padding(
-          padding: EdgeInsets.only(right: 15,left:15,top:15),
+          padding: EdgeInsets.only(right: 15, left: 15, top: 15),
           child: SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -87,7 +89,6 @@ class _createForumState extends State<createForum>
                   hintText: "Enter Forum Title",
                   controller: TitleController,
                 ),
-               
                 const Padding(
                   padding: EdgeInsets.only(left: 16),
                   child: Row(
@@ -132,29 +133,24 @@ class _createForumState extends State<createForum>
                   height: 20,
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(left:16,right:16),
+                  padding: const EdgeInsets.only(left: 16, right: 16),
                   child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  
-                  children: [
-                   /* Text(
-                      "Anonymous Identity?",
-                      style: TextStyle(fontSize: 18, color: Colors.black),
-                    ),*/
-                    Switch(
-                      activeColor: Color(0xff4285F4),
-                      inactiveTrackColor: Color.fromARGB(171, 163, 164, 183),
-                      value: isAnonymous,
-                      onChanged: (value) {
-                        setState(() {
-                          isAnonymous = value;
-                        });
-                      },
-                    ),
-                  ],
-                              ),
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Switch(
+                        activeColor: Color(0xff4285F4),
+                        inactiveTrackColor: Color.fromARGB(171, 163, 164, 183),
+                        value: isAnonymous,
+                        onChanged: (value) {
+                          setState(() {
+                            isAnonymous = value;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
                 ),
-                SizedBox(height: 20), // Added spacing
+                SizedBox(height: 20),
                 Row(
                   children: [
                     MaterialButton(
@@ -184,7 +180,7 @@ class _createForumState extends State<createForum>
                         ],
                       ),
                     ),
-                    SizedBox(width: 10), // Add spacing between the buttons
+                    SizedBox(width: 10),
                     Button(
                       buttonColor: Color(0xff01579B),
                       buttonText: 'Submit',
@@ -194,21 +190,21 @@ class _createForumState extends State<createForum>
                       onPressed: () async {
                         validateInputs();
 
-                        if (titleError.isEmpty &&
-                            descriptionError.isEmpty) {
-                          // Get token
+                        if (titleError.isEmpty && descriptionError.isEmpty) {
                           String? token = await Auth.getToken();
 
                           if (token != null) {
-                            // Call the createPost function here
-                            PostsApi.createPost(TitleController.text,
-                                DescriptionController.text, token, context,isAnonymous);
-                            // You may also want to refresh the forums content here
-                            // You can achieve this by calling a function to reload the posts
-                            // or by using a state management solution.
+                            PostsApi.createPost(
+                                TitleController.text,
+                                DescriptionController.text,
+                                token,
+                                context,
+                                isAnonymous);
+
+                            // Switch to the "Posts" tab
+                            widget.tabController.animateTo(0);
                           } else {
                             print('Token not available');
-                            // Handle case where token is not available
                           }
                         }
                       },

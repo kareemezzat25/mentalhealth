@@ -95,11 +95,12 @@ class _LoginState extends State<Login> {
         // Login successful, handle the response accordingly
         String token = json.decode(response.body)['token'];
         String userId = json.decode(response.body)['userId'];
-        String userName =json.decode(response.body)['userName']; // Add this line
+        String userName =
+            json.decode(response.body)['userName']; // Add this line
         String photoUrl = json.decode(response.body)['photoUrl'];
 
-        await Auth.setToken(token, emailController.text, userId);
-        await Auth.setUserName(userName);
+        await Auth.setToken(context, token, emailController.text, userId);
+        await Auth.setUserName(context, userName);
         await Auth.setPhotoUrl(photoUrl); // Add this line
 
         log('Response body: ${response.body}');
@@ -107,7 +108,7 @@ class _LoginState extends State<Login> {
         Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-                builder: (context) => Posts()));
+                builder: (context) => ForumsPage(userId: userId)));
       } else {
         // Login failed, handle the error
         print('Login failed. Status code: ${response.statusCode}');

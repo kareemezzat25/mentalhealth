@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mentalhealthh/api/UserProfileApi.dart';
 import 'package:mentalhealthh/authentication/auth.dart';
+import 'package:mentalhealthh/models/user_model.dart';
+import 'package:provider/provider.dart';
 
 class UserInfoEdit extends StatefulWidget {
   final String userId;
@@ -41,7 +43,7 @@ class _UserInfoEditState extends State<UserInfoEdit> {
     _birthDateController.text = widget.birthDate;
   }
 
-  void _updateProfile() async {
+  void _updateProfile(BuildContext context) async {
     try {
       await updateUserProfile(
         widget.userId,
@@ -51,9 +53,10 @@ class _UserInfoEditState extends State<UserInfoEdit> {
         _birthDateController.text,
         _image,
       );
-      if (_image != null) {
-      await Auth.setPhotoUrl(widget.photoUrl);
-    }
+      Provider.of<UserModel>(context, listen: false).setUserInfo(
+          '${_firstNameController.text} ${_lastNameController.text}',
+          await Auth.getEmail(),
+          await Auth.getPhotoUrl());
       Navigator.pop(context, 'refresh');
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -80,7 +83,7 @@ class _UserInfoEditState extends State<UserInfoEdit> {
         title: Text('Edit User Profile'),
         elevation: 0,
         backgroundColor: Colors.transparent,
-         // Custom app bar color
+        // Custom app bar color
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -88,7 +91,7 @@ class _UserInfoEditState extends State<UserInfoEdit> {
           children: [
             Center(
               child: CircleAvatar(
-                radius: 120,
+                radius: 122,
                 backgroundColor: Colors.grey[300],
                 backgroundImage: _image != null
                     ? FileImage(_image!)
@@ -97,21 +100,25 @@ class _UserInfoEditState extends State<UserInfoEdit> {
             ),
             SizedBox(height: 10), // Add some space
             ElevatedButton(
-                onPressed: _getImage,
-                child: Text('Select Photo'),
-                style: ButtonStyle(
-                  minimumSize: MaterialStateProperty.all(Size(50, 40)), // Set minimum width and height
-                  backgroundColor: MaterialStateProperty.all(Color(0xff01579B)), // Custom button color
-                  foregroundColor: MaterialStateProperty.all(Colors.white), // Custom text color
-                ),
+              onPressed: _getImage,
+              child: Text('Select Photo'),
+              style: ButtonStyle(
+                minimumSize: MaterialStateProperty.all(
+                    Size(50, 40)), // Set minimum width and height
+                backgroundColor: MaterialStateProperty.all(
+                    Color(0xff01579B)), // Custom button color
+                foregroundColor: MaterialStateProperty.all(
+                    Colors.white), // Custom text color
               ),
-
+            ),
             SizedBox(height: 20), // Add some space
             TextFormField(
               controller: _firstNameController,
               decoration: InputDecoration(
                 labelText: 'First Name',
-                border: OutlineInputBorder(borderRadius:BorderRadius.circular(15)), // Add border to text field
+                border: OutlineInputBorder(
+                    borderRadius:
+                        BorderRadius.circular(15)), // Add border to text field
               ),
             ),
             SizedBox(height: 10), // Add some space
@@ -119,7 +126,9 @@ class _UserInfoEditState extends State<UserInfoEdit> {
               controller: _lastNameController,
               decoration: InputDecoration(
                 labelText: 'Last Name',
-                border: OutlineInputBorder(borderRadius:BorderRadius.circular(15)), // Add border to text field
+                border: OutlineInputBorder(
+                    borderRadius:
+                        BorderRadius.circular(15)), // Add border to text field
               ),
             ),
             SizedBox(height: 10), // Add some space
@@ -127,7 +136,9 @@ class _UserInfoEditState extends State<UserInfoEdit> {
               controller: _genderController,
               decoration: InputDecoration(
                 labelText: 'Gender',
-                border: OutlineInputBorder(borderRadius:BorderRadius.circular(15)), // Add border to text field
+                border: OutlineInputBorder(
+                    borderRadius:
+                        BorderRadius.circular(15)), // Add border to text field
               ),
             ),
             SizedBox(height: 10), // Add some space
@@ -135,12 +146,15 @@ class _UserInfoEditState extends State<UserInfoEdit> {
               controller: _birthDateController,
               decoration: InputDecoration(
                 labelText: 'Birthdate',
-                border: OutlineInputBorder(borderRadius:BorderRadius.circular(15)), // Add border to text field
+                border: OutlineInputBorder(
+                    borderRadius:
+                        BorderRadius.circular(15)), // Add border to text field
               ),
             ),
             SizedBox(height: 20), // Add some space
             ElevatedButton(
-              onPressed: _updateProfile,
+              onPressed: () =>
+                  _updateProfile(context), // Pass a function reference
               child: SizedBox(
                 width: 100, // Set width to match parent
                 child: Center(
@@ -148,12 +162,14 @@ class _UserInfoEditState extends State<UserInfoEdit> {
                 ),
               ),
               style: ButtonStyle(
-                minimumSize: MaterialStateProperty.all(Size(200, 50)), // Set minimum width and height
-                backgroundColor: MaterialStateProperty.all(Color(0xff01579B)), // Custom button color
-                foregroundColor: MaterialStateProperty.all(Colors.white), // Custom text color
+                minimumSize: MaterialStateProperty.all(
+                    Size(200, 50)), // Set minimum width and height
+                backgroundColor: MaterialStateProperty.all(
+                    Color(0xff01579B)), // Custom button color
+                foregroundColor: MaterialStateProperty.all(
+                    Colors.white), // Custom text color
               ),
             ),
-
           ],
         ),
       ),
