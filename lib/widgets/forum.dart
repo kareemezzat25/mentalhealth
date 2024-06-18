@@ -14,6 +14,8 @@ class Forum extends StatefulWidget {
   final String? appUserId;
   final String? userId;
   final bool? isAnonymous;
+  final String? photoUrl; // Add the photoUrl parameter
+  final int? commentsCount;
 
   Forum({
     this.postTitle,
@@ -24,7 +26,9 @@ class Forum extends StatefulWidget {
     this.postId,
     this.appUserId,
     required this.userId,
-    this.isAnonymous
+    this.isAnonymous,
+    this.photoUrl,
+    this.commentsCount, // Initialize the photoUrl parameter
   });
 
   @override
@@ -57,8 +61,12 @@ class _ForumState extends State<Forum> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     SizedBox(height: 2),
-                    
-                    UserInfo(username: widget.username, postedOn: widget.postedOn,isAnonymous: widget.isAnonymous,),
+                    UserInfo(
+                      username: widget.username,
+                      postedOn: widget.postedOn,
+                      isAnonymous: widget.isAnonymous,
+                      photoUrl: widget.photoUrl,
+                    ), // Pass the photoUrl to the UserInfo widget
                     SizedBox(height: 3),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -86,18 +94,21 @@ class _ForumState extends State<Forum> {
                       ),
                     ),
                     SizedBox(height: 5),
-                    Container(
-                      height: 40,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          for (int index = 0; index < iconsList.length; index++)
-                            IconPost(
-                              iconreaction: iconsList[index],
-                            ),  
-                        ],
+                    Align(
+                      alignment: Alignment.center,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.comment_outlined),
+                            SizedBox(width: 5),
+                            Text(widget.commentsCount?.toString() ?? '0'),
+                          ],
+                        ),
                       ),
                     ),
+
                     SizedBox(height: 10), // Additional space at the bottom
                   ],
                 ),

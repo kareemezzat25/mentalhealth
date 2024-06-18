@@ -1,11 +1,14 @@
+import 'dart:convert';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:mentalhealthh/api/postsApi.dart';
 import 'package:mentalhealthh/authentication/auth.dart';
 import 'package:mentalhealthh/models/button.dart';
 import 'package:mentalhealthh/views/Posts.dart';
 import 'package:mentalhealthh/views/textForm.dart';
+import 'package:http/http.dart' as http;
+import 'package:path/path.dart' as path;
 
 class createForum extends StatefulWidget {
   final TabController tabController;
@@ -21,11 +24,43 @@ class _createForumState extends State<createForum> {
   TextEditingController TagsController = TextEditingController();
   TextEditingController DescriptionController = TextEditingController();
   bool isAnonymous = false;
+  File? _imageFile; // Add a variable to hold the selected image file
 
   String titleError = '';
   String descriptionError = '';
 
-  void UploadImage() {}
+  // Function to handle image picking
+  Future<void> pickImage() async {
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _imageFile = File(pickedFile.path);
+      });
+    }
+  }
+
+  // Function to handle image uploading
+  Future<String?> uploadImage(File imageFile) async {
+    String? token = await Auth.getToken();
+    if (token == null) return null;
+
+    final request =
+        http.MultipartRequest('POST', Uri.parse('https://your-upload-url'));
+    request.headers['Authorization'] = 'Bearer $token';
+    request.files.add(await http.MultipartFile.fromPath('file', imageFile.path,
+        filename: path.basename(imageFile.path)));
+
+    final response = await request.send();
+    if (response.statusCode == 200) {
+      final responseBody = await response.stream.bytesToString();
+      final jsonResponse = json.decode(responseBody);
+      return jsonResponse['url']; // Return the image URL
+    } else {
+      print('Image upload failed with status: ${response.statusCode}');
+      return null;
+    }
+  }
 
   void validateInputs() {
     setState(() {
@@ -156,7 +191,7 @@ class _createForumState extends State<createForum> {
                     MaterialButton(
                       minWidth: 9,
                       height: 50,
-                      onPressed: UploadImage,
+                      onPressed: pickImage,
                       color: Color.fromARGB(255, 0, 0, 0),
                       textColor: Color.fromARGB(255, 255, 255, 255),
                       shape: RoundedRectangleBorder(
@@ -194,12 +229,18 @@ class _createForumState extends State<createForum> {
                           String? token = await Auth.getToken();
 
                           if (token != null) {
+                            String? imageUrl;
+                            if (_imageFile != null) {
+                              imageUrl = await uploadImage(_imageFile!);
+                            }
+
                             PostsApi.createPost(
                                 TitleController.text,
                                 DescriptionController.text,
                                 token,
                                 context,
-                                isAnonymous);
+                                isAnonymous,
+                                imageUrl);
 
                             // Switch to the "Posts" tab
                             widget.tabController.animateTo(0);

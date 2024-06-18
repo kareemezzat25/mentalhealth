@@ -102,120 +102,134 @@ class _PostCommentState extends State<PostComment> {
                           padding: const EdgeInsets.only(
                               left: 10, right: 10, top: 10, bottom: 10),
                           child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    Container(
-                                      width: 40,
-                                      height: 40,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(40),
-                                        border: Border.all(
-                                            color: Colors.grey,
-                                            style: BorderStyle.solid),
-                                        image: const DecorationImage(
-                                          image: AssetImage(
-                                              'assets/images/Memoji Boys 3-15.png'),
-                                          fit: BoxFit.cover,
-                                        ),
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    width: 40,
+                                    height: 40,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(40),
+                                      border: Border.all(
+                                          color: Colors.grey,
+                                          style: BorderStyle.solid),
+                                      image: DecorationImage(
+                                        image: postDetailsData['isAnonymous'] ==
+                                                    true ||
+                                                postDetailsData['photoUrl'] ==
+                                                    null
+                                            ? AssetImage(
+                                                'assets/images/anonymous.png')
+                                            : NetworkImage(
+                                                    postDetailsData['photoUrl'])
+                                                as ImageProvider,
+                                        fit: BoxFit.cover,
                                       ),
                                     ),
-                                    SizedBox(width: 10),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          '${postDetailsData['username'] ?? 'Anonymous'}',
-                                          style: TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold),
+                                  ),
+                                  SizedBox(width: 10),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        '${postDetailsData['username'] ?? 'Anonymous'}',
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      Text(
+                                        '${calculateTimeDifference(postDetailsData['postedOn'])} ',
+                                        style: TextStyle(fontSize: 12),
+                                      ),
+                                    ],
+                                  ),
+                                  if (widget.userId ==
+                                      postDetailsData['appUserId'])
+                                    PopupMenuButton<String>(
+                                      onSelected: (value) async {
+                                        // Handle menu item selection
+                                        if (value == 'edit') {
+                                          // Fetch old title and content
+                                          String oldTitle =
+                                              postDetailsData['title'];
+                                          String oldContent =
+                                              postDetailsData['content'];
+                                          // Navigate to PostEdit.dart and wait for the result
+                                          Map<String, dynamic>? result =
+                                              await Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => PostEdit(
+                                                postId: widget.postId,
+                                                oldTitle: oldTitle,
+                                                oldContent: oldContent,
+                                              ),
+                                            ),
+                                          );
+                                          if (result != null) {
+                                            changePostData();
+                                            // Result is not null, indicating a successful edit
+                                            // Refresh the UI with the updated post details
+                                            setState(() {
+                                              postDetailsData =
+                                                  snapshot.data ?? {};
+                                            });
+                                          }
+                                          // Perform edit action
+                                        } else if (value == 'delete') {
+                                          // Perform delete action
+                                          // Inside your Posts page or wherever you call deletePost
+                                          await PostsApi.deletePost(
+                                            context: context,
+                                            postId: widget.postId,
+                                            onPostDeleted: () {},
+                                          );
+                                        }
+                                      },
+                                      itemBuilder: (BuildContext context) =>
+                                          <PopupMenuEntry<String>>[
+                                        const PopupMenuItem<String>(
+                                          value: 'edit',
+                                          child: ListTile(
+                                            leading: Icon(Icons.edit),
+                                            title: Text('Edit'),
+                                          ),
                                         ),
-                                        Text(
-                                          '${calculateTimeDifference(postDetailsData['postedOn'])} ',
-                                          style: TextStyle(fontSize: 12),
+                                        const PopupMenuItem<String>(
+                                          value: 'delete',
+                                          child: ListTile(
+                                            leading: Icon(Icons.delete),
+                                            title: Text('Delete'),
+                                          ),
                                         ),
                                       ],
                                     ),
-                                    if (widget.userId ==
-                                        postDetailsData['appUserId'])
-                                      PopupMenuButton<String>(
-                                        onSelected: (value) async {
-                                          // Handle menu item selection
-                                          if (value == 'edit') {
-                                            // Fetch old title and content
-                                            String oldTitle =
-                                                postDetailsData['title'];
-                                            String oldContent =
-                                                postDetailsData['content'];
-                                            // Navigate to PostEdit.dart and wait for the result
-                                            Map<String, dynamic>? result =
-                                                await Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) => PostEdit(
-                                                  postId: widget.postId,
-                                                  oldTitle: oldTitle,
-                                                  oldContent: oldContent,
-                                                ),
-                                              ),
-                                            );
-                                            if (result != null) {
-                                              changePostData();
-                                              // Result is not null, indicating a successful edit
-                                              // Refresh the UI with the updated post details
-                                              setState(() {
-                                                postDetailsData =
-                                                    snapshot.data ?? {};
-                                              });
-                                            }
-                                            // Perform edit action
-                                          } else if (value == 'delete') {
-                                            // Perform delete action
-                                            // Inside your Posts page or wherever you call deletePost
-                                            await PostsApi.deletePost(
-                                              context: context,
-                                              postId: widget.postId,
-                                              onPostDeleted: () {},
-                                            );
-                                          }
-                                        },
-                                        itemBuilder: (BuildContext context) =>
-                                            <PopupMenuEntry<String>>[
-                                          const PopupMenuItem<String>(
-                                            value: 'edit',
-                                            child: ListTile(
-                                              leading: Icon(Icons.edit),
-                                              title: Text('Edit'),
-                                            ),
-                                          ),
-                                          const PopupMenuItem<String>(
-                                            value: 'delete',
-                                            child: ListTile(
-                                              leading: Icon(Icons.delete),
-                                              title: Text('Delete'),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                  ],
+                                ],
+                              ),
+                              SizedBox(height: 10),
+                              Text(
+                                '${postDetailsData['title']}',
+                                style: TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.bold),
+                              ),
+                              SizedBox(height: 15),
+                              Text(
+                                '${postDetailsData['content']}',
+                                style: TextStyle(fontSize: 18),
+                              ),
+                              if (postDetailsData['postPhotoUrl'] !=
+                                  null) // Display image if imageUrl is available
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 10.0),
+                                  child: Image.network(
+                                      postDetailsData['postPhotoUrl']),
                                 ),
-                                SizedBox(height: 10),
-                                Text(
-                                  '${postDetailsData['title']}',
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                SizedBox(height: 15),
-                                Text(
-                                  '${postDetailsData['content']}',
-                                  style: TextStyle(fontSize: 18),
-                                ),
-                              ]),
+                            ],
+                          ),
                         ),
                       ),
                       SizedBox(height: 20),
@@ -223,12 +237,23 @@ class _PostCommentState extends State<PostComment> {
                         alignment: Alignment.centerLeft,
                         child: Padding(
                           padding: const EdgeInsets.only(left: 10),
-                          child: Text(
-                            'Comments',
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                            ),
+                          child: Row(
+                            children: [
+                              Text(
+                                'Comments',
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              SizedBox(
+                                width: 8,
+                              ),
+                              Text(
+                                '${postDetailsData['commentsCount']}',
+                                style: TextStyle(fontSize: 22),
+                              ),
+                            ],
                           ),
                         ),
                       ),
@@ -322,7 +347,9 @@ class _PostCommentState extends State<PostComment> {
                                               ListTile(
                                                 title: Row(
                                                   children: [
-                                                    ImageUser(),
+                                                    ImageUser(
+                                                        url: commentsData[index]
+                                                            ['photoUrl']),
                                                     SizedBox(width: 10),
                                                     Column(
                                                       crossAxisAlignment:
@@ -366,7 +393,10 @@ class _PostCommentState extends State<PostComment> {
                                                                       .postId,
                                                                   commentId:
                                                                       commentId,
-                                                                  oldContent: commentsData[index] ['content'],
+                                                                  oldContent: commentsData[
+                                                                          index]
+                                                                      [
+                                                                      'content'],
                                                                 ),
                                                               ),
                                                             );
@@ -431,7 +461,9 @@ class _PostCommentState extends State<PostComment> {
                                                       const EdgeInsets.only(
                                                           top: 10),
                                                   child: Column(
-                                                    crossAxisAlignment:CrossAxisAlignment.start,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
                                                     children: [
                                                       Text(
                                                         '${commentsData[index]['content']}',
@@ -506,7 +538,11 @@ class _PostCommentState extends State<PostComment> {
                                                           child: ListTile(
                                                             title: Row(
                                                               children: [
-                                                                ImageUser(),
+                                                                ImageUser(
+                                                                    url: repliesData[
+                                                                            replyIndex]
+                                                                        [
+                                                                        'photoUrl']),
                                                                 SizedBox(
                                                                     width: 10),
                                                                 Column(
@@ -657,11 +693,11 @@ class _PostCommentState extends State<PostComment> {
   }
 
   // Add this function outside the build method
-   String calculateTimeDifference(String postDateTime) {
+  String calculateTimeDifference(String postDateTime) {
     DateTime postTime = DateTime.parse(postDateTime);
 
     // Consider UTC+2 time zone offset (2 hours)
-    DateTime adjustedPostTime = postTime.add(Duration(hours: 2));
+    DateTime adjustedPostTime = postTime.add(Duration(hours: 3));
 
     Duration difference = DateTime.now().difference(adjustedPostTime);
 

@@ -127,49 +127,51 @@ class PostsApi {
   }
 
   // Inside the createPost function
-  static Future<void> createPost(
-  String title, String content, String token, BuildContext context, bool isAnonymous) async {
-  try {
-    final Map<String, dynamic> requestData = {
-      "title": title,
-      "content": content,
-      "isAnonymous": isAnonymous,
-      // Include the isAnonymous parameter in the request body
-    };
+  static Future<void> createPost(String title, String content, String token,
+      BuildContext context, bool isAnonymous,
+      [String? imageUrl]) async {
+    try {
+      final Map<String, dynamic> requestData = {
+        "title": title,
+        "content": content,
+        "isAnonymous": isAnonymous,
+        if (imageUrl != null)
+          "imageUrl": imageUrl, // Add image URL if available
+      };
 
-    final String requestBody = jsonEncode(requestData);
-    final Map<String, String> headers = {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token', // Include token in headers
-    };
+      final String requestBody = jsonEncode(requestData);
+      final Map<String, String> headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token', // Include token in headers
+      };
 
-    final http.Response response = await http.post(
-      Uri.parse(apiUrl),
-      headers: headers,
-      body: requestBody,
-    );
+      final http.Response response = await http.post(
+        Uri.parse(apiUrl),
+        headers: headers,
+        body: requestBody,
+      );
 
-    if (response.statusCode == 201) {
-      print("isanonyy:${isAnonymous}");
-      // Post created successfully, switch to the Posts tab
-      DefaultTabController.of(context)
-          ?.animateTo(1); // 1 is the index of the Posts tab
-    } else if (response.statusCode != 201) {
-      try {
-        final Map<String, dynamic> errorBody = jsonDecode(response.body);
-      } catch (e) {
-        // Handle JSON decoding error
-        print('Error decoding error response: $e');
+      if (response.statusCode == 201) {
+        print("isanonyy:${isAnonymous}");
+        // Post created successfully, switch to the Posts tab
+        DefaultTabController.of(context)
+            ?.animateTo(1); // 1 is the index of the Posts tab
+      } else if (response.statusCode != 201) {
+        try {
+          final Map<String, dynamic> errorBody = jsonDecode(response.body);
+        } catch (e) {
+          // Handle JSON decoding error
+          print('Error decoding error response: $e');
+        }
+
+        throw Exception('Failed to create post');
       }
-
+    } catch (error) {
+      // Handle any network or unexpected errors
+      print('Error: $error');
       throw Exception('Failed to create post');
     }
-  } catch (error) {
-    // Handle any network or other errors
-    print('Error during createPost: $error');
   }
-}
-
 
   static Future<Map<String, dynamic>> fetchPostDetailsWithAuthor(
       int postId) async {

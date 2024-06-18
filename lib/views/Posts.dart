@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mentalhealthh/authentication/auth.dart';
 import 'package:mentalhealthh/views/ForumsPage.dart';
-//import 'package:mentalhealthh/views/MainHomeview.dart';
 import 'package:mentalhealthh/views/PostComment.dart';
 import 'package:mentalhealthh/widgets/forum.dart';
 import 'package:mentalhealthh/api/postsApi.dart';
@@ -126,6 +125,10 @@ class _Posts extends State<Posts> {
                                 appUserId: postsData[index]['appUserId'],
                                 isAnonymous: postsData[index]['isAnonymous'],
                                 userId: userId,
+                                photoUrl: postsData[index]['photoUrl'],
+                                commentsCount: postsData[index]
+                                    ['commentsCount'],
+                                // Pass the photoUrl to the Forum widget
                               ),
                             ),
                           );
@@ -160,5 +163,4 @@ class _Posts extends State<Posts> {
       ),
     );
   }
-  
 }
