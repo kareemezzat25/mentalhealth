@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mentalhealthh/api/postsApi.dart';
+import 'package:mentalhealthh/services/postsApi.dart';
 
 class PostEdit extends StatefulWidget {
   final int postId;

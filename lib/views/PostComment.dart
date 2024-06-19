@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mentalhealthh/api/commentsApi.dart';
-import 'package:mentalhealthh/api/postsApi.dart';
+import 'package:mentalhealthh/services/commentsApi.dart';
+import 'package:mentalhealthh/services/postsApi.dart';
 import 'package:mentalhealthh/authentication/auth.dart';
 import 'package:mentalhealthh/models/button.dart';
 import 'package:mentalhealthh/views/CommentEdit.dart';

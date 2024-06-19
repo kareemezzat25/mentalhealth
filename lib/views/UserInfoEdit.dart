@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:mentalhealthh/api/UserProfileApi.dart';
+import 'package:mentalhealthh/services/UserProfileApi.dart';
 import 'package:mentalhealthh/authentication/auth.dart';
 import 'package:mentalhealthh/models/user_model.dart';
 import 'package:provider/provider.dart';
