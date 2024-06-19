@@ -108,6 +108,34 @@ class PostsApi {
       return Map<String, dynamic>(); // Return an empty map
     }
   }
+   static Future<List<Map<String, dynamic>>> fetchUserPosts(
+      String userId, int pageNumber, int pageSize) async {
+    final String url = '$apiUrl/user/$userId?pageNumber=$pageNumber&pageSize=$pageSize';
+    print('Fetching user posts from URL: $url');
+
+    String? token = await Auth.getToken();
+    if (token == null) {
+      print('Authentication token is null');
+      throw Exception('Authentication token is null');
+    }
+
+    final response = await http.get(
+      Uri.parse(url),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      return data.cast<Map<String, dynamic>>();
+    } else {
+      print('Error fetching user posts. Status code: ${response.statusCode}');
+      print('Response body: ${response.body}');
+      throw Exception('Failed to load user posts');
+    }
+  }
 
   // Inside postsApi.dart
 
@@ -127,49 +155,51 @@ class PostsApi {
   }
 
   // Inside the createPost function
-  static Future<void> createPost(
-  String title, String content, String token, BuildContext context, bool isAnonymous) async {
-  try {
-    final Map<String, dynamic> requestData = {
-      "title": title,
-      "content": content,
-      "isAnonymous": isAnonymous,
-      // Include the isAnonymous parameter in the request body
-    };
+  static Future<void> createPost(String title, String content, String token,
+      BuildContext context, bool isAnonymous,
+      [String? imageUrl]) async {
+    try {
+      final Map<String, dynamic> requestData = {
+        "title": title,
+        "content": content,
+        "isAnonymous": isAnonymous,
+        if (imageUrl != null)
+          "imageUrl": imageUrl, // Add image URL if available
+      };
 
-    final String requestBody = jsonEncode(requestData);
-    final Map<String, String> headers = {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token', // Include token in headers
-    };
+      final String requestBody = jsonEncode(requestData);
+      final Map<String, String> headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token', // Include token in headers
+      };
 
-    final http.Response response = await http.post(
-      Uri.parse(apiUrl),
-      headers: headers,
-      body: requestBody,
-    );
+      final http.Response response = await http.post(
+        Uri.parse(apiUrl),
+        headers: headers,
+        body: requestBody,
+      );
 
-    if (response.statusCode == 201) {
-      print("isanonyy:${isAnonymous}");
-      // Post created successfully, switch to the Posts tab
-      DefaultTabController.of(context)
-          ?.animateTo(1); // 1 is the index of the Posts tab
-    } else if (response.statusCode != 201) {
-      try {
-        final Map<String, dynamic> errorBody = jsonDecode(response.body);
-      } catch (e) {
-        // Handle JSON decoding error
-        print('Error decoding error response: $e');
+      if (response.statusCode == 201) {
+        print("isanonyy:${isAnonymous}");
+        // Post created successfully, switch to the Posts tab
+        DefaultTabController.of(context)
+            ?.animateTo(1); // 1 is the index of the Posts tab
+      } else if (response.statusCode != 201) {
+        try {
+          final Map<String, dynamic> errorBody = jsonDecode(response.body);
+        } catch (e) {
+          // Handle JSON decoding error
+          print('Error decoding error response: $e');
+        }
+
+        throw Exception('Failed to create post');
       }
-
+    } catch (error) {
+      // Handle any network or unexpected errors
+      print('Error: $error');
       throw Exception('Failed to create post');
     }
-  } catch (error) {
-    // Handle any network or other errors
-    print('Error during createPost: $error');
   }
-}
-
 
   static Future<Map<String, dynamic>> fetchPostDetailsWithAuthor(
       int postId) async {
@@ -220,6 +250,7 @@ class PostsApi {
       throw Exception('Failed to load comment replies');
     }
   }
+
 
   static Future<void> postCommentReply(
       int postId, int commentId, String content) async {

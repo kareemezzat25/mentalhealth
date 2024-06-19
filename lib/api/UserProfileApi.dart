@@ -29,7 +29,7 @@ Future<void> updateUserProfile(
   File? photo,
 ) async {
   try {
-    String apiUrl = 'https://nexus-api-h3ik.onrender.com/api/profiles/$userId';
+    String apiUrl = 'https://nexus-api-h3ik.onrender.com/api/users/$userId';
     String? token = await Auth.getToken();
 
     if (token == null) {

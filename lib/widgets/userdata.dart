@@ -4,62 +4,43 @@ class UserInfo extends StatelessWidget {
   final String? username;
   final String? postedOn;
   final bool? isAnonymous;
+  final String? photoUrl; // Add the photoUrl parameter
 
-  UserInfo({
-    required this.username,
-     this.postedOn,
-    required this.isAnonymous,
-  });
+  UserInfo({this.username, this.postedOn, this.isAnonymous, this.photoUrl});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 80,
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Row(
-          children: [
-            // Conditionally display user image or Icon based on isAnonymous
-            isAnonymous == true
-                ? Icon(Icons.account_circle_outlined, size: 40)
-                : Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(40),
-                      border: Border.all(
-                        color: Colors.grey,
-                        style: BorderStyle.solid,
-                      ),
-                      image: DecorationImage(
-                        image: AssetImage(
-                          'assets/images/Illustration.png',
-                        ),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-            SizedBox(width: 10),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  isAnonymous == true ? 'Anonymous' : username ?? '',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  calculateTimeDifference(postedOn!),
-                  style: TextStyle(fontSize: 12),
-                ),
-              ],
+    return Padding(
+      padding: const EdgeInsets.only(left:8.0),
+      child: Row(
+        children: [
+          if (!isAnonymous!)
+            CircleAvatar(
+              backgroundImage: NetworkImage(photoUrl ?? ''), // Use the photoUrl
             ),
-            Spacer(),
-          ],
-        ),
+          if (isAnonymous!)
+            CircleAvatar(
+              backgroundImage: NetworkImage('https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-600nw-1677509740.jpg'),
+            ),
+          SizedBox(width: 10),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                isAnonymous! ? 'Anonymous' : (username ?? ''),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                calculateTimeDifference(postedOn!),
+                style: TextStyle(
+                  color: Colors.grey,
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -83,7 +64,8 @@ class UserInfo extends StatelessWidget {
       return '${difference.inHours} ${difference.inHours == 1 ? 'hour ago' : 'hours ago'}';
     } else if (difference.inMinutes > 0) {
       return '${difference.inMinutes} ${difference.inMinutes == 1 ? 'minute ago' : 'minutes ago'}';
-    } else
+    } else {
       return 'now';
+    }
   }
 }

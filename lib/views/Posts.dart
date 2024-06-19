@@ -1,22 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:mentalhealthh/authentication/auth.dart';
 import 'package:mentalhealthh/views/ForumsPage.dart';
-//import 'package:mentalhealthh/views/MainHomeview.dart';
 import 'package:mentalhealthh/views/PostComment.dart';
 import 'package:mentalhealthh/widgets/forum.dart';
 import 'package:mentalhealthh/api/postsApi.dart';
 
 class Posts extends StatefulWidget {
+  final String? userId;
+  final bool showUserPosts; // Add this parameter
+
+  Posts({this.userId, this.showUserPosts = false});
+
   @override
   _Posts createState() => _Posts();
 }
 
 class _Posts extends State<Posts> {
   late Future<List<Map<String, dynamic>>> posts;
-  late String userId;
   int currentPage = 1;
   int pageSize = 30;
-  double maxHeight = 200.0; // Set the maximum height for the container
+  String userId = ""; // Declare userId as a field
 
   void changeData() {
     setState(() {
@@ -26,7 +29,9 @@ class _Posts extends State<Posts> {
 
   Future<void> _refreshPosts() async {
     setState(() {
-      posts = PostsApi.fetchPaginatedPosts(currentPage, pageSize);
+      posts = widget.showUserPosts && widget.userId != null
+          ? PostsApi.fetchUserPosts(widget.userId!, currentPage, pageSize)
+          : PostsApi.fetchPaginatedPosts(currentPage, pageSize);
     });
   }
 
@@ -34,7 +39,9 @@ class _Posts extends State<Posts> {
   void initState() {
     super.initState();
     initUser();
-    posts = PostsApi.fetchPaginatedPosts(currentPage, pageSize);
+    posts = widget.showUserPosts && widget.userId != null
+        ? PostsApi.fetchUserPosts(widget.userId!, currentPage, pageSize)
+        : PostsApi.fetchPaginatedPosts(currentPage, pageSize);
   }
 
   Future<void> initUser() async {
@@ -64,17 +71,12 @@ class _Posts extends State<Posts> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        // Handle back button press
-        Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) {
-          return ForumsPage(userId: "123");
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+          return ForumsPage(userId: userId);
         }));
-        return false; // prevent default behavior
+        return false; // Prevent default behavior
       },
       child: Scaffold(
-        // appBar: AppBar(
-        //   title: Text('Posts'),
-        // ),
         body: RefreshIndicator(
           onRefresh: _refreshPosts,
           child: Column(
@@ -84,19 +86,13 @@ class _Posts extends State<Posts> {
                   future: posts,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(
-                        child: CircularProgressIndicator(),
-                      );
+                      return Center(child: CircularProgressIndicator());
                     } else if (snapshot.hasError) {
-                      return Center(
-                        child: Text('Error: ${snapshot.error}'),
-                      );
+                      return Center(child: Text('Error: ${snapshot.error}'));
                     } else {
-                      List<Map<String, dynamic>> postsData =
-                          snapshot.data ?? [];
+                      List<Map<String, dynamic>> postsData = snapshot.data ?? [];
                       return ListView.builder(
                         itemCount: postsData.length,
-                        shrinkWrap: true,
                         itemBuilder: (context, index) {
                           return GestureDetector(
                             onTap: () async {
@@ -110,13 +106,12 @@ class _Posts extends State<Posts> {
                                   ),
                                 ),
                               );
-
-                              if (true) {
+                              if (refresh != null) {
                                 changeData();
                               }
                             },
                             child: Container(
-                              height: 310,
+                              height: 550,
                               child: Forum(
                                 postId: postsData[index]['id'].toString(),
                                 postTitle: postsData[index]['title'],
@@ -126,6 +121,9 @@ class _Posts extends State<Posts> {
                                 appUserId: postsData[index]['appUserId'],
                                 isAnonymous: postsData[index]['isAnonymous'],
                                 userId: userId,
+                                photoUrl: postsData[index]['photoUrl'],
+                                postPhotoUrl: postsData[index]['postPhotoUrl'],
+                                commentsCount: postsData[index]['commentsCount'],
                               ),
                             ),
                           );
@@ -135,7 +133,6 @@ class _Posts extends State<Posts> {
                   },
                 ),
               ),
-              // Row with page number and arrow buttons
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
@@ -160,5 +157,4 @@ class _Posts extends State<Posts> {
       ),
     );
   }
-  
 }

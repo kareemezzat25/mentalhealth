@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mentalhealthh/authentication/auth.dart';
 import 'package:mentalhealthh/views/ForumsPage.dart';
+import 'package:mentalhealthh/views/Posts.dart';
 import 'package:mentalhealthh/views/login.dart';
 import 'package:mentalhealthh/views/UserProfile.dart'; // Import UserProfile.dart
 
@@ -146,14 +147,35 @@ class _CommonDrawerState extends State<CommonDrawer> {
               );
             },
           ),
+          ListTile(
+            leading: Icon(Icons.notifications),
+            title: Text("Notifications"),
+            onTap: () {
+              // Close the drawer
+              Navigator.pop(context);
+
+              // Navigate to UserProfile screen
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => UserProfile(userId: widget.userId)),
+              );
+            },
+          ),
           const ListTile(
             leading: Icon(Icons.article_outlined),
             title: Text("Discover Articles"),
           ),
-          const ListTile(
-            leading: Icon(Icons.article_outlined),
-            title: Text("Discover Doctors"),
-          ),
+          ListTile(
+            title: Text('My Forums'),
+            onTap: () {
+            Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => Posts(userId: widget.userId, showUserPosts: true)), 
+             );
+            },
+            ),
+
           const ListTile(
             leading: Icon(Icons.dark_mode_outlined),
             title: Text("Night mode"),

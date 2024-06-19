@@ -107,7 +107,7 @@ class _LoginState extends State<Login> {
         Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-                builder: (context) => Posts()));
+                builder: (context) => ForumsPage(userId: userId,)));
       } else {
         // Login failed, handle the error
         print('Login failed. Status code: ${response.statusCode}');
