@@ -62,7 +62,7 @@ class _ForumState extends State<Forum> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    SizedBox(height: 2),
+                    SizedBox(height: 5),
                     UserInfo(
                       username: widget.username,
                       postedOn: widget.postedOn,
@@ -127,3 +127,4 @@ class _ForumState extends State<Forum> {
     );
   }
 }
+

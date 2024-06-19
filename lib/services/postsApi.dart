@@ -211,7 +211,7 @@ class PostsApi {
     } else {
       throw Exception('Failed to load post details');
     }
-  }
+  }	
 
   // New method to fetch details of a specific post
   static Future<Map<String, dynamic>> fetchPostDetails(int postId) async {
@@ -250,7 +250,6 @@ class PostsApi {
       throw Exception('Failed to load comment replies');
     }
   }
-
 
   static Future<void> postCommentReply(
       int postId, int commentId, String content) async {
@@ -321,3 +320,4 @@ class PostsApi {
   //   }
   // }
 }
+

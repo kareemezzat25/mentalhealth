@@ -44,7 +44,6 @@ class _CommonDrawerState extends State<CommonDrawer> {
   }
 }
 
-
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -162,11 +161,9 @@ class _CommonDrawerState extends State<CommonDrawer> {
               );
             },
           ),
-          const ListTile(
-            leading: Icon(Icons.article_outlined),
-            title: Text("Discover Articles"),
-          ),
+        
           ListTile(
+            leading: Icon(Icons.article_outlined),
             title: Text('My Forums'),
             onTap: () {
             Navigator.pushReplacement(
@@ -211,3 +208,5 @@ class _CommonDrawerState extends State<CommonDrawer> {
     );
   }
 }
+
+

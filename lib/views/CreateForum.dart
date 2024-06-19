@@ -2,14 +2,13 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:mentalhealthh/api/postsApi.dart';
 import 'package:mentalhealthh/authentication/auth.dart';
 import 'package:mentalhealthh/models/button.dart';
 import 'package:mentalhealthh/views/Posts.dart';
 import 'package:mentalhealthh/views/textForm.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
-
+import 'package:mentalhealthh/services/postsApi.dart';
 class createForum extends StatefulWidget {
   final TabController tabController;
 
@@ -82,7 +81,7 @@ class _createForumState extends State<createForum> {
       },
       child: Scaffold(
         body: Padding(
-          padding: EdgeInsets.only(right: 15, left: 15, top: 25),
+          padding: EdgeInsets.only(right: 15,left:15,top:15),
           child: SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -124,6 +123,7 @@ class _createForumState extends State<createForum> {
                   hintText: "Enter Forum Title",
                   controller: TitleController,
                 ),
+               
                
                 SizedBox(height: 25),
                 if (descriptionError.isNotEmpty)
@@ -171,7 +171,7 @@ class _createForumState extends State<createForum> {
                     ],
                   ),
                 ),
-                SizedBox(height: 30),
+                SizedBox(height: 20), // Added spacing
                 Row(
                   children: [
                     MaterialButton(

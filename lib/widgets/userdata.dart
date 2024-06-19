@@ -20,7 +20,7 @@ class UserInfo extends StatelessWidget {
             ),
           if (isAnonymous!)
             CircleAvatar(
-              backgroundImage: NetworkImage('https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-600nw-1677509740.jpg'),
+              backgroundImage: AssetImage('assets/images/anonymous.png'),
             ),
           SizedBox(width: 10),
           Column(

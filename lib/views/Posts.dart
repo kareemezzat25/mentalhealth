@@ -3,8 +3,7 @@ import 'package:mentalhealthh/authentication/auth.dart';
 import 'package:mentalhealthh/views/ForumsPage.dart';
 import 'package:mentalhealthh/views/PostComment.dart';
 import 'package:mentalhealthh/widgets/forum.dart';
-import 'package:mentalhealthh/api/postsApi.dart';
-
+import 'package:mentalhealthh/services/postsApi.dart';
 class Posts extends StatefulWidget {
   final String? userId;
   final bool showUserPosts; // Add this parameter
@@ -111,7 +110,7 @@ class _Posts extends State<Posts> {
                               }
                             },
                             child: Container(
-                              height: 550,
+                              height: 560,
                               child: Forum(
                                 postId: postsData[index]['id'].toString(),
                                 postTitle: postsData[index]['title'],
@@ -158,3 +157,5 @@ class _Posts extends State<Posts> {
     );
   }
 }
+
+

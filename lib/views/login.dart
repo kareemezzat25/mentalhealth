@@ -3,14 +3,13 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
+import 'package:mentalhealthh/DoctorViews/DoctorMainPgae.dart';
 import 'package:mentalhealthh/authentication/auth.dart';
 import 'package:mentalhealthh/views/ForumsPage.dart';
-import 'package:mentalhealthh/views/Posts.dart';
 import 'dart:convert';
 import 'textForm.dart';
 import 'package:mentalhealthh/models/button.dart';
 import 'package:mentalhealthh/views/signup.dart';
-//import 'package:mentalhealthh/views/MainHomeview.dart';
 import 'package:mentalhealthh/widgets/signinwithgoogle.dart';
 
 class Login extends StatefulWidget {
@@ -25,6 +24,7 @@ class _LoginState extends State<Login> {
   String emailError = '';
   String passwordError = '';
   String genericError = ''; // Added to store generic error message
+
   void signInWithGoogle() async {
     try {
       final GoogleSignIn _googleSignIn = GoogleSignIn();
@@ -47,10 +47,7 @@ class _LoginState extends State<Login> {
 
         if (response.statusCode == 200) {
           print("login Successful");
-          // Navigator.pushReplacement(
-          //   context,
-          //   MaterialPageRoute(builder: (context) => ForumsPage()),
-          // );
+          // Handle successful login here if needed
         } else {
           print('Login failed. Status code: ${response.statusCode}');
           log('Response body: ${response.body}');
@@ -60,6 +57,7 @@ class _LoginState extends State<Login> {
       }
     } catch (error) {
       // Handle any errors
+      print('Error during Google Sign-In: $error');
     }
   }
 
@@ -95,19 +93,28 @@ class _LoginState extends State<Login> {
         // Login successful, handle the response accordingly
         String token = json.decode(response.body)['token'];
         String userId = json.decode(response.body)['userId'];
-        String userName =json.decode(response.body)['userName']; // Add this line
+        String userName = json.decode(response.body)['userName'];
         String photoUrl = json.decode(response.body)['photoUrl'];
+        List<dynamic> roles = json.decode(response.body)['roles'];
 
-        await Auth.setToken(token, emailController.text, userId);
-        await Auth.setUserName(userName);
-        await Auth.setPhotoUrl(photoUrl); // Add this line
+        await Auth.setToken(context, token, emailController.text, userId);
+        await Auth.setUserName(context, userName);
+        await Auth.setPhotoUrl(photoUrl);
 
         log('Response body: ${response.body}');
 
-        Navigator.pushReplacement(
+        if (roles.contains("Doctor")) {
+          Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-                builder: (context) => ForumsPage(userId: userId,)));
+                builder: (context) => DoctorMainPage(DoctorId: userId)),
+          );
+        } else {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => ForumsPage(userId: userId)),
+          );
+        }
       } else {
         // Login failed, handle the error
         print('Login failed. Status code: ${response.statusCode}');

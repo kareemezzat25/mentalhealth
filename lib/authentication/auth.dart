@@ -1,3 +1,6 @@
+import 'package:flutter/material.dart';
+import 'package:mentalhealthh/models/user_model.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Auth {
@@ -5,7 +8,7 @@ class Auth {
   static const String _emailKey = 'email';
   static const String _userIdKey = 'userId';
   static const String _userNameKey = 'userName';
-  static const String _photoUrlKey = 'photoUrl'; 
+  static const String _photoUrlKey = 'photoUrl';
 
   static Future<String?> getUserId() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -18,11 +21,16 @@ class Auth {
   }
 
   static Future<void> setToken(
-      String token, String email, String userId) async {
+      BuildContext context, String token, String email, String userId) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString(_tokenKey, token);
     prefs.setString(_emailKey, email);
     prefs.setString(_userIdKey, userId);
+    final userName = await getUserName() ?? ''; // Handle nullable string
+    final photoUrl =
+        await getPhotoUrl() ?? ''; // Handle nullable string for photo URL
+    Provider.of<UserModel>(context, listen: false)
+        .setUserInfo(userName, email, photoUrl);
   }
 
   static Future<void> clearUser() async {
@@ -44,9 +52,15 @@ class Auth {
     return prefs.getString(_emailKey);
   }
 
-  static Future<void> setUserName(String userName) async {
+  static Future<void> setUserName(BuildContext context, String userName) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString(_userNameKey, userName);
+    final userEmail = await getEmail() ?? ''; // Handle nullable string
+    final photoUrl =
+        await getPhotoUrl() ?? ''; // Handle nullable string for photo URL
+
+    Provider.of<UserModel>(context, listen: false)
+        .setUserInfo(userName, userEmail, photoUrl);
   }
 
   static Future<String?> getUserName() async {
