@@ -53,4 +53,35 @@ class ApiService {
       throw Exception('Failed to create schedule: ${e.toString()}');
     }
   }
+
+  Future<void> deleteDoctorSchedule(String doctorId, String dayOfWeek) async {
+    final url = Uri.parse('$baseUrl/doctors/$doctorId/schedule/days/$dayOfWeek');
+    String? token = await Auth.getToken();
+
+    if (token == null) {
+      throw Exception('Authentication token is missing.');
+    }
+
+    try {
+      final response = await http.delete(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return;
+      } else {
+        var errorMessage = jsonDecode(response.body)['message'] ?? 'Unknown error';
+        print('Error response body: ${response.body}');
+        throw Exception('Failed to delete schedule: $errorMessage');
+      }
+    } catch (e) {
+      print('Exception occurred: $e');
+      throw Exception('Failed to delete schedule: ${e.toString()}');
+    }
+  }
 }
+

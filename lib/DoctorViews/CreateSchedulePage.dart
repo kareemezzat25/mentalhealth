@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mentalhealthh/models/schedule_model.dart';
 import 'package:mentalhealthh/services/api_service.dart';
+import 'package:intl/intl.dart';
 
 class CreateSchedulePage extends StatefulWidget {
   final String doctorId;
@@ -33,18 +34,21 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
   }
 
   Future<void> _selectTime(BuildContext context, int index, bool isStartTime) async {
-    final TimeOfDay? picked = await showTimePicker(context: context, initialTime: TimeOfDay.now());
-    if (picked != null) {
-      setState(() {
-        final formattedTime = picked.format(context);
-        if (isStartTime) {
-          _weekDays[index].startTime = formattedTime;
-        } else {
-          _weekDays[index].endTime = formattedTime;
-        }
-      });
-    }
+  final TimeOfDay? picked = await showTimePicker(
+    context: context,
+    initialTime: TimeOfDay.now(),
+  );
+  if (picked != null) {
+    setState(() {
+      final formattedTime = formatTimeOfDay(picked);
+      if (isStartTime) {
+        _weekDays[index].startTime = formattedTime;
+      } else {
+        _weekDays[index].endTime = formattedTime;
+      }
+    });
   }
+}
 
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
@@ -157,30 +161,9 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
     );
   }
 }
-/*
-Future<void> _selectTime(BuildContext context, int index, bool isStartTime) async {
-  final TimeOfDay? picked = await showTimePicker(
-    context: context,
-    initialTime: TimeOfDay.now(),
-  );
-  if (picked != null) {
-    setState(() {
-      final formattedTime = formatTimeOfDay(picked);
-      if (isStartTime) {
-        _weekDays[index].startTime = formattedTime;
-      } else {
-        _weekDays[index].endTime = formattedTime;
-      }
-    });
-  }
-}
-
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 String formatTimeOfDay(TimeOfDay time) {
   // Default seconds to 00 if not specified in TimeOfDay.
   final dateTime = DateTime(2000, 1, 1, time.hour, time.minute, 0);
   return DateFormat('HH:mm:ss').format(dateTime);
 }
-*/

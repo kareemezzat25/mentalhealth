@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mentalhealthh/DoctorViews/CreateSchedulePage.dart';
+import 'package:mentalhealthh/DoctorViews/ScheduleDetailsPage.dart';
 import 'package:mentalhealthh/models/schedule_model.dart';
 import 'package:mentalhealthh/services/api_service.dart';
 import 'package:auto_size_text/auto_size_text.dart';
@@ -93,6 +94,7 @@ class _SchedulePageState extends State<SchedulePage> {
                       itemCount: snapshot.data!.weekDays.length,
                       itemBuilder: (context, index) {
                         return ScheduleCard(
+                          doctorId: widget.doctorId,
                             day: snapshot.data!.weekDays[index]);
                       },
                     );
@@ -109,66 +111,77 @@ class _SchedulePageState extends State<SchedulePage> {
 
 class ScheduleCard extends StatelessWidget {
   final DaySchedule day;
+  final String doctorId;
 
-  ScheduleCard({required this.day});
+  ScheduleCard({required this.doctorId,required this.day});
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            AutoSizeText(
-              day.dayOfWeek,
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Colors.blueAccent,
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ScheduleDetailsPage(doctorId:doctorId,day: day),
+          ),
+        );
+      },
+      child: Card(
+        elevation: 4,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              AutoSizeText(
+                day.dayOfWeek,
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blueAccent,
+                ),
+                maxLines: 1,
+                minFontSize: 18,
+                overflow: TextOverflow.ellipsis,
               ),
-              maxLines: 1,
-              minFontSize: 18,
-              overflow: TextOverflow.ellipsis,
-            ),
-            SizedBox(height: 10),
-            AutoSizeText(
-              "Start Time: ${day.startTime}",
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
+              SizedBox(height: 10),
+              AutoSizeText(
+                "Start Time: ${day.startTime}",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+                maxLines: 1,
+                minFontSize: 14,
+                overflow: TextOverflow.ellipsis,
               ),
-              maxLines: 1,
-              minFontSize: 14,
-              overflow: TextOverflow.ellipsis,
-            ),
-            SizedBox(height: 5),
-            AutoSizeText(
-              "End Time: ${day.endTime}",
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
+              SizedBox(height: 5),
+              AutoSizeText(
+                "End Time: ${day.endTime}",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+                maxLines: 1,
+                minFontSize: 14,
+                overflow: TextOverflow.ellipsis,
               ),
-              maxLines: 1,
-              minFontSize: 14,
-              overflow: TextOverflow.ellipsis,
-            ),
-            SizedBox(height: 5),
-            AutoSizeText(
-              "Session Duration: ${day.sessionDuration}",
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
+              SizedBox(height: 5),
+              AutoSizeText(
+                "Session Duration: ${day.sessionDuration}",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+                maxLines: 1,
+                minFontSize: 14,
+                overflow: TextOverflow.ellipsis,
               ),
-              maxLines: 1,
-              minFontSize: 14,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
