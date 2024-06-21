@@ -142,7 +142,7 @@ class _CommonDrawerState extends State<CommonDrawer> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => UserProfile(userId: widget.userId)),
+                    builder: (context) => UserDoctorProfile(userId: widget.userId,roles: ['User'])),
               );
             },
           ),
@@ -157,7 +157,7 @@ class _CommonDrawerState extends State<CommonDrawer> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => UserProfile(userId: widget.userId)),
+                    builder: (context) => UserDoctorProfile(userId: widget.userId,roles: ['Doctor'])),
               );
             },
           ),

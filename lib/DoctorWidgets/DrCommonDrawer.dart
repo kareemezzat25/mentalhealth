@@ -103,12 +103,17 @@ class DrCommonDrawer extends StatelessWidget {
             leading: Icon(Icons.account_circle_outlined),
             title: Text("Doctor Profile"),
             onTap: () {
-              // Navigator.pop(context);
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(
-              //       builder: (context) => UserProfile(userId: userId)),
-              // );
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => UserDoctorProfile(
+                    userId: doctorId,
+                    roles: ['Doctor'], // Pass doctor role
+                  ),
+                ),
+              );
+            
             },
           ),
           const ListTile(
