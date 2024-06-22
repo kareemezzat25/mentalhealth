@@ -136,15 +136,15 @@ class ApiService {
     }
   }
 
-  Future<bool> deleteEntireDoctorSchedule(String doctorId) async {
+  Future<void> deleteEntireDoctorSchedule(String doctorId) async {
+    final url = Uri.parse('$baseUrl/doctors/$doctorId/schedule');
+    String? token = await Auth.getToken();
+
+    if (token == null) {
+      throw Exception('Authentication token is missing.');
+    }
+
     try {
-      final url = Uri.parse('$baseUrl/api/doctors/$doctorId/schedule');
-      String? token = await Auth.getToken();
-
-      if (token == null) {
-        throw Exception('Authentication token is missing.');
-      }
-
       final response = await http.delete(
         url,
         headers: {
@@ -154,19 +154,16 @@ class ApiService {
       );
 
       if (response.statusCode == 200) {
-        return true; // Schedule deleted successfully
-      } else if (response.statusCode == 404) {
-        print('Schedule not found for doctor with ID: $doctorId');
-        throw Exception('Schedule not found');
+        return;
       } else {
-        print(
-            'Delete entire schedule failed with status code: ${response.statusCode}');
-        print('Response body: ${response.body}');
-        throw Exception('Failed to delete entire schedule');
+        var errorMessage =
+            jsonDecode(response.body)['message'] ?? 'Unknown error';
+        print('Error response body: ${response.body}');
+        throw Exception('Failed to delete entire schedule: $errorMessage');
       }
     } catch (e) {
-      print('Error deleting entire schedule: $e');
-      throw Exception('Failed to delete entire schedule: $e');
+      print('Exception occurred: $e');
+      throw Exception('Failed to delete entire schedule: ${e.toString()}');
     }
   }
 

@@ -57,6 +57,30 @@ class _SchedulePageState extends State<SchedulePage> {
     }
   }
 
+  void deleteEntireSchedule() async {
+    try {
+      await ApiService().deleteEntireDoctorSchedule(widget.doctorId);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Entire schedule deleted"),
+        ),
+      );
+
+      // Update UI by fetching updated schedule
+      setState(() {
+        futureSchedule = ApiService().fetchDoctorSchedule(widget.doctorId);
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Failed to delete entire schedule: $e"),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
   void navigateToCreateSchedulePage() async {
     final result = await Navigator.push(
       context,
@@ -73,30 +97,6 @@ class _SchedulePageState extends State<SchedulePage> {
       });
     }
   }
-
-  // void deleteEntireSchedule() async {
-  //   try {
-  //     await ApiService().deleteEntireDoctorSchedule(widget.doctorId);
-
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(
-  //         content: Text("Entire schedule deleted"),
-  //       ),
-  //     );
-
-  //     // Update UI by fetching updated schedule
-  //     setState(() {
-  //       futureSchedule = ApiService().fetchDoctorSchedule(widget.doctorId);
-  //     });
-  //   } catch (e) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(
-  //         content: Text("Failed to delete entire schedule: $e"),
-  //         backgroundColor: Colors.red,
-  //       ),
-  //     );
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -143,7 +143,9 @@ class _SchedulePageState extends State<SchedulePage> {
                 Align(
                   alignment: Alignment.topRight,
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      deleteEntireSchedule(); // Call deleteEntireSchedule when button is pressed
+                    },
                     style: ElevatedButton.styleFrom(
                       primary: Colors.red,
                       padding:
@@ -173,7 +175,8 @@ class _SchedulePageState extends State<SchedulePage> {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(child: CircularProgressIndicator());
                   } else if (snapshot.hasError) {
-                    return Center(child: Text('Error: ${snapshot.error}'));
+                    return Center(
+                        child: Text('No Schedule Available , Try add one'));
                   } else if (!snapshot.hasData ||
                       snapshot.data!.weekDays.isEmpty) {
                     return Center(child: Text('No Schedule Available'));
