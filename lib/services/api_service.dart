@@ -7,7 +7,8 @@ class ApiService {
   final String baseUrl = 'https://nexus-api-h3ik.onrender.com/api';
 
   Future<ScheduleModel> fetchDoctorSchedule(String doctorId) async {
-    final response = await http.get(Uri.parse('$baseUrl/doctors/$doctorId/schedule'));
+    final response =
+        await http.get(Uri.parse('$baseUrl/doctors/$doctorId/schedule'));
 
     if (response.statusCode == 200) {
       return ScheduleModel.fromJson(jsonDecode(response.body));
@@ -16,43 +17,49 @@ class ApiService {
     }
   }
 
-  Future<bool> createDoctorSchedule(String doctorId, List<DaySchedule> schedules) async {
-    final url = Uri.parse('$baseUrl/doctors/$doctorId/schedule');
-    String? token = await Auth.getToken();
+  Future<bool> createDoctorSchedule(
+    String doctorId, List<DaySchedule> schedules) async {
+  final url = Uri.parse('$baseUrl/doctors/$doctorId/schedule');
+  String? token = await Auth.getToken();
 
-    if (token == null) {
-      throw Exception('Authentication token is missing.');
-    }
-
-    List<Map<String, dynamic>> scheduleList = schedules.map((schedule) => {
-      'dayOfWeek': schedule.dayOfWeek,
-      'startTime': schedule.startTime,
-      'endTime': schedule.endTime,
-      'sessionDuration': schedule.sessionDuration,
-    }).toList();
-
-    try {
-      final response = await http.post(
-        url,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-        body: jsonEncode({'weekDays': scheduleList}),
-      );
-
-      if (response.statusCode == 200) {
-        return true;
-      } else {
-        var errorMessage = jsonDecode(response.body)['message'] ?? 'Unknown error';
-        print('Error response body: ${response.body}');
-        throw Exception('Failed to create schedule: $errorMessage');
-      }
-    } catch (e) {
-      print('Exception occurred: $e');
-      throw Exception('Failed to create schedule: ${e.toString()}');
-    }
+  if (token == null) {
+    print('Authentication token is missing.');
+    return false;
   }
+
+  List<Map<String, dynamic>> scheduleList = schedules
+      .map((schedule) => {
+            'dayOfWeek': schedule.dayOfWeek,
+            'startTime': schedule.startTime,
+            'endTime': schedule.endTime,
+            'sessionDuration': schedule.sessionDuration,
+          })
+      .toList();
+
+  try {
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({'weekDays': scheduleList}),
+    );
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      var errorMessage =
+          jsonDecode(response.body)['message'] ?? 'Unknown error';
+      print('Error response body: ${response.body}');
+      print('Failed to create schedule: $errorMessage');
+      return false;
+    }
+  } catch (e) {
+    print('Exception occurred: $e');
+    return false;
+  }
+}
  Future<String> createDoctorScheduleForSingleDay(String doctorId, DaySchedule schedule) async {
   final url = Uri.parse('$baseUrl/doctors/$doctorId/schedule/days');
   String? token = await Auth.getToken();
@@ -96,9 +103,9 @@ class ApiService {
 }
 
 
-
   Future<void> deleteDoctorSchedule(String doctorId, String dayOfWeek) async {
-    final url = Uri.parse('$baseUrl/doctors/$doctorId/schedule/days/$dayOfWeek');
+    final url =
+        Uri.parse('$baseUrl/doctors/$doctorId/schedule/days/$dayOfWeek');
     String? token = await Auth.getToken();
 
     if (token == null) {
@@ -117,7 +124,8 @@ class ApiService {
       if (response.statusCode == 200) {
         return;
       } else {
-        var errorMessage = jsonDecode(response.body)['message'] ?? 'Unknown error';
+        var errorMessage =
+            jsonDecode(response.body)['message'] ?? 'Unknown error';
         print('Error response body: ${response.body}');
         throw Exception('Failed to delete schedule: $errorMessage');
       }
@@ -126,5 +134,78 @@ class ApiService {
       throw Exception('Failed to delete schedule: ${e.toString()}');
     }
   }
-}
 
+  Future<void> deleteEntireDoctorSchedule(String doctorId) async {
+    final url = Uri.parse('$baseUrl/doctors/$doctorId/schedule');
+    String? token = await Auth.getToken();
+
+    if (token == null) {
+      throw Exception('Authentication token is missing.');
+    }
+
+    try {
+      final response = await http.delete(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return;
+      } else {
+        var errorMessage =
+            jsonDecode(response.body)['message'] ?? 'Unknown error';
+        print('Error response body: ${response.body}');
+        throw Exception('Failed to delete entire schedule: $errorMessage');
+      }
+    } catch (e) {
+      print('Exception occurred: $e');
+      throw Exception('Failed to delete entire schedule: ${e.toString()}');
+    }
+  }
+
+  Future<void> updateDoctorScheduleDay(
+    String doctorId,
+    String dayOfWeek,
+    String startTime,
+    String endTime,
+    String sessionDuration,
+  ) async {
+    final url =
+        Uri.parse('$baseUrl/doctors/$doctorId/schedule/days/$dayOfWeek');
+    String? token = await Auth.getToken();
+
+    if (token == null) {
+      throw Exception('Authentication token is missing.');
+    }
+
+    try {
+      final response = await http.put(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({
+          'startTime': startTime,
+          'endTime': endTime,
+          'sessionDuration': sessionDuration,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        return;
+      } else {
+        var errorMessage =
+            jsonDecode(response.body)['message'] ?? 'Unknown error';
+        print('Error response body: ${response.body}');
+        throw Exception('Failed to update schedule: $errorMessage');
+      }
+    } catch (e) {
+      print('Exception occurred: $e');
+      throw Exception('Failed to update schedule: ${e.toString()}');
+    }
+  }
+}

@@ -83,6 +83,28 @@ class _UserDoctorProfileState extends State<UserDoctorProfile> {
                     ),
                     subtitle: Text('${userData['lastName']}'),
                   ),
+                  
+                  ListTile(
+                    title: Text(
+                      'city:',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    subtitle: Text('${userData['city']}'),
+                  ),
+                  ListTile(
+                    title: Text(
+                      'Location:',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    subtitle: Text('${userData['location']}'),
+                  ),
+                    ListTile(
+                    title: Text(
+                      'SessionFees:',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    subtitle: Text('${userData['sessionFees']}'),
+                  ),
                   ListTile(
                     title: Text(
                       'Specialization:',
@@ -126,6 +148,10 @@ class _UserDoctorProfileState extends State<UserDoctorProfile> {
                               photoUrl: userData['photoUrl'],
                               specialization: userData['specialization'],
                               biography: userData['biography'],
+                              city: userData['city'],
+                              location: userData['location'],
+                              sessionFees: userData['sessionFees'],
+
                             ),
                           ),
                         );

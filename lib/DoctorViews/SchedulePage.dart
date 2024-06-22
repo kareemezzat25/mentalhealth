@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:mentalhealthh/DoctorViews/CreateSchedulePage.dart';
 import 'package:mentalhealthh/DoctorViews/ScheduleDetailsPage.dart';
@@ -16,11 +18,84 @@ class SchedulePage extends StatefulWidget {
 
 class _SchedulePageState extends State<SchedulePage> {
   late Future<ScheduleModel> futureSchedule;
+  DaySchedule? selectedDay; // Define selectedDay variable
+
+  // Callback function to handle updated DaySchedule
+  void handleUpdatedDay(DaySchedule updatedDay) {
+    setState(() {
+      selectedDay = updatedDay;
+    });
+  }
 
   @override
   void initState() {
     super.initState();
     futureSchedule = ApiService().fetchDoctorSchedule(widget.doctorId);
+  }
+
+  void deleteSchedule(DaySchedule day) async {
+    try {
+      await ApiService().deleteDoctorSchedule(widget.doctorId, day.dayOfWeek);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Schedule deleted"),
+        ),
+      );
+
+      // Update UI by fetching updated schedule
+      setState(() {
+        futureSchedule = ApiService().fetchDoctorSchedule(widget.doctorId);
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Failed to delete schedule: $e"),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  void deleteEntireSchedule() async {
+    try {
+      await ApiService().deleteEntireDoctorSchedule(widget.doctorId);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Entire schedule deleted"),
+        ),
+      );
+
+      // Update UI by fetching updated schedule
+      setState(() {
+        futureSchedule = ApiService().fetchDoctorSchedule(widget.doctorId);
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Failed to delete entire schedule: $e"),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  void navigateToCreateSchedulePage() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CreateSchedulePage(doctorId: widget.doctorId),
+      ),
+    );
+
+    // Handle the result from CreateSchedulePage
+    if (result != null && result is List<DaySchedule>) {
+      setState(() {
+        // Update UI with the newly created schedule data
+        futureSchedule = ApiService().fetchDoctorSchedule(widget.doctorId);
+      });
+    }
   }
 
   @override
@@ -40,30 +115,48 @@ class _SchedulePageState extends State<SchedulePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Align(
-              alignment: Alignment.topRight,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          CreateSchedulePage(doctorId: widget.doctorId),
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      navigateToCreateSchedulePage();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.blueAccent,
+                      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
                     ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  primary: Colors.blueAccent,
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
+                    child: Text(
+                      "Create Schedule",
+                      style: TextStyle(fontSize: 16,color:Colors.white),
+                    ),
                   ),
                 ),
-                child: Text(
-                  "Create Schedule",
-                  style: TextStyle(fontSize: 16),
+                SizedBox(
+                  width: 20,
                 ),
-              ),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      deleteEntireSchedule(); // Call deleteEntireSchedule when button is pressed
+                    },
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.red,
+                      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                    child: Text(
+                      "Delete Schedule",
+                      style: TextStyle(fontSize: 16,color: Colors.white),
+                    ),
+                  ),
+                ),
+              ],
             ),
             SizedBox(height: 20),
             Text(
@@ -78,15 +171,15 @@ class _SchedulePageState extends State<SchedulePage> {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(child: CircularProgressIndicator());
                   } else if (snapshot.hasError) {
-                    return Center(child: Text('Error: ${snapshot.error}'));
-                  } else if (!snapshot.hasData ||
-                      snapshot.data!.weekDays.isEmpty) {
+                    return Center(
+                      child: Text('No schedule available, try adding one'),
+                    );
+                  } else if (!snapshot.hasData || snapshot.data!.weekDays.isEmpty) {
                     return Center(child: Text('No Schedule Available'));
                   } else {
                     return GridView.builder(
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount:
-                            MediaQuery.of(context).size.width > 600 ? 3 : 2,
+                        crossAxisCount: MediaQuery.of(context).size.width > 600 ? 3 : 2,
                         childAspectRatio: 0.75,
                         crossAxisSpacing: 16,
                         mainAxisSpacing: 16,
@@ -95,7 +188,11 @@ class _SchedulePageState extends State<SchedulePage> {
                       itemBuilder: (context, index) {
                         return ScheduleCard(
                           doctorId: widget.doctorId,
-                            day: snapshot.data!.weekDays[index]);
+                          day: snapshot.data!.weekDays[index],
+                          onDelete: () {
+                            deleteSchedule(snapshot.data!.weekDays[index]);
+                          },
+                        );
                       },
                     );
                   }
@@ -109,12 +206,22 @@ class _SchedulePageState extends State<SchedulePage> {
   }
 }
 
-class ScheduleCard extends StatelessWidget {
-  final DaySchedule day;
+class ScheduleCard extends StatefulWidget {
+  DaySchedule day;
   final String doctorId;
+  final Function() onDelete; // Define onDelete callback
 
-  ScheduleCard({required this.doctorId,required this.day});
+  ScheduleCard({
+    required this.doctorId,
+    required this.day,
+    required this.onDelete,
+  });
 
+  @override
+  State<ScheduleCard> createState() => _ScheduleCardState();
+}
+
+class _ScheduleCardState extends State<ScheduleCard> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -122,9 +229,21 @@ class ScheduleCard extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ScheduleDetailsPage(doctorId:doctorId,day: day),
+            builder: (context) => ScheduleDetailsPage(
+              doctorId: widget.doctorId,
+              day: widget.day,
+            ),
           ),
-        );
+        ).then((updatedDay) {
+          if (updatedDay != null) {
+            // Handle the updatedDay object here
+            // For example, update the UI with the updated data
+            setState(() {
+              // Update selectedDay or refresh the schedule list
+              widget.day = updatedDay;
+            });
+          }
+        });
       },
       child: Card(
         elevation: 4,
@@ -137,7 +256,7 @@ class ScheduleCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               AutoSizeText(
-                day.dayOfWeek,
+                widget.day.dayOfWeek,
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
@@ -149,7 +268,7 @@ class ScheduleCard extends StatelessWidget {
               ),
               SizedBox(height: 10),
               AutoSizeText(
-                "Start Time: ${day.startTime}",
+                "Start Time: ${widget.day.startTime}",
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
@@ -160,7 +279,7 @@ class ScheduleCard extends StatelessWidget {
               ),
               SizedBox(height: 5),
               AutoSizeText(
-                "End Time: ${day.endTime}",
+                "End Time: ${widget.day.endTime}",
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
@@ -171,7 +290,7 @@ class ScheduleCard extends StatelessWidget {
               ),
               SizedBox(height: 5),
               AutoSizeText(
-                "Session Duration: ${day.sessionDuration}",
+                "Session Duration: ${widget.day.sessionDuration}",
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
@@ -179,11 +298,51 @@ class ScheduleCard extends StatelessWidget {
                 maxLines: 1,
                 minFontSize: 14,
                 overflow: TextOverflow.ellipsis,
+              ),
+              SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  ElevatedButton(
+                    onPressed: () => _showDeleteConfirmationDialog(context),
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.red,
+                    ),
+                    child: Text('Delete'),
+                  ),
+                ],
               ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  void _showDeleteConfirmationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirm Delete'),
+          content: Text('Are you sure you want to delete this schedule?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                widget.onDelete(); // Call the onDelete callback
+              },
+              child: Text('Delete'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

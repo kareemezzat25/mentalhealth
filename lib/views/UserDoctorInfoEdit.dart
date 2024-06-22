@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mentalhealthh/services/UserProfileApi.dart';
@@ -13,6 +12,9 @@ class UserDoctorInfoEdit extends StatefulWidget {
   final String photoUrl;
   final String? specialization;
   final String? biography;
+  final String? city;
+  final String? location;
+  final double ?sessionFees;
 
   UserDoctorInfoEdit({
     required this.userId,
@@ -23,19 +25,25 @@ class UserDoctorInfoEdit extends StatefulWidget {
     required this.photoUrl,
     this.specialization,
     this.biography,
+    this.city,
+    this.location,
+    this.sessionFees,
   });
 
   @override
-  _UserInfoEditState createState() => _UserInfoEditState();
+  _UserDoctorInfoEditState createState() => _UserDoctorInfoEditState();
 }
 
-class _UserInfoEditState extends State<UserDoctorInfoEdit> {
+class _UserDoctorInfoEditState extends State<UserDoctorInfoEdit> {
   TextEditingController _firstNameController = TextEditingController();
   TextEditingController _lastNameController = TextEditingController();
   TextEditingController _genderController = TextEditingController();
   TextEditingController _birthDateController = TextEditingController();
   TextEditingController _specializationController = TextEditingController();
   TextEditingController _biographyController = TextEditingController();
+  TextEditingController _cityController = TextEditingController();
+  TextEditingController _locationController = TextEditingController();
+  TextEditingController _sessionFeesController = TextEditingController();
   File? _image;
 
   @override
@@ -47,31 +55,26 @@ class _UserInfoEditState extends State<UserDoctorInfoEdit> {
     _birthDateController.text = widget.birthDate;
     _specializationController.text = widget.specialization ?? '';
     _biographyController.text = widget.biography ?? '';
+    _cityController.text = widget.city ?? '';
+    _locationController.text = widget.location ?? '';
+    _sessionFeesController.text = widget.sessionFees.toString();
   }
 
   void _updateProfile(BuildContext context) async {
     try {
-      if (widget.specialization != null) {
-        await updateDoctorProfile(
-          widget.userId,
-          _firstNameController.text,
-          _lastNameController.text,
-          _genderController.text,
-          _birthDateController.text,
-          _image,
-          _specializationController.text,
-          _biographyController.text,
-        );
-      } else {
-        await updateUserProfile(
-          widget.userId,
-          _firstNameController.text,
-          _lastNameController.text,
-          _genderController.text,
-          _birthDateController.text,
-          _image,
-        );
-      }
+      await updateDoctorProfile(
+        widget.userId,
+        _firstNameController.text,
+        _lastNameController.text,
+        _genderController.text,
+        _birthDateController.text,
+        _image,
+        _specializationController.text,
+        _biographyController.text,
+        _cityController.text,
+        _locationController.text,
+        double.parse(_sessionFeesController.text),
+      );
 
       Navigator.pop(context, 'refresh');
     } catch (error) {
@@ -178,7 +181,39 @@ class _UserInfoEditState extends State<UserDoctorInfoEdit> {
                 ),
                 maxLines: 3,
               ),
+              SizedBox(height: 10),
+            TextFormField(
+              controller: _cityController,
+              decoration: InputDecoration(
+                labelText: 'City',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+              ),
+            ),
+            SizedBox(height: 10),
+            TextFormField(
+              controller: _locationController,
+              decoration: InputDecoration(
+                labelText: 'Location',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+              ),
+            ),
+            SizedBox(height: 10),
+            TextFormField(
+              controller: _sessionFeesController,
+              decoration: InputDecoration(
+                labelText: 'Session Fees',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+              ),
+              keyboardType: TextInputType.number,
+            ),
             ],
+            
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () => _updateProfile(context),

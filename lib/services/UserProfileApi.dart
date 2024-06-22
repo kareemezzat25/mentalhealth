@@ -34,13 +34,17 @@ Future<void> updateDoctorProfile(
   File? photo,
   String specialization,
   String biography,
+  String city,
+  String location,
+  double sessionFees
 ) async {
   try {
     String apiUrl = 'https://nexus-api-h3ik.onrender.com/api/doctors/$userId';
     String? token = await Auth.getToken();
 
     if (token == null) {
-      throw Exception('Token not available');
+      print('Token not available');
+      return;
     }
 
     var request = http.MultipartRequest('PUT', Uri.parse(apiUrl));
@@ -53,6 +57,9 @@ Future<void> updateDoctorProfile(
     request.fields['BirthDate'] = birthDate;
     request.fields['Specialization'] = specialization;
     request.fields['biography'] = biography;
+    request.fields['City'] = city;
+    request.fields['Location'] = location;
+    request.fields['SessionFees'] = sessionFees.toString();
 
     // Add photo file if available
     if (photo != null) {
@@ -72,17 +79,13 @@ Future<void> updateDoctorProfile(
       var doctorData = jsonDecode(responseBody);
       print('Doctor profile updated successfully: $doctorData');
     } else {
-      print(
-          'Failed to update doctor profile. Status code: ${response.statusCode}');
+      print('Failed to update doctor profile. Status code: ${response.statusCode}');
       print('Response body: ${await response.stream.bytesToString()}');
-      throw Exception('Failed to update doctor profile');
     }
   } catch (e) {
     print('Error updating doctor profile: $e');
-    throw Exception('Error updating doctor profile: $e');
   }
 }
-
 Future<void> updateUserProfile(
   String userId,
   String firstName,
