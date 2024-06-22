@@ -53,6 +53,49 @@ class ApiService {
       throw Exception('Failed to create schedule: ${e.toString()}');
     }
   }
+ Future<String> createDoctorScheduleForSingleDay(String doctorId, DaySchedule schedule) async {
+  final url = Uri.parse('$baseUrl/doctors/$doctorId/schedule/days');
+  String? token = await Auth.getToken();
+
+  if (token == null) {
+    return 'Authentication token is missing.';
+  }
+
+  Map<String, dynamic> scheduleData = {
+    'dayOfWeek': schedule.dayOfWeek,
+    'startTime': schedule.startTime,
+    'endTime': schedule.endTime,
+    'sessionDuration': schedule.sessionDuration,
+  };
+
+  try {
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode(scheduleData),
+    );
+
+    if (response.statusCode == 200) {
+      return 'Schedule created successfully';
+    } else if (response.statusCode == 409) {
+      var errorMessage = jsonDecode(response.body)['message'] ?? 'This day already exists.';
+      print('Error response body: ${response.body}');
+      return errorMessage;
+    } else {
+      var errorMessage = jsonDecode(response.body)['message'] ?? 'Unknown error';
+      print('Error response body: ${response.body}');
+      return 'Failed to create schedule: $errorMessage';
+    }
+  } catch (e) {
+    print('Exception occurred: $e');
+    return 'Failed to create schedule: ${e.toString()}';
+  }
+}
+
+
 
   Future<void> deleteDoctorSchedule(String doctorId, String dayOfWeek) async {
     final url = Uri.parse('$baseUrl/doctors/$doctorId/schedule/days/$dayOfWeek');

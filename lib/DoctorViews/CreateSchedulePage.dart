@@ -34,37 +34,104 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
   }
 
   Future<void> _selectTime(BuildContext context, int index, bool isStartTime) async {
-  final TimeOfDay? picked = await showTimePicker(
-    context: context,
-    initialTime: TimeOfDay.now(),
-  );
-  if (picked != null) {
-    setState(() {
-      final formattedTime = formatTimeOfDay(picked);
-      if (isStartTime) {
-        _weekDays[index].startTime = formattedTime;
-      } else {
-        _weekDays[index].endTime = formattedTime;
-      }
-    });
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+    if (picked != null) {
+      setState(() {
+        final formattedTime = formatTimeOfDay(picked);
+        if (isStartTime) {
+          _weekDays[index].startTime = formattedTime;
+        } else {
+          _weekDays[index].endTime = formattedTime;
+        }
+      });
+    }
   }
-}
 
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      ApiService().createDoctorSchedule(widget.doctorId, _weekDays).then((response) {
-        if (response) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Schedule created successfully')));
-          Navigator.pop(context);
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to create schedule')));
-        }
-      }).catchError((e) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
-      });
+
+      // Check the number of days being submitted
+      if (_weekDays.length == 1) {
+        // Submit single day
+        _submitSingleDay(widget.doctorId, _weekDays[0]);
+      } else {
+        // Submit multiple days
+        ApiService().createDoctorSchedule(widget.doctorId, _weekDays).then((response) {
+          if (response) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Schedule created successfully')));
+            Navigator.pop(context);
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to create schedule')));
+          }
+        }).catchError((e) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
+        });
+      }
     }
   }
+
+  void _submitSingleDay(String doctorId, DaySchedule daySchedule) {
+  ApiService().createDoctorScheduleForSingleDay(doctorId, daySchedule).then((response) {
+    if (response == 'Schedule created successfully') {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(response)));
+      Navigator.pop(context);
+    } else if (response == 'This day already exists.') {
+      _showErrorDialog('This day already exists');
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(response)));
+    }
+  }).catchError((e) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
+  });
+}
+
+void _showErrorDialog(String message) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(15.0)),
+        ),
+        title: Text(
+          'Error',
+          style: TextStyle(
+            color: Colors.red,
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+          ),
+        ),
+        content: Text(
+          message,
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 16,
+          ),
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: Text(
+              'OK',
+              style: TextStyle(
+                color: Colors.blue,
+                fontSize: 16,
+              ),
+            ),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -163,7 +230,6 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
 }
 
 String formatTimeOfDay(TimeOfDay time) {
-  // Default seconds to 00 if not specified in TimeOfDay.
   final dateTime = DateTime(2000, 1, 1, time.hour, time.minute, 0);
   return DateFormat('HH:mm:ss').format(dateTime);
 }
