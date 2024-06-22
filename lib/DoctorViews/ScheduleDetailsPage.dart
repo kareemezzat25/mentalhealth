@@ -58,16 +58,15 @@ class _ScheduleDetailsPageState extends State<ScheduleDetailsPage> {
               SizedBox(height: 20),
               _buildEditableRow("Start Time", _startTimeController),
               _buildEditableRow("End Time", _endTimeController),
-              _buildEditableRow(
-                  "Session Duration", _sessionDurationController),
+              _buildEditableRow("Session Duration", _sessionDurationController),
               SizedBox(height: 40),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  ElevatedButton(
-                    onPressed: () => _showDeleteConfirmationDialog(context),
-                    child: Text('Remove'),
-                  ),
+                  // ElevatedButton(
+                  //   onPressed: () => _showDeleteConfirmationDialog(context),
+                  //   child: Text('Remove'),
+                  // ),
                   ElevatedButton(
                     onPressed: () => _updateSchedule(context),
                     child: Text('Update'),
@@ -81,8 +80,7 @@ class _ScheduleDetailsPageState extends State<ScheduleDetailsPage> {
     );
   }
 
-  Widget _buildEditableRow(
-      String label, TextEditingController controller) {
+  Widget _buildEditableRow(String label, TextEditingController controller) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
@@ -119,83 +117,77 @@ class _ScheduleDetailsPageState extends State<ScheduleDetailsPage> {
     );
   }
 
-  void _showDeleteConfirmationDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Confirm Deletion"),
-          content: Text("Are you sure you want to delete this schedule?"),
-          actions: <Widget>[
-            TextButton(
-              child: Text("Cancel"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: Text(
-                "Delete",
-                style: TextStyle(color: Colors.red),
-              ),
-              onPressed: () async {
-                Navigator.of(context).pop();
-                await _deleteSchedule(context);
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
+  // void _showDeleteConfirmationDialog(BuildContext context) {
+  //   showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return AlertDialog(
+  //         title: Text("Confirm Deletion"),
+  //         content: Text("Are you sure you want to delete this schedule?"),
+  //         actions: <Widget>[
+  //           TextButton(
+  //             child: Text("Cancel"),
+  //             onPressed: () {
+  //               Navigator.of(context).pop();
+  //             },
+  //           ),
+  //           TextButton(
+  //             child: Text(
+  //               "Delete",
+  //               style: TextStyle(color: Colors.red),
+  //             ),
+  //             onPressed: () async {
+  //               Navigator.of(context).pop();
+  //               await _deleteSchedule(context);
+  //             },
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
 
-  Future<void> _deleteSchedule(BuildContext context) async {
-    try {
-      await _apiService.deleteDoctorSchedule(
-          widget.doctorId, widget.day.dayOfWeek);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Schedule deleted"),
-        ),
-      );
-      // Navigate back to SchedulePage and pass the deleted day for removal
-      Navigator.of(context).pop(widget.day);
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Failed to delete schedule: $e"),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
-  }
+  // Future<void> _deleteSchedule(BuildContext context) async {
+  //   try {
+  //     await ApiService()
+  //         .deleteDoctorSchedule(widget.doctorId, widget.day.dayOfWeek);
+
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(
+  //         content: Text("Schedule deleted"),
+  //       ),
+  //     );
+
+  //     // Navigate back to previous screen
+  //     Navigator.of(context).pop();
+  //   } catch (e) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(
+  //         content: Text("Failed to delete schedule: $e"),
+  //         backgroundColor: Colors.red,
+  //       ),
+  //     );
+  //   }
+  // }
 
   void _updateSchedule(BuildContext context) {
-    // Implement logic to update schedule
     String startTime = _startTimeController.text;
     String endTime = _endTimeController.text;
     String sessionDuration = _sessionDurationController.text;
 
-    // Example validation (you should implement your own validation logic)
-    if (startTime.isNotEmpty &&
-        endTime.isNotEmpty &&
-        sessionDuration.isNotEmpty) {
-      // Call API to update schedule with new values
-      // Example:
-      // ApiService().updateDoctorSchedule(widget.day.doctorId, widget.day.dayOfWeek, startTime, endTime, sessionDuration);
+    // Update the DaySchedule object
+    widget.day.startTime = startTime;
+    widget.day.endTime = endTime;
+    widget.day.sessionDuration = sessionDuration;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Schedule updated"),
-        ),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Please fill in all fields"),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
+    // Show success message
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("Schedule updated"),
+      ),
+    );
+
+    // Return to previous screen and pass updated DaySchedule
+    Navigator.of(context).pop(widget.day);
   }
 }
