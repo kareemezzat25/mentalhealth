@@ -110,7 +110,8 @@ class _SchedulePageState extends State<SchedulePage> {
                     onPressed: navigateToCreateSchedulePage,
                     style: ElevatedButton.styleFrom(
                       primary: Colors.blueAccent,
-                      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                       ),
@@ -127,7 +128,8 @@ class _SchedulePageState extends State<SchedulePage> {
                     onPressed: deleteEntireSchedule,
                     style: ElevatedButton.styleFrom(
                       primary: Colors.red,
-                      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                       ),
@@ -156,12 +158,14 @@ class _SchedulePageState extends State<SchedulePage> {
                     return Center(
                       child: Text('No schedule available, try adding one'),
                     );
-                  } else if (!snapshot.hasData || snapshot.data!.weekDays.isEmpty) {
+                  } else if (!snapshot.hasData ||
+                      snapshot.data!.weekDays.isEmpty) {
                     return Center(child: Text('No Schedule Available'));
                   } else {
                     return GridView.builder(
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: MediaQuery.of(context).size.width > 600 ? 3 : 2,
+                        crossAxisCount:
+                            MediaQuery.of(context).size.width > 600 ? 3 : 2,
                         childAspectRatio: 0.75,
                         crossAxisSpacing: 16,
                         mainAxisSpacing: 16,
@@ -258,7 +262,8 @@ class _ScheduleCardState extends State<ScheduleCard> {
                         _navigateToUpdateSchedule(context);
                       }
                     },
-                    itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                    itemBuilder: (BuildContext context) =>
+                        <PopupMenuEntry<String>>[
                       PopupMenuItem<String>(
                         value: 'Update',
                         child: Row(

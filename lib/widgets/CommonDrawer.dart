@@ -1,12 +1,12 @@
 // CommonDrawer.dart
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:mentalhealthh/authentication/auth.dart';
 import 'package:mentalhealthh/views/ForumsPage.dart';
 import 'package:mentalhealthh/views/Posts.dart';
 import 'package:mentalhealthh/views/login.dart';
 import 'package:mentalhealthh/views/UserProfile.dart'; // Import UserProfile.dart
+import 'package:mentalhealthh/views/DepressionTest.dart'; // Import DepressionTest.dart
 
 class CommonDrawer extends StatefulWidget {
   final String userId; // Add userId parameter
@@ -19,7 +19,7 @@ class CommonDrawer extends StatefulWidget {
 class _CommonDrawerState extends State<CommonDrawer> {
   String userName = '';
   String userEmail = '';
-  String photoUrl= '';
+  String photoUrl = '';
 
   @override
   void initState() {
@@ -27,22 +27,22 @@ class _CommonDrawerState extends State<CommonDrawer> {
     _loadUserData();
   }
 
- _loadUserData() async {
-  try {
-    // Fetch user data
-    String? retrievedUserName = await Auth.getUserName();
-    String? retrievedUserEmail = await Auth.getEmail();
-    String? retrievedPhotoUrl = await Auth.getPhotoUrl();
+  _loadUserData() async {
+    try {
+      // Fetch user data
+      String? retrievedUserName = await Auth.getUserName();
+      String? retrievedUserEmail = await Auth.getEmail();
+      String? retrievedPhotoUrl = await Auth.getPhotoUrl();
 
-    setState(() {
-      this.userName = retrievedUserName ?? '';
-      this.userEmail = retrievedUserEmail ?? '';
-      this.photoUrl = retrievedPhotoUrl ?? '';
-    });
-  } catch (error) {
-    print('Error loading user data: $error');
+      setState(() {
+        this.userName = retrievedUserName ?? '';
+        this.userEmail = retrievedUserEmail ?? '';
+        this.photoUrl = retrievedPhotoUrl ?? '';
+      });
+    } catch (error) {
+      print('Error loading user data: $error');
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -66,15 +66,20 @@ class _CommonDrawerState extends State<CommonDrawer> {
                       borderRadius: BorderRadius.circular(40),
                       border: Border.all(
                           color: Colors.grey, style: BorderStyle.solid),
-                      image: photoUrl.isNotEmpty // Check if photoUrl is not empty
-                ? DecorationImage(  
-                    image: NetworkImage(photoUrl), // Use NetworkImage with photoUrl
-                    fit: BoxFit.cover, ): null, // If photoUrl is empty, don't display any image
-          ),
-          child: photoUrl.isEmpty // If photoUrl is empty, display a default icon
-              ? Icon(Icons.account_circle_outlined, size: 40)
-              : null,
+                      image: photoUrl
+                              .isNotEmpty // Check if photoUrl is not empty
+                          ? DecorationImage(
+                              image: NetworkImage(
+                                  photoUrl), // Use NetworkImage with photoUrl
+                              fit: BoxFit.cover,
+                            )
+                          : null, // If photoUrl is empty, don't display any image
                     ),
+                    child: photoUrl
+                            .isEmpty // If photoUrl is empty, display a default icon
+                        ? Icon(Icons.account_circle_outlined, size: 40)
+                        : null,
+                  ),
                   SizedBox(width: 10),
                   Expanded(
                     child: Column(
@@ -108,13 +113,23 @@ class _CommonDrawerState extends State<CommonDrawer> {
               ),
             ),
           ),
-          const ListTile(
+          ListTile(
             leading: Icon(Icons.home_outlined),
             title: Text("Home"),
           ),
-          const ListTile(
+          ListTile(
             leading: Icon(Icons.assignment_outlined),
             title: Text("Depression Test"),
+            onTap: () {
+              // Close the drawer
+              Navigator.pop(context);
+
+              // Navigate to the Depression Test screen
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => DepressionTest()),
+              );
+            },
           ),
           ListTile(
             leading: const Icon(Icons.bookmark_outline_outlined),
@@ -142,7 +157,8 @@ class _CommonDrawerState extends State<CommonDrawer> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => UserDoctorProfile(userId: widget.userId,roles: ['User'])),
+                    builder: (context) => UserDoctorProfile(
+                        userId: widget.userId, roles: ['User'])),
               );
             },
           ),
@@ -157,22 +173,23 @@ class _CommonDrawerState extends State<CommonDrawer> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => UserDoctorProfile(userId: widget.userId,roles: ['Doctor'])),
+                    builder: (context) => UserDoctorProfile(
+                        userId: widget.userId, roles: ['Doctor'])),
               );
             },
           ),
-        
           ListTile(
             leading: Icon(Icons.article_outlined),
             title: Text('My Forums'),
             onTap: () {
-            Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => Posts(userId: widget.userId, showUserPosts: true)), 
-             );
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        Posts(userId: widget.userId, showUserPosts: true)),
+              );
             },
-            ),
-
+          ),
           const ListTile(
             leading: Icon(Icons.dark_mode_outlined),
             title: Text("Night mode"),
@@ -208,5 +225,3 @@ class _CommonDrawerState extends State<CommonDrawer> {
     );
   }
 }
-
-

@@ -18,12 +18,19 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
     DaySchedule(dayOfWeek: '', startTime: '', endTime: '', sessionDuration: ''),
   ];
   final _dayOfWeekOptions = [
-    'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday'
   ];
 
   void _addDay() {
     setState(() {
-      _weekDays.add(DaySchedule(dayOfWeek: '', startTime: '', endTime: '', sessionDuration: ''));
+      _weekDays.add(DaySchedule(
+          dayOfWeek: '', startTime: '', endTime: '', sessionDuration: ''));
     });
   }
 
@@ -33,7 +40,8 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
     });
   }
 
-  Future<void> _selectTime(BuildContext context, int index, bool isStartTime) async {
+  Future<void> _selectTime(
+      BuildContext context, int index, bool isStartTime) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
@@ -60,78 +68,87 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
         _submitSingleDay(widget.doctorId, _weekDays[0]);
       } else {
         // Submit multiple days
-        ApiService().createDoctorSchedule(widget.doctorId, _weekDays).then((response) {
+        ApiService()
+            .createDoctorSchedule(widget.doctorId, _weekDays)
+            .then((response) {
           if (response) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Schedule created successfully')));
-            Navigator.pop(context);
+            ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Schedule created successfully')));
+            Navigator.pop(context, _weekDays);
           } else {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to create schedule')));
+            ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Failed to create schedule')));
           }
         }).catchError((e) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
         });
       }
     }
   }
 
   void _submitSingleDay(String doctorId, DaySchedule daySchedule) {
-  ApiService().createDoctorScheduleForSingleDay(doctorId, daySchedule).then((response) {
-    if (response == 'Schedule created successfully') {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(response)));
-      Navigator.pop(context);
-    } else if (response == 'This day already exists.') {
-      _showErrorDialog('This day already exists');
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(response)));
-    }
-  }).catchError((e) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
-  });
-}
+    ApiService()
+        .createDoctorScheduleForSingleDay(doctorId, daySchedule)
+        .then((response) {
+      if (response == 'Schedule created successfully') {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(response)));
+        Navigator.pop(context, [daySchedule]);
+      } else if (response == 'This day already exists.') {
+        _showErrorDialog('This day already exists');
+      } else {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(response)));
+      }
+    }).catchError((e) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
+    });
+  }
 
-void _showErrorDialog(String message) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        backgroundColor: Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(15.0)),
-        ),
-        title: Text(
-          'Error',
-          style: TextStyle(
-            color: Colors.red,
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(15.0)),
           ),
-        ),
-        content: Text(
-          message,
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 16,
-          ),
-        ),
-        actions: <Widget>[
-          TextButton(
-            child: Text(
-              'OK',
-              style: TextStyle(
-                color: Colors.blue,
-                fontSize: 16,
-              ),
+          title: Text(
+            'Error',
+            style: TextStyle(
+              color: Colors.red,
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
             ),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
           ),
-        ],
-      );
-    },
-  );
-}
-
+          content: Text(
+            message,
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 16,
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text(
+                'OK',
+                style: TextStyle(
+                  color: Colors.blue,
+                  fontSize: 16,
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -156,40 +173,60 @@ void _showErrorDialog(String message) {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         DropdownButtonFormField<String>(
-                          value: _weekDays[index].dayOfWeek.isEmpty ? null : _weekDays[index].dayOfWeek,
+                          value: _weekDays[index].dayOfWeek.isEmpty
+                              ? null
+                              : _weekDays[index].dayOfWeek,
                           decoration: InputDecoration(labelText: 'Day of Week'),
                           items: _dayOfWeekOptions.map((String day) {
-                            return DropdownMenuItem<String>(value: day, child: Text(day));
+                            return DropdownMenuItem<String>(
+                                value: day, child: Text(day));
                           }).toList(),
                           onChanged: (value) {
                             setState(() {
                               _weekDays[index].dayOfWeek = value!;
                             });
                           },
-                          validator: (value) => value == null ? 'Please select a day' : null,
+                          validator: (value) =>
+                              value == null ? 'Please select a day' : null,
                         ),
                         SizedBox(height: 10),
                         TextFormField(
                           readOnly: true,
-                          decoration: InputDecoration(labelText: 'Start Time', suffixIcon: Icon(Icons.access_time)),
+                          decoration: InputDecoration(
+                              labelText: 'Start Time',
+                              suffixIcon: Icon(Icons.access_time)),
                           onTap: () => _selectTime(context, index, true),
-                          validator: (value) => _weekDays[index].startTime.isEmpty ? 'Please select start time' : null,
-                          controller: TextEditingController(text: _weekDays[index].startTime),
+                          validator: (value) =>
+                              _weekDays[index].startTime.isEmpty
+                                  ? 'Please select start time'
+                                  : null,
+                          controller: TextEditingController(
+                              text: _weekDays[index].startTime),
                         ),
                         SizedBox(height: 10),
                         TextFormField(
                           readOnly: true,
-                          decoration: InputDecoration(labelText: 'End Time', suffixIcon: Icon(Icons.access_time)),
+                          decoration: InputDecoration(
+                              labelText: 'End Time',
+                              suffixIcon: Icon(Icons.access_time)),
                           onTap: () => _selectTime(context, index, false),
-                          validator: (value) => _weekDays[index].endTime.isEmpty ? 'Please select end time' : null,
-                          controller: TextEditingController(text: _weekDays[index].endTime),
+                          validator: (value) => _weekDays[index].endTime.isEmpty
+                              ? 'Please select end time'
+                              : null,
+                          controller: TextEditingController(
+                              text: _weekDays[index].endTime),
                         ),
                         SizedBox(height: 10),
                         TextFormField(
-                          decoration: InputDecoration(labelText: 'Session Duration (HH:MM:SS)'),
-                          validator: (value) => value == null || value.isEmpty ? 'Please enter session duration' : null,
-                          onSaved: (value) => _weekDays[index].sessionDuration = value!,
-                          controller: TextEditingController(text: _weekDays[index].sessionDuration),
+                          decoration: InputDecoration(
+                              labelText: 'Session Duration (HH:MM:SS)'),
+                          validator: (value) => value == null || value.isEmpty
+                              ? 'Please enter session duration'
+                              : null,
+                          onSaved: (value) =>
+                              _weekDays[index].sessionDuration = value!,
+                          controller: TextEditingController(
+                              text: _weekDays[index].sessionDuration),
                         ),
                         SizedBox(height: 10),
                         Align(
@@ -197,7 +234,8 @@ void _showErrorDialog(String message) {
                           child: ElevatedButton(
                             onPressed: () => _removeDay(index),
                             child: Text('Remove'),
-                            style: ElevatedButton.styleFrom(primary: Colors.red),
+                            style:
+                                ElevatedButton.styleFrom(primary: Colors.red),
                           ),
                         ),
                         SizedBox(height: 20),
@@ -210,9 +248,11 @@ void _showErrorDialog(String message) {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   ElevatedButton(
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+                    style:
+                        ElevatedButton.styleFrom(backgroundColor: Colors.blue),
                     onPressed: _addDay,
-                    child: Text('Add Day', style: TextStyle(color: Colors.white)),
+                    child:
+                        Text('Add Day', style: TextStyle(color: Colors.white)),
                   ),
                   SizedBox(width: 20),
                   ElevatedButton(
