@@ -1,5 +1,3 @@
-// DepressionTest.dart
-
 import 'package:flutter/material.dart';
 import 'package:mentalhealthh/services/DepTestApi.dart';
 
@@ -85,28 +83,46 @@ class _DepressionTestFormState extends State<DepressionTest> {
           key: _formKey,
           child: SingleChildScrollView(
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
-                _buildDropdown('How often do you feel hopeless or helpless?',
-                    (value) => _hopeless = value),
                 _buildDropdown(
-                    'How often do you have trouble sleeping or experience changes in your sleep patterns (e.g., insomnia or oversleeping)?',
-                    (value) => _sleepProblems = value),
+                  'How often do you feel hopeless or helpless?',
+                  (value) => _hopeless = value,
+                  _hopeless,
+                ),
                 _buildDropdown(
-                    'How often do you feel excessively tired or lack energy?',
-                    (value) => _tired = value),
+                  'How often do you have trouble sleeping or experience changes in your sleep patterns (e.g., insomnia or oversleeping)?',
+                  (value) => _sleepProblems = value,
+                  _sleepProblems,
+                ),
                 _buildDropdown(
-                    'How often do you lose interest or pleasure in activities you used to enjoy?',
-                    (value) => _lossInterest = value),
+                  'How often do you feel excessively tired or lack energy?',
+                  (value) => _tired = value,
+                  _tired,
+                ),
                 _buildDropdown(
-                    'How often do you experience difficulty concentrating or making decisions?',
-                    (value) => _concentration = value),
+                  'How often do you lose interest or pleasure in activities you used to enjoy?',
+                  (value) => _lossInterest = value,
+                  _lossInterest,
+                ),
                 _buildDropdown(
-                    'How often do you feel worthless or excessively guilty?',
-                    (value) => _worthless = value),
-                _buildTextField(
-                    'Tell us your story', (value) => _story = value),
+                  'How often do you experience difficulty concentrating or making decisions?',
+                  (value) => _concentration = value,
+                  _concentration,
+                ),
+                _buildDropdown(
+                  'How often do you feel worthless or excessively guilty?',
+                  (value) => _worthless = value,
+                  _worthless,
+                ),
+                _buildTextField('Tell us your story', (value) => _story = value),
                 SizedBox(height: 20),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.blue,
+                    onPrimary: Colors.white
+
+                  ),
                   onPressed: _submitForm,
                   child: Text('Submit'),
                 ),
@@ -118,22 +134,44 @@ class _DepressionTestFormState extends State<DepressionTest> {
     );
   }
 
-  Widget _buildDropdown(String labelText, Function(String?) onSaved) {
+  Widget _buildDropdown(
+      String labelText, Function(String?) onSaved, String? currentValue) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: DropdownButtonFormField<String>(
-        decoration: InputDecoration(
-          labelText: labelText,
-        ),
-        items: options.map((String option) {
-          return DropdownMenuItem<String>(
-            value: option,
-            child: Text(option),
-          );
-        }).toList(),
-        onChanged: (value) {},
-        validator: (value) => value == null ? 'Please select an option' : null,
-        onSaved: onSaved,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            labelText,
+            style: TextStyle(fontSize: 18), // Set the font size here
+          ),
+          DropdownButtonFormField<String>(
+            isExpanded: true, // Make dropdown take full width
+            decoration: InputDecoration(
+              labelStyle: TextStyle(fontSize: 18), // Set the font size here
+            ),
+            hint: Text(
+              'Select an option',
+              style: TextStyle(fontSize: 16), // Set the font size here
+            ),
+            value: currentValue,
+            items: options.map((String option) {
+              return DropdownMenuItem<String>(
+                value: option,
+                child: Text(option, style: TextStyle(fontSize: 16)), // Set the font size here
+              );
+            }).toList(),
+            onChanged: (value) {
+              setState(() {
+                onSaved(value);
+              });
+            },
+            validator: (value) => value == null ? 'Please select an option' : null,
+            onSaved: (value) {
+              onSaved(value);
+            },
+          ),
+        ],
       ),
     );
   }
@@ -145,6 +183,7 @@ class _DepressionTestFormState extends State<DepressionTest> {
         maxLines: 4,
         decoration: InputDecoration(
           labelText: labelText,
+          labelStyle: TextStyle(fontSize: 18), // Set the font size here
         ),
         validator: (value) =>
             value == null || value.isEmpty ? 'Please enter a story' : null,

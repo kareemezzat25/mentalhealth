@@ -86,7 +86,7 @@ class DrCommonDrawer extends StatelessWidget {
             title: Text("Home"),
           ),
           ListTile(
-            leading: Icon(Icons.schedule_outlined),
+            leading: Icon(Icons.calendar_today),
             title: Text("Schedule"),
             onTap: () {
               Navigator.pop(context);

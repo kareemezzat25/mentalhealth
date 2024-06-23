@@ -2,11 +2,13 @@
 
 import 'package:flutter/material.dart';
 import 'package:mentalhealthh/authentication/auth.dart';
+import 'package:mentalhealthh/views/AppointmentsPage.dart';
 import 'package:mentalhealthh/views/ForumsPage.dart';
 import 'package:mentalhealthh/views/Posts.dart';
 import 'package:mentalhealthh/views/login.dart';
 import 'package:mentalhealthh/views/UserProfile.dart'; // Import UserProfile.dart
 import 'package:mentalhealthh/views/DepressionTest.dart'; // Import DepressionTest.dart
+import 'package:mentalhealthh/views/chatbot_page.dart'; // Import ChatbotPage
 
 class CommonDrawer extends StatefulWidget {
   final String userId; // Add userId parameter
@@ -190,10 +192,38 @@ class _CommonDrawerState extends State<CommonDrawer> {
               );
             },
           ),
-          const ListTile(
+          ListTile(
+            leading: Icon(Icons.chat_bubble_outline),
+            title: Text("Chatbot"),
+            onTap: () {
+              // Close the drawer
+              Navigator.pop(context);
+
+              // Navigate to Chatbot screen
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ChatbotPage()),
+              );
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.schedule),
+            title: Text("Appointments"),
+            onTap: () {
+              Navigator.pop(context); // Close the drawer
+
+              // Navigate to AppointmentsPage
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => AppointmentsPage()),
+              );
+            },
+          ),
+
+          /*const ListTile(
             leading: Icon(Icons.dark_mode_outlined),
             title: Text("Night mode"),
-          ),
+          )*/
           Padding(
             padding: const EdgeInsets.only(top: 80),
             child: ListTile(

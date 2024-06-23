@@ -269,7 +269,7 @@ class _ScheduleCardState extends State<ScheduleCard> {
                         child: Row(
                           children: [
                             Icon(Icons.edit),
-                            SizedBox(width: 8),
+                            SizedBox(width: 2),
                             Text('Update'),
                           ],
                         ),
@@ -279,7 +279,7 @@ class _ScheduleCardState extends State<ScheduleCard> {
                         child: Row(
                           children: [
                             Icon(Icons.delete),
-                            SizedBox(width: 8),
+                            SizedBox(width: 2),
                             Text('Delete'),
                           ],
                         ),

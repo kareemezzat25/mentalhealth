@@ -110,7 +110,7 @@ class _Posts extends State<Posts> {
                               }
                             },
                             child: Container(
-                              height: 560,
+                              height: 720,
                               child: Forum(
                                 postId: postsData[index]['id'].toString(),
                                 postTitle: postsData[index]['title'],
