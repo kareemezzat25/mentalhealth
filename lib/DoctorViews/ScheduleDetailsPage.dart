@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart'; // Add this import for date formatting
 import 'package:mentalhealthh/models/schedule_model.dart';
 import 'package:mentalhealthh/services/api_service.dart';
 
@@ -24,8 +25,7 @@ class _ScheduleDetailsPageState extends State<ScheduleDetailsPage> {
     super.initState();
     _startTimeController = TextEditingController(text: widget.day.startTime);
     _endTimeController = TextEditingController(text: widget.day.endTime);
-    _sessionDurationController =
-        TextEditingController(text: widget.day.sessionDuration);
+    _sessionDurationController = TextEditingController(text: widget.day.sessionDuration);
   }
 
   @override
@@ -34,6 +34,24 @@ class _ScheduleDetailsPageState extends State<ScheduleDetailsPage> {
     _endTimeController.dispose();
     _sessionDurationController.dispose();
     super.dispose();
+  }
+
+  Future<void> _selectTime(BuildContext context, TextEditingController controller) async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+    if (picked != null) {
+      final formattedTime = formatTimeOfDay(picked);
+      setState(() {
+        controller.text = formattedTime;
+      });
+    }
+  }
+
+  String formatTimeOfDay(TimeOfDay time) {
+    final dateTime = DateTime(2000, 1, 1, time.hour, time.minute, 0);
+    return DateFormat('HH:mm:ss').format(dateTime);
   }
 
   @override
@@ -56,21 +74,29 @@ class _ScheduleDetailsPageState extends State<ScheduleDetailsPage> {
                 ),
               ),
               SizedBox(height: 20),
-              _buildEditableRow("Start Time", _startTimeController),
-              _buildEditableRow("End Time", _endTimeController),
+              _buildTimePickerRow("Start Time", _startTimeController),
+              SizedBox(height: 10),
+              _buildTimePickerRow("End Time", _endTimeController),
+              SizedBox(height: 10),
               _buildEditableRow("Session Duration", _sessionDurationController),
               SizedBox(height: 40),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // ElevatedButton(
-                  //   onPressed: () => _showDeleteConfirmationDialog(context),
-                  //   child: Text('Remove'),
-                  // ),
-                  ElevatedButton(
-                    onPressed: () => _updateSchedule(context),
+                 ElevatedButton(
+                  onPressed: () => _updateSchedule(context),
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.blue, // background color
+                    onPrimary: Colors.white, // text color
+                    padding: EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+                    textStyle: TextStyle(fontSize: 20),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18),
+                    ),
+                  ),
                     child: Text('Update'),
                   ),
+
                 ],
               ),
             ],
@@ -80,95 +106,64 @@ class _ScheduleDetailsPageState extends State<ScheduleDetailsPage> {
     );
   }
 
-  Widget _buildEditableRow(String label, TextEditingController controller) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 120,
-            child: Text(
-              label + ":",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-          SizedBox(width: 10),
-          Expanded(
-            child: TextFormField(
-              controller: controller,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                contentPadding:
-                    EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
-              ),
-              style: TextStyle(
-                fontSize: 18,
-              ),
-            ),
-          ),
-        ],
+ Widget _buildTimePickerRow(String label, TextEditingController controller) {
+  return Row(
+    children: [
+      SizedBox(
+        width: 120,
+        child: Text(
+          "$label:",
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+        ),
       ),
-    );
-  }
+      SizedBox(width: 10),
+      Expanded(
+        child: TextFormField(
+          readOnly: true,
+          controller: controller,
+          decoration: InputDecoration(
+            suffixIcon: Icon(Icons.access_time),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+            contentPadding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+          ),
+          onTap: () => _selectTime(context, controller),
+        ),
+      ),
+    ],
+  );
+}
 
-  // void _showDeleteConfirmationDialog(BuildContext context) {
-  //   showDialog(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       return AlertDialog(
-  //         title: Text("Confirm Deletion"),
-  //         content: Text("Are you sure you want to delete this schedule?"),
-  //         actions: <Widget>[
-  //           TextButton(
-  //             child: Text("Cancel"),
-  //             onPressed: () {
-  //               Navigator.of(context).pop();
-  //             },
-  //           ),
-  //           TextButton(
-  //             child: Text(
-  //               "Delete",
-  //               style: TextStyle(color: Colors.red),
-  //             ),
-  //             onPressed: () async {
-  //               Navigator.of(context).pop();
-  //               await _deleteSchedule(context);
-  //             },
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
+Widget _buildEditableRow(String label, TextEditingController controller) {
+  return Row(
+    children: [
+      SizedBox(
+        width: 120,
+        child: Text(
+          "$label:",
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+        ),
+      ),
+      SizedBox(width: 10),
+      Expanded(
+        child: TextFormField(
+          controller: controller,
+          decoration: InputDecoration(
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+            contentPadding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+          ),
+          style: TextStyle(
+            fontSize: 18,
+          ),
+        ),
+      ),
+    ],
+  );
+}
 
-  // Future<void> _deleteSchedule(BuildContext context) async {
-  //   try {
-  //     await ApiService()
-  //         .deleteDoctorSchedule(widget.doctorId, widget.day.dayOfWeek);
-
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(
-  //         content: Text("Schedule deleted"),
-  //       ),
-  //     );
-
-  //     // Navigate back to previous screen
-  //     Navigator.of(context).pop();
-  //   } catch (e) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(
-  //         content: Text("Failed to delete schedule: $e"),
-  //         backgroundColor: Colors.red,
-  //       ),
-  //     );
-  //   }
-  // }
 
   void _updateSchedule(BuildContext context) {
     String startTime = _startTimeController.text;

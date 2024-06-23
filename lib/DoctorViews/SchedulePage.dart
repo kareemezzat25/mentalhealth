@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:mentalhealthh/DoctorViews/CreateSchedulePage.dart';
 import 'package:mentalhealthh/DoctorViews/ScheduleDetailsPage.dart';
@@ -18,14 +17,7 @@ class SchedulePage extends StatefulWidget {
 
 class _SchedulePageState extends State<SchedulePage> {
   late Future<ScheduleModel> futureSchedule;
-  DaySchedule? selectedDay; // Define selectedDay variable
-
-  // Callback function to handle updated DaySchedule
-  void handleUpdatedDay(DaySchedule updatedDay) {
-    setState(() {
-      selectedDay = updatedDay;
-    });
-  }
+  DaySchedule? selectedDay;
 
   @override
   void initState() {
@@ -43,7 +35,6 @@ class _SchedulePageState extends State<SchedulePage> {
         ),
       );
 
-      // Update UI by fetching updated schedule
       setState(() {
         futureSchedule = ApiService().fetchDoctorSchedule(widget.doctorId);
       });
@@ -67,7 +58,6 @@ class _SchedulePageState extends State<SchedulePage> {
         ),
       );
 
-      // Update UI by fetching updated schedule
       setState(() {
         futureSchedule = ApiService().fetchDoctorSchedule(widget.doctorId);
       });
@@ -89,10 +79,8 @@ class _SchedulePageState extends State<SchedulePage> {
       ),
     );
 
-    // Handle the result from CreateSchedulePage
     if (result != null && result is List<DaySchedule>) {
       setState(() {
-        // Update UI with the newly created schedule data
         futureSchedule = ApiService().fetchDoctorSchedule(widget.doctorId);
       });
     }
@@ -119,9 +107,7 @@ class _SchedulePageState extends State<SchedulePage> {
               children: [
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: () {
-                      navigateToCreateSchedulePage();
-                    },
+                    onPressed: navigateToCreateSchedulePage,
                     style: ElevatedButton.styleFrom(
                       primary: Colors.blueAccent,
                       padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -131,18 +117,14 @@ class _SchedulePageState extends State<SchedulePage> {
                     ),
                     child: Text(
                       "Create Schedule",
-                      style: TextStyle(fontSize: 16,color:Colors.white),
+                      style: TextStyle(fontSize: 16, color: Colors.white),
                     ),
                   ),
                 ),
-                SizedBox(
-                  width: 20,
-                ),
+                SizedBox(width: 20),
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: () {
-                      deleteEntireSchedule(); // Call deleteEntireSchedule when button is pressed
-                    },
+                    onPressed: deleteEntireSchedule,
                     style: ElevatedButton.styleFrom(
                       primary: Colors.red,
                       padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -152,7 +134,7 @@ class _SchedulePageState extends State<SchedulePage> {
                     ),
                     child: Text(
                       "Delete Schedule",
-                      style: TextStyle(fontSize: 16,color: Colors.white),
+                      style: TextStyle(fontSize: 16, color: Colors.white),
                     ),
                   ),
                 ),
@@ -209,7 +191,7 @@ class _SchedulePageState extends State<SchedulePage> {
 class ScheduleCard extends StatefulWidget {
   DaySchedule day;
   final String doctorId;
-  final Function() onDelete; // Define onDelete callback
+  final Function() onDelete;
 
   ScheduleCard({
     required this.doctorId,
@@ -236,10 +218,7 @@ class _ScheduleCardState extends State<ScheduleCard> {
           ),
         ).then((updatedDay) {
           if (updatedDay != null) {
-            // Handle the updatedDay object here
-            // For example, update the UI with the updated data
             setState(() {
-              // Update selectedDay or refresh the schedule list
               widget.day = updatedDay;
             });
           }
@@ -251,20 +230,58 @@ class _ScheduleCardState extends State<ScheduleCard> {
           borderRadius: BorderRadius.circular(15),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(8.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              AutoSizeText(
-                widget.day.dayOfWeek,
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.blueAccent,
-                ),
-                maxLines: 1,
-                minFontSize: 18,
-                overflow: TextOverflow.ellipsis,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: AutoSizeText(
+                      widget.day.dayOfWeek,
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blueAccent,
+                      ),
+                      maxLines: 1,
+                      minFontSize: 18,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  PopupMenuButton<String>(
+                    onSelected: (String result) {
+                      if (result == 'Delete') {
+                        _showDeleteConfirmationDialog(context);
+                      } else if (result == 'Update') {
+                        _navigateToUpdateSchedule(context);
+                      }
+                    },
+                    itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                      PopupMenuItem<String>(
+                        value: 'Update',
+                        child: Row(
+                          children: [
+                            Icon(Icons.edit),
+                            SizedBox(width: 8),
+                            Text('Update'),
+                          ],
+                        ),
+                      ),
+                      PopupMenuItem<String>(
+                        value: 'Delete',
+                        child: Row(
+                          children: [
+                            Icon(Icons.delete),
+                            SizedBox(width: 8),
+                            Text('Delete'),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
               SizedBox(height: 10),
               AutoSizeText(
@@ -300,18 +317,6 @@ class _ScheduleCardState extends State<ScheduleCard> {
                 overflow: TextOverflow.ellipsis,
               ),
               SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  ElevatedButton(
-                    onPressed: () => _showDeleteConfirmationDialog(context),
-                    style: ElevatedButton.styleFrom(
-                      primary: Colors.red,
-                    ),
-                    child: Text('Delete'),
-                  ),
-                ],
-              ),
             ],
           ),
         ),
@@ -328,21 +333,39 @@ class _ScheduleCardState extends State<ScheduleCard> {
           content: Text('Are you sure you want to delete this schedule?'),
           actions: <Widget>[
             TextButton(
+              child: Text('Cancel'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('Cancel'),
             ),
             TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                widget.onDelete(); // Call the onDelete callback
-              },
               child: Text('Delete'),
+              onPressed: () {
+                widget.onDelete();
+                Navigator.of(context).pop();
+              },
             ),
           ],
         );
       },
     );
+  }
+
+  void _navigateToUpdateSchedule(BuildContext context) async {
+    final updatedDay = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ScheduleDetailsPage(
+          doctorId: widget.doctorId,
+          day: widget.day,
+        ),
+      ),
+    );
+
+    if (updatedDay != null) {
+      setState(() {
+        widget.day = updatedDay;
+      });
+    }
   }
 }
