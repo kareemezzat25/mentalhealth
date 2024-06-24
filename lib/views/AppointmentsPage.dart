@@ -1,3 +1,5 @@
+// AppointmentsPage.dart
+
 import 'package:flutter/material.dart';
 import 'package:mentalhealthh/models/Doctor.dart'; // Replace with actual path to Doctor.dart
 import 'package:mentalhealthh/services/doctorapi.dart';
@@ -34,7 +36,8 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
     } catch (error) {
       print('Error fetching doctors: $error');
       setState(() {
-        isLoading = false; // Ensure loading state is set to false in case of error
+        isLoading =
+            false; // Ensure loading state is set to false in case of error
       });
       // Handle error state in your UI as needed
     }
@@ -57,19 +60,21 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                     : 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-600nw-1677509740.jpg'; // Set a default image URL
 
                 return GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => DoctorDetailPage(doctor: doctor),
-                        ),
-                      );
-                    },
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DoctorDetailPage(doctor: doctor),
+                      ),
+                    );
+                  },
                   child: Container(
                     margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                     decoration: BoxDecoration(
-                      color: Color.fromARGB(255, 99, 185, 225), // Set the color of the card to blue
-                      borderRadius: BorderRadius.circular(15), // Set border radius here
+                      color: Color.fromARGB(255, 99, 185,
+                          225), // Set the color of the card to blue
+                      borderRadius:
+                          BorderRadius.circular(15), // Set border radius here
                     ),
                     child: Padding(
                       padding: EdgeInsets.all(10),
@@ -88,11 +93,13 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      doctor.fullName, // Use first name and last name here
+                                      doctor
+                                          .fullName, // Use first name and last name here
                                       style: TextStyle(
                                         fontSize: 20,
                                         fontWeight: FontWeight.bold,
-                                        color: Colors.black, // Set the text color to white for better contrast
+                                        color: Colors
+                                            .black, // Set the text color to white for better contrast
                                       ),
                                     ),
                                     SizedBox(height: 5),
@@ -100,7 +107,8 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                                       '${doctor.specialization}',
                                       style: TextStyle(
                                         fontSize: 16,
-                                        color: Colors.white, // Set the text color to white for better contrast
+                                        color: Colors
+                                            .white, // Set the text color to white for better contrast
                                       ),
                                     ),
                                     SizedBox(height: 5),
@@ -108,7 +116,8 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                                       'Gender: ${doctor.gender}',
                                       style: TextStyle(
                                         fontSize: 16,
-                                        color: Colors.white, // Set the text color to white for better contrast
+                                        color: Colors
+                                            .white, // Set the text color to white for better contrast
                                       ),
                                     ),
                                     SizedBox(height: 5),
@@ -116,7 +125,8 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                                       'City: ${doctor.city}',
                                       style: TextStyle(
                                         fontSize: 16,
-                                        color: Colors.white, // Set the text color to white for better contrast
+                                        color: Colors
+                                            .white, // Set the text color to white for better contrast
                                       ),
                                     ),
                                     SizedBox(height: 5),
@@ -124,7 +134,8 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                                       'Session Fees: ${doctor.sessionFees} hrs',
                                       style: TextStyle(
                                         fontSize: 16,
-                                        color: Colors.white, // Set the text color to white for better contrast
+                                        color: Colors
+                                            .white, // Set the text color to white for better contrast
                                       ),
                                     ),
                                   ],

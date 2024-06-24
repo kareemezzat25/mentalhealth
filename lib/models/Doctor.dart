@@ -9,6 +9,8 @@ class Doctor {
   String photoUrl;
   String bio;
   String email;
+  Map<String, Map<String, String>> schedule;
+  Duration sessionDuration;
 
   Doctor({
     required this.id,
@@ -21,6 +23,8 @@ class Doctor {
     required this.photoUrl,
     required this.bio,
     required this.email,
+    required this.schedule,
+    required this.sessionDuration,
   });
 
   // Method to get the full name
