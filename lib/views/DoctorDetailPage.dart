@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart'; // for DateFormat
 import 'package:mentalhealthh/models/Doctor.dart'; // Replace with actual path to Doctor.dart
 import 'package:mentalhealthh/services/doctorapi.dart';
 import 'package:mentalhealthh/views/AppointmentSlotsPage.dart';
@@ -15,6 +16,7 @@ class DoctorDetailPage extends StatefulWidget {
 class _DoctorDetailPageState extends State<DoctorDetailPage> {
   List<Map<String, String>> schedule = [];
   bool isLoading = false;
+  PageController _pageController = PageController();
 
   @override
   void initState() {
@@ -54,6 +56,26 @@ class _DoctorDetailPageState extends State<DoctorDetailPage> {
   }
 
   @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  // Function to format time from HH:mm to h:mm a
+  String _formatTime(String timeString) {
+    // Parse time from HH:mm format
+    final time = TimeOfDay(
+      hour: int.parse(timeString.split(':')[0]),
+      minute: int.parse(timeString.split(':')[1]),
+    );
+    
+    // Format time in h:mm a format
+    final formattedTime = DateFormat.jm().format(DateTime(1, 1, 1, time.hour, time.minute));
+
+    return formattedTime;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -61,119 +83,182 @@ class _DoctorDetailPageState extends State<DoctorDetailPage> {
       ),
       body: Padding(
         padding: EdgeInsets.all(20.0),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Card(
-                elevation: 5,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: Padding(
-                  padding: EdgeInsets.all(20.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          CircleAvatar(
-                            backgroundImage:
-                                NetworkImage(widget.doctor.photoUrl),
-                            radius: 60,
-                          ),
-                          SizedBox(width: 20),
-                          Expanded(
-                            child: Column(
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Card(
+                      elevation: 5,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.all(20.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  widget.doctor.fullName,
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold),
+                                CircleAvatar(
+                                  backgroundImage:
+                                      NetworkImage(widget.doctor.photoUrl),
+                                  radius: 60,
                                 ),
-                                SizedBox(height: 10),
-                                Text(
-                                  'Gender: ${widget.doctor.gender}',
-                                  style: TextStyle(fontSize: 16),
-                                ),
-                                SizedBox(height: 10),
-                                Text(
-                                  'Email: ${widget.doctor.email}',
-                                  style: TextStyle(fontSize: 16),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 20),
-                      Text(
-                        'Specialization: ${widget.doctor.specialization}',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      SizedBox(height: 10),
-                      Text(
-                        'Session Fees: ${widget.doctor.sessionFees} hrs',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      SizedBox(height: 10),
-                      Text(
-                        'Biography: ${widget.doctor.bio}',
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(height: 20),
-                      isLoading
-                          ? Center(child: CircularProgressIndicator())
-                          : Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Schedule:',
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                SizedBox(height: 10),
-                                ...schedule.map((day) {
-                                  return GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              AppointmentSlotsPage(
-                                            day: day['dayOfWeek']!,
-                                            startTime: day['startTime']!,
-                                            endTime: day['endTime']!,
-                                            sessionDuration: Duration(
-                                              minutes: int.parse(
-                                                  day['sessionDuration']!
-                                                      .split(':')[1]),
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                    child: Card(
-                                      child: ListTile(
-                                        title: Text(
-                                            '${day['dayOfWeek']}: ${day['startTime']} - ${day['endTime']}'),
+                                SizedBox(width: 20),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        widget.doctor.fullName,
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold),
                                       ),
-                                    ),
-                                  );
-                                }).toList(),
+                                      SizedBox(height: 10),
+                                      Text(
+                                        'Gender: ${widget.doctor.gender}',
+                                        style: TextStyle(fontSize: 16),
+                                      ),
+                                      SizedBox(height: 10),
+                                      Text(
+                                        'Email: ${widget.doctor.email}',
+                                        style: TextStyle(fontSize: 16),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ],
                             ),
-                    ],
-                  ),
+                            SizedBox(height: 20),
+                            Text(
+                              'Specialization: ${widget.doctor.specialization}',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                            SizedBox(height: 10),
+                            Text(
+                              'Session Fees: ${widget.doctor.sessionFees} hrs',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                            SizedBox(height: 10),
+                            Text(
+                              'Biography: ${widget.doctor.bio}',
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                  ],
                 ),
               ),
-              SizedBox(height: 20), // Spacer for future use
-            ],
-          ),
+            ),
+            isLoading
+                ? Center(child: CircularProgressIndicator())
+                : Expanded(
+                    child: schedule.isEmpty
+                        ? Center(child: Text("No days available for appointments"))
+                        : Row(
+                            children: [
+                              Visibility(
+                                visible: schedule.length > 1,
+                                child: IconButton(
+                                  icon: Icon(Icons.arrow_back_ios),
+                                  onPressed: () {
+                                    _pageController.previousPage(
+                                      duration: Duration(milliseconds: 300),
+                                      curve: Curves.easeInOut,
+                                    );
+                                  },
+                                ),
+                              ),
+                              Expanded(
+                                child: PageView.builder(
+                                  controller: _pageController,
+                                  itemCount: schedule.length,
+                                  itemBuilder: (context, index) {
+                                    final day = schedule[index];
+                                    return Card(
+                                      elevation: 5,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(15),
+                                      ),
+                                      child: Padding(
+                                        padding: EdgeInsets.all(2.0),
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              day['dayOfWeek']!,
+                                              style: TextStyle(
+                                                  fontSize: 22,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.blue),
+                                            ),
+                                            SizedBox(height: 10),
+                                            Text(
+                                              'from ${_formatTime(day['startTime']!)}',
+                                              style: TextStyle(fontSize: 16),
+                                            ),
+                                            Text(
+                                              'to ${_formatTime(day['endTime']!)}',
+                                              style: TextStyle(fontSize: 16),
+                                            ),
+                                            SizedBox(height: 15),
+                                            ElevatedButton(
+                                              onPressed: () {
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        AppointmentSlotsPage(
+                                                      day: day['dayOfWeek']!,
+                                                      startTime: day['startTime']!,
+                                                      endTime: day['endTime']!,
+                                                      sessionDuration: Duration(
+                                                        minutes: int.parse(
+                                                            day['sessionDuration']!
+                                                                .split(':')[1]),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                primary: Colors.red,
+                                                onPrimary: Colors.white // Background color
+                                              ),
+                                              child: Text('Book'),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                              Visibility(
+                                visible: schedule.length > 1,
+                                child: IconButton(
+                                  icon: Icon(Icons.arrow_forward_ios),
+                                  onPressed: () {
+                                    _pageController.nextPage(
+                                      duration: Duration(milliseconds: 300),
+                                      curve: Curves.easeInOut,
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                  ),
+          ],
         ),
       ),
     );

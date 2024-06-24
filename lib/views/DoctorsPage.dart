@@ -5,12 +5,12 @@ import 'package:mentalhealthh/models/Doctor.dart'; // Replace with actual path t
 import 'package:mentalhealthh/services/doctorapi.dart';
 import 'package:mentalhealthh/views/DoctorDetailPage.dart';
 
-class AppointmentsPage extends StatefulWidget {
+class DoctorsPage extends StatefulWidget {
   @override
-  _AppointmentsPageState createState() => _AppointmentsPageState();
+  _DoctorsPageState createState() => _DoctorsPageState();
 }
 
-class _AppointmentsPageState extends State<AppointmentsPage> {
+class _DoctorsPageState extends State<DoctorsPage> {
   List<Doctor> doctors = [];
   bool isLoading = false;
 
@@ -47,7 +47,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Appointments'),
+        title: Text('Doctors'),
       ),
       body: isLoading
           ? Center(child: CircularProgressIndicator())

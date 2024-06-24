@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:mentalhealthh/authentication/auth.dart';
-import 'package:mentalhealthh/views/AppointmentsPage.dart';
+import 'package:mentalhealthh/views/DoctorsPage.dart';
 import 'package:mentalhealthh/views/ForumsPage.dart';
 import 'package:mentalhealthh/views/Posts.dart';
 import 'package:mentalhealthh/views/login.dart';
@@ -215,7 +215,7 @@ class _CommonDrawerState extends State<CommonDrawer> {
               // Navigate to AppointmentsPage
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => AppointmentsPage()),
+                MaterialPageRoute(builder: (context) => DoctorsPage()),
               );
             },
           ),
@@ -225,7 +225,7 @@ class _CommonDrawerState extends State<CommonDrawer> {
             title: Text("Night mode"),
           )*/
           Padding(
-            padding: const EdgeInsets.only(top: 80),
+            padding: const EdgeInsets.only(top: 60,),
             child: ListTile(
               tileColor: Color(0xff000000),
               leading: const Icon(
