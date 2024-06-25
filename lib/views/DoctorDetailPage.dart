@@ -68,9 +68,10 @@ class _DoctorDetailPageState extends State<DoctorDetailPage> {
       hour: int.parse(timeString.split(':')[0]),
       minute: int.parse(timeString.split(':')[1]),
     );
-    
+
     // Format time in h:mm a format
-    final formattedTime = DateFormat.jm().format(DateTime(1, 1, 1, time.hour, time.minute));
+    final formattedTime =
+        DateFormat.jm().format(DateTime(1, 1, 1, time.hour, time.minute));
 
     return formattedTime;
   }
@@ -110,7 +111,8 @@ class _DoctorDetailPageState extends State<DoctorDetailPage> {
                                 SizedBox(width: 20),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         widget.doctor.fullName,
@@ -162,7 +164,8 @@ class _DoctorDetailPageState extends State<DoctorDetailPage> {
                 ? Center(child: CircularProgressIndicator())
                 : Expanded(
                     child: schedule.isEmpty
-                        ? Center(child: Text("No days available for appointments"))
+                        ? Center(
+                            child: Text("No days available for appointments"))
                         : Row(
                             children: [
                               Visibility(
@@ -191,8 +194,10 @@ class _DoctorDetailPageState extends State<DoctorDetailPage> {
                                       child: Padding(
                                         padding: EdgeInsets.all(2.0),
                                         child: Column(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
                                           children: [
                                             Text(
                                               day['dayOfWeek']!,
@@ -219,21 +224,27 @@ class _DoctorDetailPageState extends State<DoctorDetailPage> {
                                                     builder: (context) =>
                                                         AppointmentSlotsPage(
                                                       day: day['dayOfWeek']!,
-                                                      startTime: day['startTime']!,
+                                                      startTime:
+                                                          day['startTime']!,
                                                       endTime: day['endTime']!,
                                                       sessionDuration: Duration(
                                                         minutes: int.parse(
                                                             day['sessionDuration']!
                                                                 .split(':')[1]),
                                                       ),
+                                                      doctorId:
+                                                          widget.doctor.id,
+                                                      authToken:
+                                                          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiJiYTI1Y2UxZi03MjA3LTQzOGYtYmEyMi0yYmYzODYzMzY2MjIiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6ImJhMjVjZTFmLTcyMDctNDM4Zi1iYTIyLTJiZjM4NjMzNjYyMiIsImVtYWlsIjoidGVzdEBleGFtcGxlLmNvbSIsIm5hbWUiOiJOb3JtYWwgVXNlciIsInBob3RvVXJsIjoiaHR0cDovL3Jlcy5jbG91ZGluYXJ5LmNvbS9kbHQwZTA5ZTcvaW1hZ2UvdXBsb2FkL3YxNzE5MTY0NDg3L2JnanBoY3Jlb3F3YWxpbGVqOW11LnBuZyIsImp0aSI6InRlc3RAZXhhbXBsZS5jb20iLCJyb2xlcyI6IlVzZXIiLCJleHAiOjE3MjE4NzY3MTksImlzcyI6Imh0dHBzOi8vbmV4dXMtYXBpLWgzaWsub25yZW5kZXIuY29tIiwiYXVkIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NzIzNSJ9.ehfJNrwPTguhrrGGw7lhrNccemwlk6OW8LNrFixyHxs', // Pass doctorId
                                                     ),
                                                   ),
                                                 );
                                               },
                                               style: ElevatedButton.styleFrom(
-                                                primary: Colors.red,
-                                                onPrimary: Colors.white // Background color
-                                              ),
+                                                  primary: Colors.red,
+                                                  onPrimary: Colors
+                                                      .white // Background color
+                                                  ),
                                               child: Text('Book'),
                                             ),
                                           ],

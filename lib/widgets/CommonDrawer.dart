@@ -225,7 +225,9 @@ class _CommonDrawerState extends State<CommonDrawer> {
             title: Text("Night mode"),
           )*/
           Padding(
-            padding: const EdgeInsets.only(top: 60,),
+            padding: const EdgeInsets.only(
+              top: 60,
+            ),
             child: ListTile(
               tileColor: Color(0xff000000),
               leading: const Icon(
