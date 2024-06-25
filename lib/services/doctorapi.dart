@@ -4,10 +4,16 @@ import 'dart:convert';
 import 'package:mentalhealthh/authentication/auth.dart'; // Import your authentication module
 
 class DoctorsApi {
-  static const String apiUrl =
-      'https://nexus-api-h3ik.onrender.com/api/doctors';
+  static const String apiUrl = 'https://nexus-api-h3ik.onrender.com/api/doctors';
 
-  Future<List<Doctor>> fetchDoctors() async {
+  Future<List<Doctor>> fetchDoctors({
+    String? name,
+    String? specialization,
+    String? gender,
+    String? city,
+    double? minFees,
+    double? maxFees,
+  }) async {
     try {
       String? token = await Auth.getToken();
 
@@ -16,8 +22,18 @@ class DoctorsApi {
         throw Exception('Authentication token is missing.');
       }
 
+      Map<String, String> queryParams = {};
+      if (name != null) queryParams['name'] = name;
+      if (specialization != null) queryParams['specialization'] = specialization;
+      if (gender != null) queryParams['gender'] = gender;
+      if (city != null) queryParams['city'] = city;
+      if (minFees != null) queryParams['minFees'] = minFees.toString();
+      if (maxFees != null) queryParams['maxFees'] = maxFees.toString();
+
+      Uri uri = Uri.parse(apiUrl).replace(queryParameters: queryParams);
+
       final response = await http.get(
-        Uri.parse(apiUrl),
+        uri,
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',

@@ -1,9 +1,8 @@
-// AppointmentsPage.dart
-
 import 'package:flutter/material.dart';
-import 'package:mentalhealthh/models/Doctor.dart'; // Replace with actual path to Doctor.dart
+import 'package:mentalhealthh/models/Doctor.dart';
 import 'package:mentalhealthh/services/doctorapi.dart';
 import 'package:mentalhealthh/views/DoctorDetailPage.dart';
+import 'package:mentalhealthh/views/doctorsearchdelegate.dart'; // Import the search delegate
 
 class DoctorsPage extends StatefulWidget {
   @override
@@ -22,24 +21,21 @@ class _DoctorsPageState extends State<DoctorsPage> {
 
   Future<void> fetchDoctorsData() async {
     setState(() {
-      isLoading = true; // Set loading state
+      isLoading = true;
     });
 
     try {
-      // Instantiate DoctorsApi and call fetchDoctors method
       List<Doctor> fetchedDoctors = await DoctorsApi().fetchDoctors();
 
       setState(() {
         doctors = fetchedDoctors;
-        isLoading = false; // Set loading state to false after data is fetched
+        isLoading = false;
       });
     } catch (error) {
       print('Error fetching doctors: $error');
       setState(() {
-        isLoading =
-            false; // Ensure loading state is set to false in case of error
+        isLoading = false;
       });
-      // Handle error state in your UI as needed
     }
   }
 
@@ -48,6 +44,17 @@ class _DoctorsPageState extends State<DoctorsPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Doctors'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.search),
+            onPressed: () {
+              showSearch(
+                context: context,
+                delegate: DoctorSearchDelegate(doctors),
+              );
+            },
+          ),
+        ],
       ),
       body: isLoading
           ? Center(child: CircularProgressIndicator())
@@ -71,10 +78,8 @@ class _DoctorsPageState extends State<DoctorsPage> {
                   child: Container(
                     margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                     decoration: BoxDecoration(
-                      color: Color.fromARGB(255, 99, 185,
-                          225), // Set the color of the card to blue
-                      borderRadius:
-                          BorderRadius.circular(15), // Set border radius here
+                      color: Color.fromARGB(255, 99, 185, 225),
+                      borderRadius: BorderRadius.circular(15),
                     ),
                     child: Padding(
                       padding: EdgeInsets.all(10),
@@ -93,13 +98,11 @@ class _DoctorsPageState extends State<DoctorsPage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      doctor
-                                          .fullName, // Use first name and last name here
+                                      doctor.fullName,
                                       style: TextStyle(
                                         fontSize: 20,
                                         fontWeight: FontWeight.bold,
-                                        color: Colors
-                                            .black, // Set the text color to white for better contrast
+                                        color: Colors.black,
                                       ),
                                     ),
                                     SizedBox(height: 5),
@@ -107,8 +110,7 @@ class _DoctorsPageState extends State<DoctorsPage> {
                                       '${doctor.specialization}',
                                       style: TextStyle(
                                         fontSize: 16,
-                                        color: Colors
-                                            .white, // Set the text color to white for better contrast
+                                        color: Colors.white,
                                       ),
                                     ),
                                     SizedBox(height: 5),
@@ -116,8 +118,7 @@ class _DoctorsPageState extends State<DoctorsPage> {
                                       'Gender: ${doctor.gender}',
                                       style: TextStyle(
                                         fontSize: 16,
-                                        color: Colors
-                                            .white, // Set the text color to white for better contrast
+                                        color: Colors.white,
                                       ),
                                     ),
                                     SizedBox(height: 5),
@@ -125,8 +126,7 @@ class _DoctorsPageState extends State<DoctorsPage> {
                                       'City: ${doctor.city}',
                                       style: TextStyle(
                                         fontSize: 16,
-                                        color: Colors
-                                            .white, // Set the text color to white for better contrast
+                                        color: Colors.white,
                                       ),
                                     ),
                                     SizedBox(height: 5),
@@ -134,8 +134,7 @@ class _DoctorsPageState extends State<DoctorsPage> {
                                       'Session Fees: ${doctor.sessionFees} hrs',
                                       style: TextStyle(
                                         fontSize: 16,
-                                        color: Colors
-                                            .white, // Set the text color to white for better contrast
+                                        color: Colors.white,
                                       ),
                                     ),
                                   ],
