@@ -4,7 +4,8 @@ import 'dart:convert';
 import 'package:mentalhealthh/authentication/auth.dart'; // Import your authentication module
 
 class DoctorsApi {
-  static const String apiUrl = 'https://nexus-api-h3ik.onrender.com/api/doctors';
+  static const String apiUrl =
+      'https://nexus-api-h3ik.onrender.com/api/doctors';
 
   Future<List<Doctor>> fetchDoctors({
     String? name,
@@ -24,7 +25,8 @@ class DoctorsApi {
 
       Map<String, String> queryParams = {};
       if (name != null) queryParams['name'] = name;
-      if (specialization != null) queryParams['specialization'] = specialization;
+      if (specialization != null)
+        queryParams['specialization'] = specialization;
       if (gender != null) queryParams['gender'] = gender;
       if (city != null) queryParams['city'] = city;
       if (minFees != null) queryParams['minFees'] = minFees.toString();
@@ -96,6 +98,63 @@ class DoctorsApi {
     } catch (error) {
       print('Error fetching doctor schedule: $error');
       throw error;
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> fetchDoctorAppointments() async {
+    String? token = await Auth.getToken();
+
+    final response = await http.get(
+      Uri.parse(
+          'https://nexus-api-h3ik.onrender.com/api/appointments/doctors/me?pageNumber=1&pageSize=10'),
+      headers: {
+        'Authorization': 'Bearer $token', // Add your authentication token here
+      },
+    );
+
+    print('Response status: ${response.statusCode}');
+    print('Response body: ${response.body}');
+
+    if (response.statusCode == 200) {
+      List<dynamic> data = json.decode(response.body);
+      return data
+          .map((appointment) => appointment as Map<String, dynamic>)
+          .toList();
+    } else {
+      throw Exception('Failed to load appointments');
+    }
+  }
+
+  Future<void> confirmAppointment(String appointmentId) async {
+    String? token = await Auth.getToken();
+    final response = await http.put(
+      Uri.parse(
+          'https://nexus-api-h3ik.onrender.com/api/appointments/$appointmentId/confirm'),
+      headers: {
+        'Authorization': 'Bearer $token', // Add your authentication token here
+      },
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to confirm appointment');
+    }
+  }
+
+  Future<void> rejectAppointment(String appointmentId, String reason) async {
+    String? token = await Auth.getToken();
+
+    final response = await http.put(
+      Uri.parse(
+          'https://nexus-api-h3ik.onrender.com/api/appointments/$appointmentId/reject'),
+      headers: {
+        'Authorization': 'Bearer $token', // Add your authentication token here
+        'Content-Type': 'application/json',
+      },
+      body: json.encode(reason),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to reject appointment');
     }
   }
 }

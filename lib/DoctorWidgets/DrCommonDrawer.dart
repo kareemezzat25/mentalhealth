@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mentalhealthh/DoctorViews/SchedulePage.dart';
 import 'package:mentalhealthh/models/user_model.dart';
+import 'package:mentalhealthh/views/DoctorAppointmentsPage.dart';
 import 'package:mentalhealthh/views/ForumsPage.dart';
 import 'package:mentalhealthh/views/UserProfile.dart';
 import 'package:mentalhealthh/views/login.dart';
@@ -100,6 +101,16 @@ class DrCommonDrawer extends StatelessWidget {
             },
           ),
           ListTile(
+            title: Text('Appointments'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => DoctorAppointmentsPage()),
+              );
+            },
+          ),
+          ListTile(
             leading: Icon(Icons.account_circle_outlined),
             title: Text("Doctor Profile"),
             onTap: () {
@@ -113,7 +124,6 @@ class DrCommonDrawer extends StatelessWidget {
                   ),
                 ),
               );
-            
             },
           ),
           const ListTile(
