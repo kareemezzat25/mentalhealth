@@ -7,15 +7,32 @@ class ApiService {
   final String baseUrl = 'https://nexus-api-h3ik.onrender.com/api';
 
   Future<ScheduleModel> fetchDoctorSchedule(String doctorId) async {
-    final response =
-        await http.get(Uri.parse('$baseUrl/doctors/$doctorId/schedule'));
+  final url = Uri.parse('$baseUrl/doctors/$doctorId/schedule');
+  String? token = await Auth.getToken();
+
+  if (token == null) {
+    throw Exception('Authentication token is missing.');
+  }
+
+  try {
+    final response = await http.get(
+      url,
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
 
     if (response.statusCode == 200) {
       return ScheduleModel.fromJson(jsonDecode(response.body));
     } else {
-      throw Exception('Failed to load schedule');
+      var errorMessage = jsonDecode(response.body)['message'] ?? 'Unknown error';
+      throw Exception('Failed to load schedule: $errorMessage');
     }
+  } catch (e) {
+    throw Exception('Exception occurred: $e');
   }
+}
+
 
   Future<bool> createDoctorSchedule(
     String doctorId, List<DaySchedule> schedules) async {

@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:mentalhealthh/authentication/auth.dart';
+import 'package:mentalhealthh/views/Appointmentsview.dart';
 import 'package:mentalhealthh/views/DoctorsPage.dart';
 import 'package:mentalhealthh/views/ForumsPage.dart';
 import 'package:mentalhealthh/views/Posts.dart';
@@ -92,7 +93,7 @@ class _CommonDrawerState extends State<CommonDrawer> {
                             userName,
                             style: TextStyle(
                               color: Colors.black,
-                              fontSize: 18,
+                              fontSize: 16,
                             ),
                           ),
                         ),
@@ -115,10 +116,7 @@ class _CommonDrawerState extends State<CommonDrawer> {
               ),
             ),
           ),
-          ListTile(
-            leading: Icon(Icons.home_outlined),
-            title: Text("Home"),
-          ),
+          
           ListTile(
             leading: Icon(Icons.assignment_outlined),
             title: Text("Depression Test"),
@@ -208,22 +206,30 @@ class _CommonDrawerState extends State<CommonDrawer> {
           ),
           ListTile(
             leading: Icon(Icons.schedule),
-            title: Text("Appointments"),
+            title: Text("Doctors"),
             onTap: () {
               Navigator.pop(context); // Close the drawer
 
-              // Navigate to AppointmentsPage
+              // Navigate to DoctorsPage
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => DoctorsPage()),
               );
             },
           ),
+          ListTile(
+            leading: Icon(Icons.schedule),
+            title: Text("Appointments"),
+            onTap: () {
+              Navigator.pop(context); // Close the drawer
 
-          /*const ListTile(
-            leading: Icon(Icons.dark_mode_outlined),
-            title: Text("Night mode"),
-          )*/
+              // Navigate to DoctorsPage
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => Appointmentsview()),
+              );
+            },
+          ),
           Padding(
             padding: const EdgeInsets.only(
               top: 60,

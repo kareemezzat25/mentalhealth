@@ -78,6 +78,9 @@ class _DoctorDetailPageState extends State<DoctorDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    String imageUrl = (widget.doctor.photoUrl != null && widget.doctor.photoUrl.isNotEmpty)
+        ? widget.doctor.photoUrl
+        : 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-600nw-1677509740.jpg'; // Set a default image URL
     return Scaffold(
       appBar: AppBar(
         title: Text('Doctor Details'),
@@ -103,9 +106,10 @@ class _DoctorDetailPageState extends State<DoctorDetailPage> {
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                
                                 CircleAvatar(
                                   backgroundImage:
-                                      NetworkImage(widget.doctor.photoUrl),
+                                      NetworkImage(imageUrl),
                                   radius: 60,
                                 ),
                                 SizedBox(width: 20),
