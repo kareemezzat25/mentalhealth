@@ -9,7 +9,8 @@ import 'package:mentalhealthh/views/Posts.dart';
 import 'package:mentalhealthh/views/login.dart';
 import 'package:mentalhealthh/views/UserProfile.dart'; // Import UserProfile.dart
 import 'package:mentalhealthh/views/DepressionTest.dart'; // Import DepressionTest.dart
-import 'package:mentalhealthh/views/chatbot_page.dart'; // Import ChatbotPage
+import 'package:mentalhealthh/views/chatbot_page.dart';
+import 'package:mentalhealthh/views/notifications_page.dart'; // Import ChatbotPage
 
 class CommonDrawer extends StatefulWidget {
   final String userId; // Add userId parameter
@@ -116,7 +117,6 @@ class _CommonDrawerState extends State<CommonDrawer> {
               ),
             ),
           ),
-          
           ListTile(
             leading: Icon(Icons.assignment_outlined),
             title: Text("Depression Test"),
@@ -164,17 +164,11 @@ class _CommonDrawerState extends State<CommonDrawer> {
           ),
           ListTile(
             leading: Icon(Icons.notifications),
-            title: Text("Notifications"),
+            title: Text('Notifications'),
             onTap: () {
-              // Close the drawer
-              Navigator.pop(context);
-
-              // Navigate to UserProfile screen
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                    builder: (context) => UserDoctorProfile(
-                        userId: widget.userId, roles: ['Doctor'])),
+                MaterialPageRoute(builder: (context) => NotificationsPage()),
               );
             },
           ),
