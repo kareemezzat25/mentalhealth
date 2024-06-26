@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mentalhealthh/DoctorViews/DoctorNotificationsPage.dart';
 import 'package:mentalhealthh/DoctorViews/SchedulePage.dart';
 import 'package:mentalhealthh/models/user_model.dart';
 import 'package:mentalhealthh/views/DoctorAppointmentsPage.dart';
@@ -101,12 +102,25 @@ class DrCommonDrawer extends StatelessWidget {
             },
           ),
           ListTile(
+            leading: Icon(Icons.schedule_outlined),
             title: Text('Appointments'),
             onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
                     builder: (context) => DoctorAppointmentsPage()),
+              );
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.notifications),
+            title: Text('Notifications'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => DoctorNotificationsPage(),
+                ),
               );
             },
           ),
