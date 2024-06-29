@@ -4,9 +4,11 @@ import 'package:mentalhealthh/authentication/auth.dart'; // Ensure this path is 
 import 'package:mentalhealthh/models/appointment.dart'; // Ensure this path is correct
 
 class BookingApi {
-  final String baseUrl = 'https://nexus-api-h3ik.onrender.com'; // Base URL for the API
+  final String baseUrl =
+      'https://nexus-api-h3ik.onrender.com'; // Base URL for the API
 
-  Future<List<Appointment>> getAppointments({required int pageNumber, required int pageSize}) async {
+  Future<List<Appointment>> getAppointments(
+      {required int pageNumber, required int pageSize}) async {
     try {
       final String? token = await Auth.getToken();
 
@@ -17,21 +19,26 @@ class BookingApi {
         };
 
         final response = await http.get(
-          Uri.parse('$baseUrl/api/appointments/clients/me?pageNumber=$pageNumber&pageSize=$pageSize'),
+          Uri.parse(
+              '$baseUrl/api/appointments/clients/me?pageNumber=$pageNumber&pageSize=$pageSize'),
           headers: headers,
         );
 
         if (response.statusCode == 200) {
           final responseData = jsonDecode(response.body);
-          print('Response data: $responseData'); // Log the entire response to inspect its structure
+          print(
+              'Response data: $responseData'); // Log the entire response to inspect its structure
 
           if (responseData is List) {
-            return responseData.map((json) => Appointment.fromJson(json)).toList();
+            return responseData
+                .map((json) => Appointment.fromJson(json))
+                .toList();
           } else {
             throw Exception('Unexpected response structure: $responseData');
           }
         } else {
-          throw Exception('Failed to load appointments. Status code: ${response.statusCode}, Body: ${response.body}');
+          throw Exception(
+              'Failed to load appointments. Status code: ${response.statusCode}, Body: ${response.body}');
         }
       } else {
         throw Exception('Token not available');
@@ -42,42 +49,48 @@ class BookingApi {
       throw error;
     }
   }
-  Future<List<Appointment>> searchAppointmentsByStatus({required String status}) async {
-  try {
-    final String? token = await Auth.getToken();
 
-    if (token != null) {
-      final Map<String, String> headers = {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      };
+  Future<List<Appointment>> searchAppointmentsByStatus(
+      {required String status}) async {
+    try {
+      final String? token = await Auth.getToken();
 
-      final response = await http.get(
-        Uri.parse('$baseUrl/api/appointments/clients/me?status=$status'),
-        headers: headers,
-      );
+      if (token != null) {
+        final Map<String, String> headers = {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        };
 
-      if (response.statusCode == 200) {
-        final responseData = jsonDecode(response.body);
-        print('Response data: $responseData'); // Log the entire response to inspect its structure
+        final response = await http.get(
+          Uri.parse('$baseUrl/api/appointments/clients/me?status=$status'),
+          headers: headers,
+        );
 
-        if (responseData is List) {
-          return responseData.map((json) => Appointment.fromJson(json)).toList();
+        if (response.statusCode == 200) {
+          final responseData = jsonDecode(response.body);
+          print(
+              'Response data: $responseData'); // Log the entire response to inspect its structure
+
+          if (responseData is List) {
+            return responseData
+                .map((json) => Appointment.fromJson(json))
+                .toList();
+          } else {
+            throw Exception('Unexpected response structure: $responseData');
+          }
         } else {
-          throw Exception('Unexpected response structure: $responseData');
+          throw Exception(
+              'Failed to load appointments. Status code: ${response.statusCode}, Body: ${response.body}');
         }
       } else {
-        throw Exception('Failed to load appointments. Status code: ${response.statusCode}, Body: ${response.body}');
+        throw Exception('Token not available');
       }
-    } else {
-      throw Exception('Token not available');
+    } catch (error) {
+      // Handle any network or other errors
+      print('Error during searchAppointmentsByStatus: $error');
+      throw error;
     }
-  } catch (error) {
-    // Handle any network or other errors
-    print('Error during searchAppointmentsByStatus: $error');
-    throw error;
   }
-}
 
   // Existing method for booking appointment
   Future<bool> bookAppointment({

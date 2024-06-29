@@ -24,7 +24,8 @@ class _AppointmentsviewState extends State<Appointmentsview> {
   }
 
   Future<void> _fetchUserId() async {
-    userId = await Auth.getUserId(); // Assuming you have a method to get the userId
+    userId =
+        await Auth.getUserId(); // Assuming you have a method to get the userId
     _fetchAppointments();
   }
 
@@ -34,7 +35,8 @@ class _AppointmentsviewState extends State<Appointmentsview> {
     });
 
     try {
-      final newAppointments = await bookingApi.getAppointments(pageNumber: 1, pageSize: 10);
+      final newAppointments =
+          await bookingApi.getAppointments(pageNumber: 1, pageSize: 10);
 
       setState(() {
         appointments = newAppointments;
@@ -49,99 +51,108 @@ class _AppointmentsviewState extends State<Appointmentsview> {
     }
   }
 
- Future<void> _searchAppointments(String? status) async {
-  setState(() {
-    isLoading = true;
-  });
-
-  try {
-    final searchedAppointments = await bookingApi.searchAppointmentsByStatus(status: status!);
-
+  Future<void> _searchAppointments(String? status) async {
     setState(() {
-      filteredAppointments = searchedAppointments;
+      isLoading = true;
     });
-  } catch (error) {
-    print('Error searching appointments: $error');
-  } finally {
-    setState(() {
-      isLoading = false;
-    });
+
+    try {
+      // final searchedAppointments =
+      //     await bookingApi.searchAppointmentsByStatus(status: status!);
+
+      // setState(() {
+      //   filteredAppointments = searchedAppointments;
+      // });
+    } catch (error) {
+      print('Error searching appointments: $error');
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
-}
-
 
   String _formatDateTime(String dateTimeString) {
     final DateTime dateTime = DateTime.parse(dateTimeString);
-    final String formattedDate = DateFormat.yMMMd().format(dateTime); // e.g., Jan 1, 2020
-    final String formattedTime = DateFormat.jm().format(dateTime); // e.g., 6:00 AM
+    final String formattedDate =
+        DateFormat.yMMMd().format(dateTime); // e.g., Jan 1, 2020
+    final String formattedTime =
+        DateFormat.jm().format(dateTime); // e.g., 6:00 AM
     return '$formattedDate at $formattedTime';
   }
 
   void _showSearchModal() {
-  showModalBottomSheet(
-    context: context,
-    builder: (context) {
-      String? newStatus = selectedStatus;
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        String? newStatus = selectedStatus;
 
-      return StatefulBuilder(
-        builder: (BuildContext context, StateSetter setState) {
-          return Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                DropdownButton<String>(
-                  value: newStatus,
-                  items: <String>['All', 'Pending', 'Cancelled', 'Rejected', 'Confirmed'].map((String status) {
-                    return DropdownMenuItem<String>(
-                      value: status,
-                      child: Text(status),
-                    );
-                  }).toList(),
-                  onChanged: (String? value) {
-                    setState(() {
-                      newStatus = value!;
-                    });
-                  },
-                  hint: Text('Select Status'),
-                  isExpanded: true,
-                ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    primary: Colors.blue,
-                    onPrimary: Colors.white,
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  DropdownButton<String>(
+                    value: newStatus,
+                    items: <String>[
+                      'All',
+                      'Pending',
+                      'Cancelled',
+                      'Rejected',
+                      'Confirmed'
+                    ].map((String status) {
+                      return DropdownMenuItem<String>(
+                        value: status,
+                        child: Text(status),
+                      );
+                    }).toList(),
+                    onChanged: (String? value) {
+                      setState(() {
+                        newStatus = value!;
+                      });
+                    },
+                    hint: Text('Select Status'),
+                    isExpanded: true,
                   ),
-                  onPressed: () {
-                    setState(() {
-                      selectedStatus = newStatus!;
-                    });
-                    _searchAppointments(selectedStatus == 'All' ? null : selectedStatus);
-                    Navigator.pop(context);
-                  },
-                  child: Text('Apply Filters'),
-                ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    primary: Colors.blue,
-                    onPrimary: Colors.white,
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.blue,
+                      onPrimary: Colors.white,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        selectedStatus = newStatus!;
+                      });
+                      _searchAppointments(
+                          selectedStatus == 'All' ? null : selectedStatus);
+                      Navigator.pop(context);
+                    },
+                    child: Text('Apply Filters'),
                   ),
-                  onPressed: () {
-                    setState(() {
-                      selectedStatus = 'All';
-                    });
-                    _searchAppointments(null);
-                    Navigator.pop(context);
-                  },
-                  child: Text('Reset Filters'),
-                ),
-              ],
-            ),
-          );
-        },
-      );
-    },
-  );
-}
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.blue,
+                      onPrimary: Colors.white,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        selectedStatus = 'All';
+                      });
+                      _searchAppointments(null);
+                      Navigator.pop(context);
+                    },
+                    child: Text('Reset Filters'),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -164,7 +175,8 @@ class _AppointmentsviewState extends State<Appointmentsview> {
                   itemBuilder: (context, index) {
                     final appointment = filteredAppointments[index];
                     Color cardColor;
-                    String imageUrl = (appointment.doctorPhotoUrl.isEmpty || !appointment.doctorPhotoUrl.contains('http'))
+                    String imageUrl = (appointment.doctorPhotoUrl.isEmpty ||
+                            !appointment.doctorPhotoUrl.contains('http'))
                         ? 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-600nw-1677509740.jpg'
                         : appointment.doctorPhotoUrl;
                     String? reason;
@@ -187,7 +199,8 @@ class _AppointmentsviewState extends State<Appointmentsview> {
                         reason = null;
                     }
 
-                    final formattedDateTime = _formatDateTime(appointment.startTime);
+                    final formattedDateTime =
+                        _formatDateTime(appointment.startTime);
 
                     return Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -206,11 +219,14 @@ class _AppointmentsviewState extends State<Appointmentsview> {
                                   ),
                                   SizedBox(width: 10),
                                   Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         appointment.doctorName,
-                                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold),
                                       ),
                                       Text(formattedDateTime),
                                     ],

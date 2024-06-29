@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'dart:convert';
 
 import 'package:mentalhealthh/authentication/auth.dart';
+import 'package:mentalhealthh/views/DoctorAppointmentsPage.dart';
 
 class DoctorNotificationsPage extends StatefulWidget {
   @override
@@ -196,6 +197,11 @@ class _DoctorNotificationsPageState extends State<DoctorNotificationsPage> {
                       if (!notification['isRead']) {
                         markAsRead(notification['id']);
                       }
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => DoctorAppointmentsPage()),
+                      );
                     },
                   ),
                 );

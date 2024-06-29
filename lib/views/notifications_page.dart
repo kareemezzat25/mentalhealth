@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'dart:convert';
 
 import 'package:mentalhealthh/authentication/auth.dart';
+import 'package:mentalhealthh/views/PostComment.dart'; // Import the PostComment.dart page
 
 class NotificationsPage extends StatefulWidget {
   @override
@@ -134,6 +135,36 @@ class _NotificationsPageState extends State<NotificationsPage> {
     return '$formattedDate at $formattedTime';
   }
 
+  void _handleNotificationTap(Map<String, dynamic> notification) {
+    if (!notification['isRead']) {
+      markAsRead(notification['id']);
+    }
+
+    // Navigate based on notification type
+    if (notification['type'] == 'Reply') {
+      int postId = notification['resources']['postId'];
+      int commentId = notification['resources']['commentId'];
+      int replyId = notification['resources']['replyId'];
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => PostComment(
+                  postId: postId,
+                )),
+      );
+    } else if (notification['type'] == 'Comment') {
+      int postId = notification['resources']['postId'];
+      int commentId = notification['resources']['commentId'];
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => PostComment(
+                  postId: postId,
+                )),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -192,9 +223,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                         ? Icon(Icons.check_circle, color: Colors.green)
                         : Icon(Icons.check_circle_outline, color: Colors.grey),
                     onTap: () {
-                      if (!notification['isRead']) {
-                        markAsRead(notification['id']);
-                      }
+                      _handleNotificationTap(notification);
                     },
                   ),
                 );
