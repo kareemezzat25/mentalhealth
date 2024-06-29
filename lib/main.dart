@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         home: AnimatedSplashScreen(
           duration: 3000,
-          splash: const Text('Mental health',
+          splash: const Text('Nexus',
               style: TextStyle(
                   fontSize: 36,
                   fontFamily: 'Hurricane',

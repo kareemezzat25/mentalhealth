@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mentalhealthh/services/AppointmentApi.dart'; // Update the path accordingly
 import 'package:mentalhealthh/models/appointment.dart'; // Ensure this path is correct
+import 'package:mentalhealthh/authentication/auth.dart'; // Ensure this path is correct
 
 class Appointmentsview extends StatefulWidget {
   @override
@@ -11,11 +12,19 @@ class Appointmentsview extends StatefulWidget {
 class _AppointmentsviewState extends State<Appointmentsview> {
   final BookingApi bookingApi = BookingApi();
   List<Appointment> appointments = [];
+  List<Appointment> filteredAppointments = [];
   bool isLoading = false;
+  String selectedStatus = 'All';
+  String? userId;
 
   @override
   void initState() {
     super.initState();
+    _fetchUserId();
+  }
+
+  Future<void> _fetchUserId() async {
+    userId = await Auth.getUserId(); // Assuming you have a method to get the userId
     _fetchAppointments();
   }
 
@@ -29,6 +38,7 @@ class _AppointmentsviewState extends State<Appointmentsview> {
 
       setState(() {
         appointments = newAppointments;
+        filteredAppointments = newAppointments;
       });
     } catch (error) {
       print('Error fetching appointments: $error');
@@ -39,6 +49,27 @@ class _AppointmentsviewState extends State<Appointmentsview> {
     }
   }
 
+ Future<void> _searchAppointments(String? status) async {
+  setState(() {
+    isLoading = true;
+  });
+
+  try {
+    final searchedAppointments = await bookingApi.searchAppointmentsByStatus(status: status!);
+
+    setState(() {
+      filteredAppointments = searchedAppointments;
+    });
+  } catch (error) {
+    print('Error searching appointments: $error');
+  } finally {
+    setState(() {
+      isLoading = false;
+    });
+  }
+}
+
+
   String _formatDateTime(String dateTimeString) {
     final DateTime dateTime = DateTime.parse(dateTimeString);
     final String formattedDate = DateFormat.yMMMd().format(dateTime); // e.g., Jan 1, 2020
@@ -46,24 +77,96 @@ class _AppointmentsviewState extends State<Appointmentsview> {
     return '$formattedDate at $formattedTime';
   }
 
+  void _showSearchModal() {
+  showModalBottomSheet(
+    context: context,
+    builder: (context) {
+      String? newStatus = selectedStatus;
+
+      return StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) {
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                DropdownButton<String>(
+                  value: newStatus,
+                  items: <String>['All', 'Pending', 'Cancelled', 'Rejected', 'Confirmed'].map((String status) {
+                    return DropdownMenuItem<String>(
+                      value: status,
+                      child: Text(status),
+                    );
+                  }).toList(),
+                  onChanged: (String? value) {
+                    setState(() {
+                      newStatus = value!;
+                    });
+                  },
+                  hint: Text('Select Status'),
+                  isExpanded: true,
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.blue,
+                    onPrimary: Colors.white,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      selectedStatus = newStatus!;
+                    });
+                    _searchAppointments(selectedStatus == 'All' ? null : selectedStatus);
+                    Navigator.pop(context);
+                  },
+                  child: Text('Apply Filters'),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.blue,
+                    onPrimary: Colors.white,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      selectedStatus = 'All';
+                    });
+                    _searchAppointments(null);
+                    Navigator.pop(context);
+                  },
+                  child: Text('Reset Filters'),
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    },
+  );
+}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Appointments'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.search),
+            onPressed: _showSearchModal,
+          ),
+        ],
       ),
       body: isLoading
           ? Center(child: CircularProgressIndicator())
-          : appointments.isEmpty
+          : filteredAppointments.isEmpty
               ? Center(child: Text('No appointments found'))
               : ListView.builder(
-                  itemCount: appointments.length,
+                  itemCount: filteredAppointments.length,
                   itemBuilder: (context, index) {
-                    final appointment = appointments[index];
+                    final appointment = filteredAppointments[index];
                     Color cardColor;
-                    String imageUrl = appointment.doctorPhotoUrl.isNotEmpty
-                        ? appointment.doctorPhotoUrl
-                        : 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-600nw-1677509740.jpg';
+                    String imageUrl = (appointment.doctorPhotoUrl.isEmpty || !appointment.doctorPhotoUrl.contains('http'))
+                        ? 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-600nw-1677509740.jpg'
+                        : appointment.doctorPhotoUrl;
                     String? reason;
 
                     switch (appointment.status) {
@@ -76,11 +179,11 @@ class _AppointmentsviewState extends State<Appointmentsview> {
                         reason = appointment.rejectionReason;
                         break;
                       case 'Confirmed':
-                        cardColor = Color(0xff90EE90);
+                        cardColor = Color.fromARGB(255, 90, 198, 90);
                         reason = null;
                         break;
                       default:
-                        cardColor = Color(0xffFFFFE0);
+                        cardColor = Color.fromARGB(255, 225, 209, 59);
                         reason = null;
                     }
 
@@ -119,7 +222,6 @@ class _AppointmentsviewState extends State<Appointmentsview> {
                               Text('Fees: ${appointment.fees}\$'),
                               Text('Status: ${appointment.status}'),
                               Text('Location: ${appointment.location}'),
-
                               if (reason != null) Text('Reason: $reason'),
                             ],
                           ),

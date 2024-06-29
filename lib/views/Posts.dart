@@ -4,6 +4,7 @@ import 'package:mentalhealthh/views/ForumsPage.dart';
 import 'package:mentalhealthh/views/PostComment.dart';
 import 'package:mentalhealthh/widgets/forum.dart';
 import 'package:mentalhealthh/services/postsApi.dart';
+
 class Posts extends StatefulWidget {
   final String? userId;
   final bool showUserPosts; // Add this parameter
@@ -109,21 +110,18 @@ class _Posts extends State<Posts> {
                                 changeData();
                               }
                             },
-                            child: Container(
-                              height: 720,
-                              child: Forum(
-                                postId: postsData[index]['id'].toString(),
-                                postTitle: postsData[index]['title'],
-                                postContent: postsData[index]['content'],
-                                username: postsData[index]['username'],
-                                postedOn: postsData[index]['postedOn'],
-                                appUserId: postsData[index]['appUserId'],
-                                isAnonymous: postsData[index]['isAnonymous'],
-                                userId: userId,
-                                photoUrl: postsData[index]['photoUrl'],
-                                postPhotoUrl: postsData[index]['postPhotoUrl'],
-                                commentsCount: postsData[index]['commentsCount'],
-                              ),
+                            child: Forum(
+                              postId: postsData[index]['id'].toString(),
+                              postTitle: postsData[index]['title'],
+                              postContent: postsData[index]['content'],
+                              username: postsData[index]['username'],
+                              postedOn: postsData[index]['postedOn'],
+                              appUserId: postsData[index]['appUserId'],
+                              isAnonymous: postsData[index]['isAnonymous'],
+                              userId: userId,
+                              photoUrl: postsData[index]['photoUrl'],
+                              postPhotoUrl: postsData[index]['postPhotoUrl'],
+                              commentsCount: postsData[index]['commentsCount'],
                             ),
                           );
                         },
@@ -157,5 +155,3 @@ class _Posts extends State<Posts> {
     );
   }
 }
-
-

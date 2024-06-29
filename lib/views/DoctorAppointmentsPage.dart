@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:mentalhealthh/services/doctorapi.dart'; // Replace with your actual path
 
 class DoctorAppointmentsPage extends StatefulWidget {
@@ -62,6 +63,13 @@ class _DoctorAppointmentsPageState extends State<DoctorAppointmentsPage> {
     }
   }
 
+  String _formatDateTime(String dateTimeString) {
+    final DateTime dateTime = DateTime.parse(dateTimeString);
+    final String formattedDate = DateFormat.yMMMd().format(dateTime); // e.g., Jan 1, 2020
+    final String formattedTime = DateFormat.jm().format(dateTime); // e.g., 6:00 AM
+    return '$formattedDate at $formattedTime';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -83,8 +91,8 @@ class _DoctorAppointmentsPageState extends State<DoctorAppointmentsPage> {
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                          'Time: ${appointment['startTime']} - ${appointment['endTime']}'),
+                      Text('Time:${_formatDateTime(appointment['startTime'])}'),
+                       Text('${_formatDateTime(appointment['endTime'])}'),
                       Text('Status: ${appointment['status']}'),
                     ],
                   ),
