@@ -20,10 +20,11 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  TextEditingController forgotPasswordEmailController = TextEditingController();
 
   String emailError = '';
   String passwordError = '';
-  String genericError = ''; // Added to store generic error message
+  String genericError = '';
 
   void signInWithGoogle() async {
     try {
@@ -35,7 +36,6 @@ class _LoginState extends State<Login> {
             await googleUser.authentication;
         final String accessToken = googleAuth.accessToken!;
 
-        // Call External Login API
         final String apiUrl =
             'https://mentalmediator.somee.com/api/auth/external-login-callback';
         final http.Response response = await http.get(
@@ -47,7 +47,6 @@ class _LoginState extends State<Login> {
 
         if (response.statusCode == 200) {
           print("login Successful");
-          // Handle successful login here if needed
         } else {
           print('Login failed. Status code: ${response.statusCode}');
           log('Response body: ${response.body}');
@@ -56,41 +55,33 @@ class _LoginState extends State<Login> {
         print("User canceled Google Sign-In");
       }
     } catch (error) {
-      // Handle any errors
       print('Error during Google Sign-In: $error');
     }
   }
 
   void login() async {
     try {
-      // API endpoint
       final String apiUrl =
           'https://nexus-api-h3ik.onrender.com/api/auth/signin';
 
-      // Request data
       Map<String, dynamic> requestData = {
         "email": emailController.text,
         "password": passwordController.text,
       };
 
-      // Convert data to JSON
       String requestBody = jsonEncode(requestData);
 
-      // Set headers
       Map<String, String> headers = {
         'Content-Type': 'application/json',
       };
 
-      // Perform POST request
       final http.Response response = await http.post(
         Uri.parse(apiUrl),
         headers: headers,
         body: requestBody,
       );
 
-      // Check response status code
       if (response.statusCode == 200) {
-        // Login successful, handle the response accordingly
         String token = json.decode(response.body)['token'];
         String userId = json.decode(response.body)['userId'];
         String userName = json.decode(response.body)['userName'];
@@ -116,7 +107,6 @@ class _LoginState extends State<Login> {
           );
         }
       } else {
-        // Login failed, handle the error
         print('Login failed. Status code: ${response.statusCode}');
         log('Response body: ${response.body}');
 
@@ -136,14 +126,106 @@ class _LoginState extends State<Login> {
             }
           }
         } catch (e) {
-          // Handle JSON decoding error
           print('Error decoding error response: $e');
         }
       }
     } catch (error) {
-      // Handle any network or other errors
       print('Error during login: $error');
     }
+  }
+
+  Future<String?> getToken() async {
+    return await Auth.getToken();
+  }
+
+  void forgotPassword() async {
+  String email = forgotPasswordEmailController.text.trim();
+
+  if (email.isEmpty) {
+    setState(() {
+      genericError = 'Please enter your email.';
+    });
+    return;
+  }
+
+  final String apiUrl =
+      'https://nexus-api-h3ik.onrender.com/api/auth/send-reset-password-link?email=$email';
+
+  Map<String, String> headers = {
+    'Content-Type': 'application/json',
+  };
+
+  try {
+    print('Sending request to $apiUrl');
+    print('Headers: $headers');
+
+    final http.Response response = await http.post(
+      Uri.parse(apiUrl),
+      headers: headers,
+    );
+
+    print('Response status code: ${response.statusCode}');
+    print('Response body: ${response.body}');
+
+    if (response.statusCode == 200) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Success'),
+            content: Text('An email with reset password link has been sent to your email address.'),
+            actions: [
+              TextButton(
+                child: Text('OK'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      setState(() {
+        genericError = 'Failed to send reset link. Please try again.';
+      });
+      print('Forgot password failed. Status code: ${response.statusCode}');
+      log('Response body: ${response.body}');
+    }
+  } catch (error) {
+    setState(() {
+      genericError = 'Error during request. Please try again.';
+    });
+    print('Error during forgot password: $error');
+  }
+}
+
+
+  void showForgotPasswordDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Forgot Password'),
+          content: TextField(
+            controller: forgotPasswordEmailController,
+            decoration: InputDecoration(hintText: "Enter your email"),
+          ),
+          actions: [
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            TextButton(
+              child: Text('Submit'),
+              onPressed: forgotPassword,
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -207,10 +289,7 @@ class _LoginState extends State<Login> {
                 hintText: "Email",
                 controller: emailController,
               ),
-
               SizedBox(height: 15),
-              // Display generic error message for any other errors
-
               Padding(
                 padding: EdgeInsets.only(left: 14),
                 child: Row(
@@ -225,16 +304,12 @@ class _LoginState extends State<Login> {
                 controller: passwordController,
                 isPassword: true,
               ),
-
               SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   GestureDetector(
-                    onTap: () {
-                      // we edit it later
-                      // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Signup()));
-                    },
+                    onTap: showForgotPasswordDialog,
                     child: Text(
                       "Forgot Password?",
                       style: TextStyle(color: Color(0xff4285F4)),

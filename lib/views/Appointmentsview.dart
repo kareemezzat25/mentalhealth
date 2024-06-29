@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:mentalhealthh/services/AppointmentApi.dart'; // Update the path accordingly
-import 'package:mentalhealthh/models/appointment.dart'; // Ensure this path is correct
-import 'package:mentalhealthh/authentication/auth.dart'; // Ensure this path is correct
+import 'package:mentalhealthh/services/AppointmentApi.dart';
+import 'package:mentalhealthh/models/appointment.dart';
+import 'package:mentalhealthh/authentication/auth.dart';
 
 class Appointmentsview extends StatefulWidget {
   @override
@@ -15,6 +15,7 @@ class _AppointmentsviewState extends State<Appointmentsview> {
   List<Appointment> filteredAppointments = [];
   bool isLoading = false;
   String selectedStatus = 'All';
+  String doctorName = '';
   String? userId;
 
   @override
@@ -24,8 +25,7 @@ class _AppointmentsviewState extends State<Appointmentsview> {
   }
 
   Future<void> _fetchUserId() async {
-    userId =
-        await Auth.getUserId(); // Assuming you have a method to get the userId
+    userId = await Auth.getUserId();
     _fetchAppointments();
   }
 
@@ -35,8 +35,7 @@ class _AppointmentsviewState extends State<Appointmentsview> {
     });
 
     try {
-      final newAppointments =
-          await bookingApi.getAppointments(pageNumber: 1, pageSize: 10);
+      final newAppointments = await bookingApi.getAppointments(pageNumber: 1, pageSize: 10);
 
       setState(() {
         appointments = newAppointments;
@@ -51,18 +50,20 @@ class _AppointmentsviewState extends State<Appointmentsview> {
     }
   }
 
-  Future<void> _searchAppointments(String? status) async {
+  Future<void> _searchAppointments({String? status, String? doctorName}) async {
     setState(() {
       isLoading = true;
     });
 
     try {
-      // final searchedAppointments =
-      //     await bookingApi.searchAppointmentsByStatus(status: status!);
+      final searchedAppointments = await bookingApi.searchAppointments(
+        status: status == 'All' ? null : status,
+        doctorName: doctorName,
+      );
 
-      // setState(() {
-      //   filteredAppointments = searchedAppointments;
-      // });
+      setState(() {
+        filteredAppointments = searchedAppointments;
+      });
     } catch (error) {
       print('Error searching appointments: $error');
     } finally {
@@ -71,8 +72,7 @@ class _AppointmentsviewState extends State<Appointmentsview> {
       });
     }
   }
-
-  String _formatDateTime(String dateTimeString) {
+   String _formatDateTime(String dateTimeString) {
     final DateTime dateTime = DateTime.parse(dateTimeString);
     final String formattedDate =
         DateFormat.yMMMd().format(dateTime); // e.g., Jan 1, 2020
@@ -86,6 +86,7 @@ class _AppointmentsviewState extends State<Appointmentsview> {
       context: context,
       builder: (context) {
         String? newStatus = selectedStatus;
+        String newDoctorName = doctorName;
 
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setState) {
@@ -116,6 +117,16 @@ class _AppointmentsviewState extends State<Appointmentsview> {
                     hint: Text('Select Status'),
                     isExpanded: true,
                   ),
+                  TextField(
+                    decoration: InputDecoration(
+                      labelText: 'Doctor Name',
+                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        newDoctorName = value;
+                      });
+                    },
+                  ),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       primary: Colors.blue,
@@ -124,9 +135,12 @@ class _AppointmentsviewState extends State<Appointmentsview> {
                     onPressed: () {
                       setState(() {
                         selectedStatus = newStatus!;
+                        doctorName = newDoctorName;
                       });
                       _searchAppointments(
-                          selectedStatus == 'All' ? null : selectedStatus);
+                        status: selectedStatus == 'All' ? null : selectedStatus,
+                        doctorName: doctorName.isEmpty ? null : doctorName,
+                      );
                       Navigator.pop(context);
                     },
                     child: Text('Apply Filters'),
@@ -139,8 +153,9 @@ class _AppointmentsviewState extends State<Appointmentsview> {
                     onPressed: () {
                       setState(() {
                         selectedStatus = 'All';
+                        doctorName = '';
                       });
-                      _searchAppointments(null);
+                      _searchAppointments();
                       Navigator.pop(context);
                     },
                     child: Text('Reset Filters'),
@@ -175,8 +190,7 @@ class _AppointmentsviewState extends State<Appointmentsview> {
                   itemBuilder: (context, index) {
                     final appointment = filteredAppointments[index];
                     Color cardColor;
-                    String imageUrl = (appointment.doctorPhotoUrl.isEmpty ||
-                            !appointment.doctorPhotoUrl.contains('http'))
+                    String imageUrl = (appointment.doctorPhotoUrl.isEmpty || !appointment.doctorPhotoUrl.contains('http'))
                         ? 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-600nw-1677509740.jpg'
                         : appointment.doctorPhotoUrl;
                     String? reason;
@@ -199,8 +213,7 @@ class _AppointmentsviewState extends State<Appointmentsview> {
                         reason = null;
                     }
 
-                    final formattedDateTime =
-                        _formatDateTime(appointment.startTime);
+                    final formattedDateTime = _formatDateTime(appointment.startTime);
 
                     return Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -219,14 +232,12 @@ class _AppointmentsviewState extends State<Appointmentsview> {
                                   ),
                                   SizedBox(width: 10),
                                   Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         appointment.doctorName,
                                         style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold),
+                                            fontSize: 16, fontWeight: FontWeight.bold),
                                       ),
                                       Text(formattedDateTime),
                                     ],
