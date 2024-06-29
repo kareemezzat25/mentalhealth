@@ -35,7 +35,12 @@ class _AppointmentsviewState extends State<Appointmentsview> {
     });
 
     try {
-      final newAppointments = await bookingApi.getAppointments(pageNumber: 1, pageSize: 10);
+      final newAppointments = await bookingApi.getAppointments(
+        pageNumber: 1,
+        pageSize: 10,
+        doctorName: doctorName.isNotEmpty ? doctorName : null,
+        status: selectedStatus != 'All' ? selectedStatus : null,
+      );
 
       setState(() {
         appointments = newAppointments;
@@ -50,29 +55,15 @@ class _AppointmentsviewState extends State<Appointmentsview> {
     }
   }
 
-  Future<void> _searchAppointments({String? status, String? doctorName}) async {
+  void _resetFilters() {
     setState(() {
-      isLoading = true;
+      selectedStatus = 'All';
+      doctorName = '';
     });
-
-    try {
-      final searchedAppointments = await bookingApi.searchAppointments(
-        status: status == 'All' ? null : status,
-        doctorName: doctorName,
-      );
-
-      setState(() {
-        filteredAppointments = searchedAppointments;
-      });
-    } catch (error) {
-      print('Error searching appointments: $error');
-    } finally {
-      setState(() {
-        isLoading = false;
-      });
-    }
+    _fetchAppointments(); // Refresh appointments with cleared filters
   }
-   String _formatDateTime(String dateTimeString) {
+
+  String _formatDateTime(String dateTimeString) {
     final DateTime dateTime = DateTime.parse(dateTimeString);
     final String formattedDate =
         DateFormat.yMMMd().format(dateTime); // e.g., Jan 1, 2020
@@ -84,86 +75,71 @@ class _AppointmentsviewState extends State<Appointmentsview> {
   void _showSearchModal() {
     showModalBottomSheet(
       context: context,
-      builder: (context) {
-        String? newStatus = selectedStatus;
-        String newDoctorName = doctorName;
-
-        return StatefulBuilder(
-          builder: (BuildContext context, StateSetter setState) {
-            return Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
+      builder: (BuildContext context) {
+        return Container(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              DropdownButtonFormField<String>(
+                value: selectedStatus,
+                onChanged: (String? value) {
+                  setState(() {
+                    selectedStatus = value ?? 'All';
+                  });
+                },
+                items: <String>[
+                  'All',
+                  'Pending',
+                  'Cancelled',
+                  'Rejected',
+                  'Confirmed'
+                ].map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+                decoration: InputDecoration(
+                  labelText: 'Select Status',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              SizedBox(height: 10),
+              TextField(
+                onChanged: (value) {
+                  setState(() {
+                    doctorName = value;
+                  });
+                },
+                decoration: InputDecoration(
+                  labelText: 'Enter Doctor Name',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  DropdownButton<String>(
-                    value: newStatus,
-                    items: <String>[
-                      'All',
-                      'Pending',
-                      'Cancelled',
-                      'Rejected',
-                      'Confirmed'
-                    ].map((String status) {
-                      return DropdownMenuItem<String>(
-                        value: status,
-                        child: Text(status),
-                      );
-                    }).toList(),
-                    onChanged: (String? value) {
-                      setState(() {
-                        newStatus = value!;
-                      });
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context); // Close the modal
+                      _fetchAppointments(); // Apply filters and refresh
                     },
-                    hint: Text('Select Status'),
-                    isExpanded: true,
-                  ),
-                  TextField(
-                    decoration: InputDecoration(
-                      labelText: 'Doctor Name',
-                    ),
-                    onChanged: (value) {
-                      setState(() {
-                        newDoctorName = value;
-                      });
-                    },
+                    child: Text('Apply Filter'),
                   ),
                   ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      primary: Colors.blue,
-                      onPrimary: Colors.white,
-                    ),
                     onPressed: () {
-                      setState(() {
-                        selectedStatus = newStatus!;
-                        doctorName = newDoctorName;
-                      });
-                      _searchAppointments(
-                        status: selectedStatus == 'All' ? null : selectedStatus,
-                        doctorName: doctorName.isEmpty ? null : doctorName,
-                      );
-                      Navigator.pop(context);
-                    },
-                    child: Text('Apply Filters'),
-                  ),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      primary: Colors.blue,
-                      onPrimary: Colors.white,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        selectedStatus = 'All';
-                        doctorName = '';
-                      });
-                      _searchAppointments();
-                      Navigator.pop(context);
+                      Navigator.pop(context); // Close the modal
+                      _resetFilters(); // Reset filters
                     },
                     child: Text('Reset Filters'),
                   ),
                 ],
               ),
-            );
-          },
+            ],
+          ),
         );
       },
     );
@@ -177,7 +153,9 @@ class _AppointmentsviewState extends State<Appointmentsview> {
         actions: [
           IconButton(
             icon: Icon(Icons.search),
-            onPressed: _showSearchModal,
+            onPressed: () {
+              _showSearchModal();
+            },
           ),
         ],
       ),
@@ -190,7 +168,8 @@ class _AppointmentsviewState extends State<Appointmentsview> {
                   itemBuilder: (context, index) {
                     final appointment = filteredAppointments[index];
                     Color cardColor;
-                    String imageUrl = (appointment.doctorPhotoUrl.isEmpty || !appointment.doctorPhotoUrl.contains('http'))
+                    String imageUrl = (appointment.doctorPhotoUrl.isEmpty ||
+                            !appointment.doctorPhotoUrl.contains('http'))
                         ? 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-600nw-1677509740.jpg'
                         : appointment.doctorPhotoUrl;
                     String? reason;
@@ -213,7 +192,8 @@ class _AppointmentsviewState extends State<Appointmentsview> {
                         reason = null;
                     }
 
-                    final formattedDateTime = _formatDateTime(appointment.startTime);
+                    final formattedDateTime =
+                        _formatDateTime(appointment.startTime);
 
                     return Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -232,12 +212,14 @@ class _AppointmentsviewState extends State<Appointmentsview> {
                                   ),
                                   SizedBox(width: 10),
                                   Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         appointment.doctorName,
                                         style: TextStyle(
-                                            fontSize: 16, fontWeight: FontWeight.bold),
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold),
                                       ),
                                       Text(formattedDateTime),
                                     ],
