@@ -180,7 +180,7 @@ class _CommonDrawerState extends State<CommonDrawer> {
                 context,
                 MaterialPageRoute(
                     builder: (context) =>
-                        Posts(userId: widget.userId, showUserPosts: true)),
+                        Posts(userId: widget.userId, showUserPosts: true,)),
               );
             },
           ),

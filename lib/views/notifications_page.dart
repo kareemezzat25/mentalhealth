@@ -5,6 +5,7 @@ import 'dart:convert';
 
 import 'package:mentalhealthh/authentication/auth.dart';
 import 'package:mentalhealthh/views/PostComment.dart'; // Import the PostComment.dart page
+import 'package:mentalhealthh/views/Appointmentsview.dart'; // Import the PostComment.dart page
 
 class NotificationsPage extends StatefulWidget {
   @override
@@ -161,6 +162,12 @@ class _NotificationsPageState extends State<NotificationsPage> {
             builder: (context) => PostComment(
                   postId: postId,
                 )),
+      );
+    } else if (notification['type'] == 'AppointmentConfirmation' ||
+        notification['type'] == 'AppointmentRejection') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => Appointmentsview()),
       );
     }
   }

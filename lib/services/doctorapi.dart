@@ -125,6 +125,45 @@ class DoctorsApi {
     }
   }
 
+  Future<List<Map<String, dynamic>>> fetchFilteredAppointments({
+  String? clientName,
+  String? startDate,
+  String? endDate,
+  String? status,
+}) async {
+  String? token = await Auth.getToken();
+
+  Map<String, String> queryParams = {};
+  if (clientName != null) queryParams['clientName'] = clientName;
+  if (startDate != null) queryParams['startDate'] = startDate;
+  if (endDate != null) queryParams['endDate'] = endDate;
+  if (status != null) queryParams['status'] = status;
+
+  Uri uri = Uri.parse(
+      'https://nexus-api-h3ik.onrender.com/api/appointments/doctors/me')
+      .replace(queryParameters: queryParams);
+
+  final response = await http.get(
+    uri,
+    headers: {
+      'Authorization': 'Bearer $token',
+    },
+  );
+
+  // Log the request URI and response for debugging
+  print('Request URL: $uri');
+  print('Response status: ${response.statusCode}');
+  print('Response body: ${response.body}');
+
+  if (response.statusCode == 200) {
+    List<dynamic> data = json.decode(response.body);
+    return data.map((appointment) => appointment as Map<String, dynamic>).toList();
+  } else {
+    throw Exception('Failed to load appointments');
+  }
+}
+
+
   Future<void> confirmAppointment(String appointmentId) async {
     String? token = await Auth.getToken();
     final response = await http.put(

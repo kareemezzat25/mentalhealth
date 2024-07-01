@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:mentalhealthh/authentication/auth.dart';
@@ -10,18 +11,30 @@ class PostsApi {
 
   // New method to reload posts
   static Future<void> reloadPosts() async {}
-  static Future<List<Map<String, dynamic>>> fetchPaginatedPosts(
-      int pageNumber, int pageSize) async {
-    final response = await http
-        .get(Uri.parse('$apiUrl?pageNumber=$pageNumber&pageSize=$pageSize'));
+ static Future<List<Map<String, dynamic>>> fetchPaginatedPosts(
+    int pageNumber, int pageSize, {bool? confessionsOnly}) async {
+  final Map<String, String> queryParams = {
+    'pageNumber': pageNumber.toString(),
+    'pageSize': pageSize.toString(),
+  };
 
-    if (response.statusCode == 200) {
-      final List<dynamic> data = json.decode(response.body);
-      return data.cast<Map<String, dynamic>>();
-    } else {
-      throw Exception('Failed to load paginated posts');
-    }
+  if (confessionsOnly != null) {
+    queryParams['ConfessionsOnly'] = confessionsOnly.toString();
   }
+
+  final Uri uri = Uri.parse('$apiUrl').replace(queryParameters: queryParams);
+
+  final response = await http.get(uri);
+
+  if (response.statusCode == 200) {
+    final List<dynamic> data = json.decode(response.body);
+    return data.cast<Map<String, dynamic>>();
+  } else {
+    throw Exception('Failed to load paginated posts');
+  }
+}
+
+
 
   // Inside deletePost function
   static Future<void> deletePost({
@@ -154,52 +167,43 @@ class PostsApi {
     }
   }
 
-  // Inside the createPost function
-  static Future<void> createPost(String title, String content, String token,
-      BuildContext context, bool isAnonymous,
-      [String? imageUrl]) async {
-    try {
-      final Map<String, dynamic> requestData = {
-        "title": title,
-        "content": content,
-        "isAnonymous": isAnonymous,
-        if (imageUrl != null)
-          "imageUrl": imageUrl, // Add image URL if available
-      };
+Future<String?> createPost(
+    String title, String content, String token, bool isAnonymous, File? imageFile) async {
+  try {
+    var request = http.MultipartRequest('POST', Uri.parse(apiUrl));
+    request.headers['Authorization'] = 'Bearer $token';
 
-      final String requestBody = jsonEncode(requestData);
-      final Map<String, String> headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token', // Include token in headers
-      };
+    // Add form fields
+    request.fields['title'] = title;
+    request.fields['content'] = content;
+    request.fields['isAnonymous'] = isAnonymous.toString();
 
-      final http.Response response = await http.post(
-        Uri.parse(apiUrl),
-        headers: headers,
-        body: requestBody,
+    // Add image file if available
+    if (imageFile != null) {
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          'photoPost',
+          imageFile.path,
+          filename: imageFile.path.split('/').last,
+        ),
       );
-
-      if (response.statusCode == 201) {
-        print("isanonyy:${isAnonymous}");
-        // Post created successfully, switch to the Posts tab
-        DefaultTabController.of(context)
-            ?.animateTo(1); // 1 is the index of the Posts tab
-      } else if (response.statusCode != 201) {
-        try {
-          final Map<String, dynamic> errorBody = jsonDecode(response.body);
-        } catch (e) {
-          // Handle JSON decoding error
-          print('Error decoding error response: $e');
-        }
-
-        throw Exception('Failed to create post');
-      }
-    } catch (error) {
-      // Handle any network or unexpected errors
-      print('Error: $error');
-      throw Exception('Failed to create post');
     }
+
+    var response = await request.send();
+    if (response.statusCode == 201) {
+      final responseBody = await response.stream.bytesToString();
+      final jsonResponse = json.decode(responseBody);
+      return jsonResponse['url']; // Return the image URL
+    } else {
+      print('Failed to create post. Status code: ${response.statusCode}');
+      print('Response body: ${await response.stream.bytesToString()}');
+      return null;
+    }
+  } catch (error) {
+    print('Error during createPost: $error');
+    return null;
   }
+}
 
   static Future<Map<String, dynamic>> fetchPostDetailsWithAuthor(
       int postId) async {

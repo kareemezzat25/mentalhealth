@@ -7,31 +7,34 @@ import 'package:mentalhealthh/services/postsApi.dart';
 
 class Posts extends StatefulWidget {
   final String? userId;
-  final bool showUserPosts; // Add this parameter
+  final bool showUserPosts;
+  final bool? confessionsOnly;
 
-  Posts({this.userId, this.showUserPosts = false});
+  Posts({Key? key, this.userId, this.showUserPosts = false, this.confessionsOnly}) : super(key: key);
 
   @override
-  _Posts createState() => _Posts();
+  PostsState createState() => PostsState();
 }
 
-class _Posts extends State<Posts> {
+class PostsState extends State<Posts> {
   late Future<List<Map<String, dynamic>>> posts;
   int currentPage = 1;
   int pageSize = 30;
-  String userId = ""; // Declare userId as a field
-
-  void changeData() {
-    setState(() {
-      _refreshPosts();
-    });
-  }
+  String userId = "";
+  bool hasMoreData = true;
 
   Future<void> _refreshPosts() async {
     setState(() {
       posts = widget.showUserPosts && widget.userId != null
           ? PostsApi.fetchUserPosts(widget.userId!, currentPage, pageSize)
-          : PostsApi.fetchPaginatedPosts(currentPage, pageSize);
+          : widget.confessionsOnly != null
+              ? PostsApi.fetchPaginatedPosts(currentPage, pageSize, confessionsOnly: widget.confessionsOnly!)
+              : PostsApi.fetchPaginatedPosts(currentPage, pageSize);
+      posts.then((data) {
+        setState(() {
+          hasMoreData = data.length == pageSize;
+        });
+      });
     });
   }
 
@@ -41,7 +44,14 @@ class _Posts extends State<Posts> {
     initUser();
     posts = widget.showUserPosts && widget.userId != null
         ? PostsApi.fetchUserPosts(widget.userId!, currentPage, pageSize)
-        : PostsApi.fetchPaginatedPosts(currentPage, pageSize);
+        : widget.confessionsOnly != null
+            ? PostsApi.fetchPaginatedPosts(currentPage, pageSize, confessionsOnly: widget.confessionsOnly!)
+            : PostsApi.fetchPaginatedPosts(currentPage, pageSize);
+    posts.then((data) {
+      setState(() {
+        hasMoreData = data.length == pageSize;
+      });
+    });
   }
 
   Future<void> initUser() async {
@@ -74,7 +84,7 @@ class _Posts extends State<Posts> {
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
           return ForumsPage(userId: userId);
         }));
-        return false; // Prevent default behavior
+        return false;
       },
       child: Scaffold(
         body: RefreshIndicator(
@@ -107,7 +117,7 @@ class _Posts extends State<Posts> {
                                 ),
                               );
                               if (refresh != null) {
-                                changeData();
+                                _refreshPosts();
                               }
                             },
                             child: Forum(
@@ -135,16 +145,17 @@ class _Posts extends State<Posts> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    if (currentPage != 1)
+                    if (currentPage > 1)
                       IconButton(
                         icon: Icon(Icons.arrow_back),
                         onPressed: _loadPreviousPage,
                       ),
                     Text('Page $currentPage'),
-                    IconButton(
-                      icon: Icon(Icons.arrow_forward),
-                      onPressed: _loadNextPage,
-                    ),
+                    if (hasMoreData)
+                      IconButton(
+                        icon: Icon(Icons.arrow_forward),
+                        onPressed: _loadNextPage,
+                      ),
                   ],
                 ),
               ),

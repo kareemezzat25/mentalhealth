@@ -98,7 +98,7 @@ class _LoginState extends State<Login> {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-                builder: (context) => DoctorMainPage(DoctorId: userId)),
+                builder: (context) => DoctorMainPage(doctorId: userId)),
           );
         } else {
           Navigator.pushReplacement(
