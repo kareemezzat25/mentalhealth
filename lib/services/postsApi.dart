@@ -11,30 +11,51 @@ class PostsApi {
 
   // New method to reload posts
   static Future<void> reloadPosts() async {}
- static Future<List<Map<String, dynamic>>> fetchPaginatedPosts(
-    int pageNumber, int pageSize, {bool? confessionsOnly}) async {
-  final Map<String, String> queryParams = {
-    'pageNumber': pageNumber.toString(),
-    'pageSize': pageSize.toString(),
-  };
+  static Future<List<Map<String, dynamic>>> fetchPaginatedPosts(
+    int pageNumber,
+    int pageSize, {
+    bool? confessionsOnly,
+    String? title,
+    String? content,
+    String? username,
+    DateTime? startTime,
+    DateTime? endTime,
+  }) async {
+    final Map<String, String> queryParams = {
+      'pageNumber': pageNumber.toString(),
+      'pageSize': pageSize.toString(),
+    };
 
-  if (confessionsOnly != null) {
-    queryParams['ConfessionsOnly'] = confessionsOnly.toString();
+    if (confessionsOnly != null) {
+      queryParams['ConfessionsOnly'] = confessionsOnly.toString();
+    }
+    if (title != null) {
+      queryParams['Title'] = title;
+    }
+    if (content != null) {
+      queryParams['Content'] = content;
+    }
+    if (username != null) {
+      queryParams['Username'] = username;
+    }
+    if (startTime != null) {
+      queryParams['StartTime'] = startTime.toIso8601String();
+    }
+    if (endTime != null) {
+      queryParams['EndTime'] = endTime.toIso8601String();
+    }
+
+    final Uri uri = Uri.parse('$apiUrl').replace(queryParameters: queryParams);
+
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      return data.cast<Map<String, dynamic>>();
+    } else {
+      throw Exception('Failed to load paginated posts');
+    }
   }
-
-  final Uri uri = Uri.parse('$apiUrl').replace(queryParameters: queryParams);
-
-  final response = await http.get(uri);
-
-  if (response.statusCode == 200) {
-    final List<dynamic> data = json.decode(response.body);
-    return data.cast<Map<String, dynamic>>();
-  } else {
-    throw Exception('Failed to load paginated posts');
-  }
-}
-
-
 
   // Inside deletePost function
   static Future<void> deletePost({
@@ -121,9 +142,11 @@ class PostsApi {
       return Map<String, dynamic>(); // Return an empty map
     }
   }
-   static Future<List<Map<String, dynamic>>> fetchUserPosts(
+
+  static Future<List<Map<String, dynamic>>> fetchUserPosts(
       String userId, int pageNumber, int pageSize) async {
-    final String url = '$apiUrl/user/$userId?pageNumber=$pageNumber&pageSize=$pageSize';
+    final String url =
+        '$apiUrl/user/$userId?pageNumber=$pageNumber&pageSize=$pageSize';
     print('Fetching user posts from URL: $url');
 
     String? token = await Auth.getToken();
@@ -167,43 +190,43 @@ class PostsApi {
     }
   }
 
-Future<String?> createPost(
-    String title, String content, String token, bool isAnonymous, File? imageFile) async {
-  try {
-    var request = http.MultipartRequest('POST', Uri.parse(apiUrl));
-    request.headers['Authorization'] = 'Bearer $token';
+  Future<String?> createPost(String title, String content, String token,
+      bool isAnonymous, File? imageFile) async {
+    try {
+      var request = http.MultipartRequest('POST', Uri.parse(apiUrl));
+      request.headers['Authorization'] = 'Bearer $token';
 
-    // Add form fields
-    request.fields['title'] = title;
-    request.fields['content'] = content;
-    request.fields['isAnonymous'] = isAnonymous.toString();
+      // Add form fields
+      request.fields['title'] = title;
+      request.fields['content'] = content;
+      request.fields['isAnonymous'] = isAnonymous.toString();
 
-    // Add image file if available
-    if (imageFile != null) {
-      request.files.add(
-        await http.MultipartFile.fromPath(
-          'photoPost',
-          imageFile.path,
-          filename: imageFile.path.split('/').last,
-        ),
-      );
-    }
+      // Add image file if available
+      if (imageFile != null) {
+        request.files.add(
+          await http.MultipartFile.fromPath(
+            'photoPost',
+            imageFile.path,
+            filename: imageFile.path.split('/').last,
+          ),
+        );
+      }
 
-    var response = await request.send();
-    if (response.statusCode == 201) {
-      final responseBody = await response.stream.bytesToString();
-      final jsonResponse = json.decode(responseBody);
-      return jsonResponse['url']; // Return the image URL
-    } else {
-      print('Failed to create post. Status code: ${response.statusCode}');
-      print('Response body: ${await response.stream.bytesToString()}');
+      var response = await request.send();
+      if (response.statusCode == 201) {
+        final responseBody = await response.stream.bytesToString();
+        final jsonResponse = json.decode(responseBody);
+        return jsonResponse['url']; // Return the image URL
+      } else {
+        print('Failed to create post. Status code: ${response.statusCode}');
+        print('Response body: ${await response.stream.bytesToString()}');
+        return null;
+      }
+    } catch (error) {
+      print('Error during createPost: $error');
       return null;
     }
-  } catch (error) {
-    print('Error during createPost: $error');
-    return null;
   }
-}
 
   static Future<Map<String, dynamic>> fetchPostDetailsWithAuthor(
       int postId) async {
@@ -215,7 +238,7 @@ Future<String?> createPost(
     } else {
       throw Exception('Failed to load post details');
     }
-  }	
+  }
 
   // New method to fetch details of a specific post
   static Future<Map<String, dynamic>> fetchPostDetails(int postId) async {
@@ -324,4 +347,3 @@ Future<String?> createPost(
   //   }
   // }
 }
-

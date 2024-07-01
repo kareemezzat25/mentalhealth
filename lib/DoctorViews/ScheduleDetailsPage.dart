@@ -25,7 +25,8 @@ class _ScheduleDetailsPageState extends State<ScheduleDetailsPage> {
     super.initState();
     _startTimeController = TextEditingController(text: widget.day.startTime);
     _endTimeController = TextEditingController(text: widget.day.endTime);
-    _sessionDurationController = TextEditingController(text: widget.day.sessionDuration);
+    _sessionDurationController =
+        TextEditingController(text: widget.day.sessionDuration);
   }
 
   @override
@@ -36,7 +37,8 @@ class _ScheduleDetailsPageState extends State<ScheduleDetailsPage> {
     super.dispose();
   }
 
-  Future<void> _selectTime(BuildContext context, TextEditingController controller) async {
+  Future<void> _selectTime(
+      BuildContext context, TextEditingController controller) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
@@ -83,20 +85,20 @@ class _ScheduleDetailsPageState extends State<ScheduleDetailsPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                 ElevatedButton(
-                  onPressed: () => _updateSchedule(context),
-                  style: ElevatedButton.styleFrom(
-                    primary: Colors.blue, // background color
-                    onPrimary: Colors.white, // text color
-                    padding: EdgeInsets.symmetric(horizontal: 40, vertical: 16),
-                    textStyle: TextStyle(fontSize: 20),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(18),
+                  ElevatedButton(
+                    onPressed: () => _updateSchedule(context),
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.blue, // background color
+                      onPrimary: Colors.white, // text color
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+                      textStyle: TextStyle(fontSize: 20),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(18),
+                      ),
                     ),
-                  ),
                     child: Text('Update'),
                   ),
-
                 ],
               ),
             ],
@@ -106,64 +108,65 @@ class _ScheduleDetailsPageState extends State<ScheduleDetailsPage> {
     );
   }
 
- Widget _buildTimePickerRow(String label, TextEditingController controller) {
-  return Row(
-    children: [
-      SizedBox(
-        width: 120,
-        child: Text(
-          "$label:",
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+  Widget _buildTimePickerRow(String label, TextEditingController controller) {
+    return Row(
+      children: [
+        SizedBox(
+          width: 120,
+          child: Text(
+            "$label:",
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+          ),
         ),
-      ),
-      SizedBox(width: 10),
-      Expanded(
-        child: TextFormField(
-          readOnly: true,
-          controller: controller,
-          decoration: InputDecoration(
-            suffixIcon: Icon(Icons.access_time),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8.0),
+        SizedBox(width: 10),
+        Expanded(
+          child: TextFormField(
+            readOnly: true,
+            controller: controller,
+            decoration: InputDecoration(
+              suffixIcon: Icon(Icons.access_time),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              contentPadding:
+                  EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
             ),
-            contentPadding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+            onTap: () => _selectTime(context, controller),
           ),
-          onTap: () => _selectTime(context, controller),
         ),
-      ),
-    ],
-  );
-}
+      ],
+    );
+  }
 
-Widget _buildEditableRow(String label, TextEditingController controller) {
-  return Row(
-    children: [
-      SizedBox(
-        width: 120,
-        child: Text(
-          "$label:",
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+  Widget _buildEditableRow(String label, TextEditingController controller) {
+    return Row(
+      children: [
+        SizedBox(
+          width: 120,
+          child: Text(
+            "$label:",
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+          ),
         ),
-      ),
-      SizedBox(width: 10),
-      Expanded(
-        child: TextFormField(
-          controller: controller,
-          decoration: InputDecoration(
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8.0),
+        SizedBox(width: 10),
+        Expanded(
+          child: TextFormField(
+            controller: controller,
+            decoration: InputDecoration(
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              contentPadding:
+                  EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
             ),
-            contentPadding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
-          ),
-          style: TextStyle(
-            fontSize: 18,
+            style: TextStyle(
+              fontSize: 18,
+            ),
           ),
         ),
-      ),
-    ],
-  );
-}
-
+      ],
+    );
+  }
 
   void _updateSchedule(BuildContext context) {
     String startTime = _startTimeController.text;

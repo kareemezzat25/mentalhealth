@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart'; // Import for date formatting
 import 'package:mentalhealthh/authentication/auth.dart';
 import 'package:mentalhealthh/views/ForumsPage.dart';
 import 'package:mentalhealthh/views/PostComment.dart';
@@ -10,7 +11,9 @@ class Posts extends StatefulWidget {
   final bool showUserPosts;
   final bool? confessionsOnly;
 
-  Posts({Key? key, this.userId, this.showUserPosts = false, this.confessionsOnly}) : super(key: key);
+  Posts(
+      {Key? key, this.userId, this.showUserPosts = false, this.confessionsOnly})
+      : super(key: key);
 
   @override
   PostsState createState() => PostsState();
@@ -23,13 +26,37 @@ class PostsState extends State<Posts> {
   String userId = "";
   bool hasMoreData = true;
 
+  String? titleFilter;
+  String? contentFilter;
+  String? usernameFilter;
+  DateTime? startTimeFilter;
+  DateTime? endTimeFilter;
+
   Future<void> _refreshPosts() async {
     setState(() {
+      // Fetching posts with updated filters
       posts = widget.showUserPosts && widget.userId != null
           ? PostsApi.fetchUserPosts(widget.userId!, currentPage, pageSize)
           : widget.confessionsOnly != null
-              ? PostsApi.fetchPaginatedPosts(currentPage, pageSize, confessionsOnly: widget.confessionsOnly!)
-              : PostsApi.fetchPaginatedPosts(currentPage, pageSize);
+              ? PostsApi.fetchPaginatedPosts(
+                  currentPage,
+                  pageSize,
+                  confessionsOnly: widget.confessionsOnly!,
+                  title: titleFilter,
+                  content: contentFilter,
+                  username: usernameFilter,
+                  startTime: startTimeFilter,
+                  endTime: endTimeFilter,
+                )
+              : PostsApi.fetchPaginatedPosts(
+                  currentPage,
+                  pageSize,
+                  title: titleFilter,
+                  content: contentFilter,
+                  username: usernameFilter,
+                  startTime: startTimeFilter,
+                  endTime: endTimeFilter,
+                );
       posts.then((data) {
         setState(() {
           hasMoreData = data.length == pageSize;
@@ -45,7 +72,8 @@ class PostsState extends State<Posts> {
     posts = widget.showUserPosts && widget.userId != null
         ? PostsApi.fetchUserPosts(widget.userId!, currentPage, pageSize)
         : widget.confessionsOnly != null
-            ? PostsApi.fetchPaginatedPosts(currentPage, pageSize, confessionsOnly: widget.confessionsOnly!)
+            ? PostsApi.fetchPaginatedPosts(currentPage, pageSize,
+                confessionsOnly: widget.confessionsOnly!)
             : PostsApi.fetchPaginatedPosts(currentPage, pageSize);
     posts.then((data) {
       setState(() {
@@ -77,16 +105,192 @@ class PostsState extends State<Posts> {
     }
   }
 
+  void _applyFilters() {
+    Navigator.pop(context); // Close the bottom sheet
+    _refreshPosts();
+  }
+
+  void _openFilterBottomSheet() {
+    // Reset filter values before opening the bottom sheet
+    setState(() {
+      titleFilter = null;
+      contentFilter = null;
+      usernameFilter = null;
+      startTimeFilter = null;
+      endTimeFilter = null;
+    });
+
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(
+                'Filter Posts',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 16),
+              TextField(
+                onChanged: (value) => titleFilter = value,
+                decoration: InputDecoration(
+                  labelText: 'Title',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              SizedBox(height: 12),
+              TextField(
+                onChanged: (value) => contentFilter = value,
+                decoration: InputDecoration(
+                  labelText: 'Content',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              SizedBox(height: 12),
+              TextField(
+                onChanged: (value) => usernameFilter = value,
+                decoration: InputDecoration(
+                  labelText: 'Username',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () async {
+                        DateTime? pickedDate = await showDatePicker(
+                          context: context,
+                          initialDate: startTimeFilter ?? DateTime.now(),
+                          firstDate: DateTime(2000),
+                          lastDate: DateTime(2100),
+                        );
+                        if (pickedDate != null) {
+                          setState(() {
+                            startTimeFilter = pickedDate;
+                          });
+                        }
+                      },
+                      child: AbsorbPointer(
+                        child: TextField(
+                          readOnly: true,
+                          controller: TextEditingController(
+                            text: startTimeFilter != null
+                                ? DateFormat('yyyy-MM-dd')
+                                    .format(startTimeFilter!)
+                                : '',
+                          ),
+                          decoration: InputDecoration(
+                            labelText: 'Start Time',
+                            border: OutlineInputBorder(),
+                            suffixIcon: Icon(Icons.calendar_today),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 12),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () async {
+                        DateTime? pickedDate = await showDatePicker(
+                          context: context,
+                          initialDate: endTimeFilter ?? DateTime.now(),
+                          firstDate: DateTime(2000),
+                          lastDate: DateTime(2100),
+                        );
+                        if (pickedDate != null) {
+                          setState(() {
+                            endTimeFilter = pickedDate;
+                          });
+                        }
+                      },
+                      child: AbsorbPointer(
+                        child: TextField(
+                          readOnly: true,
+                          controller: TextEditingController(
+                            text: endTimeFilter != null
+                                ? DateFormat('yyyy-MM-dd')
+                                    .format(endTimeFilter!)
+                                : '',
+                          ),
+                          decoration: InputDecoration(
+                            labelText: 'End Time',
+                            border: OutlineInputBorder(),
+                            suffixIcon: Icon(Icons.calendar_today),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(width: 12),
+                  ElevatedButton(
+                    onPressed: _resetFilters,
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.red,
+                      onPrimary: Colors.white,
+                    ),
+                    child: Text('Reset Filters'),
+                  ),
+                  SizedBox(width: 12),
+                  ElevatedButton(
+                    onPressed: _applyFilters,
+                    child: Text('Apply Filters'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _resetFilters() {
+    setState(() {
+      titleFilter = null;
+      contentFilter = null;
+      usernameFilter = null;
+      startTimeFilter = null;
+      endTimeFilter = null;
+    });
+    Navigator.pop(context); // Close the bottom sheet after resetting filters
+
+    _refreshPosts(); // Refresh posts after resetting filters
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) {
           return ForumsPage(userId: userId);
         }));
         return false;
       },
       child: Scaffold(
+        appBar: AppBar(
+          title: Text('Posts'),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.search),
+              onPressed: () {
+                _openFilterBottomSheet(); // Open filter bottom sheet
+              },
+            ),
+          ],
+        ),
         body: RefreshIndicator(
           onRefresh: _refreshPosts,
           child: Column(
@@ -100,7 +304,8 @@ class PostsState extends State<Posts> {
                     } else if (snapshot.hasError) {
                       return Center(child: Text('Error: ${snapshot.error}'));
                     } else {
-                      List<Map<String, dynamic>> postsData = snapshot.data ?? [];
+                      List<Map<String, dynamic>> postsData =
+                          snapshot.data ?? [];
                       return ListView.builder(
                         itemCount: postsData.length,
                         itemBuilder: (context, index) {
