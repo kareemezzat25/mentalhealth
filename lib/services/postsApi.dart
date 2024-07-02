@@ -1,3 +1,4 @@
+// postsApi.dart
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -11,6 +12,7 @@ class PostsApi {
 
   // New method to reload posts
   static Future<void> reloadPosts() async {}
+
   static Future<List<Map<String, dynamic>>> fetchPaginatedPosts(
     int pageNumber,
     int pageSize, {
@@ -106,7 +108,7 @@ class PostsApi {
 
       if (authToken == null) {
         print('Error editing post. Authentication token is null.');
-        return Map<String, dynamic>(); // Return an empty map
+        return {'error': 'Token not available'};
       }
 
       final Map<String, dynamic> requestData = {
@@ -127,19 +129,17 @@ class PostsApi {
       );
 
       if (response.statusCode == 200) {
-        // Return the updated post details if successful
-        final Map<String, dynamic> updatedPost = json.decode(response.body);
-
-        return updatedPost;
+        return json.decode(response.body);
       } else {
-        // Handle other status codes
-        print('Failed to edit post. Status Code: ${response.statusCode}');
-        print('Response Body: ${response.body}');
-        return Map<String, dynamic>(); // Return an empty map
+        final Map<String, dynamic> errorResponse = json.decode(response.body);
+        if (errorResponse['title'] == 'Forbidden') {
+          return errorResponse;
+        }
+        throw Exception('Failed to edit post');
       }
     } catch (error) {
       print('Error during editPost: $error');
-      return Map<String, dynamic>(); // Return an empty map
+      return {'error': error.toString()};
     }
   }
 
@@ -173,8 +173,6 @@ class PostsApi {
     }
   }
 
-  // Inside postsApi.dart
-
   static Future<List<Map<String, dynamic>>> fetchPosts({
     int page = 1,
     int pageSize = 30,
@@ -190,8 +188,8 @@ class PostsApi {
     }
   }
 
-  Future<String?> createPost(String title, String content, String token,
-      bool isAnonymous, File? imageFile) async {
+  Future<Map<String, dynamic>> createPost(String title, String content,
+      String token, bool isAnonymous, File? imageFile) async {
     try {
       var request = http.MultipartRequest('POST', Uri.parse(apiUrl));
       request.headers['Authorization'] = 'Bearer $token';
@@ -216,15 +214,18 @@ class PostsApi {
       if (response.statusCode == 201) {
         final responseBody = await response.stream.bytesToString();
         final jsonResponse = json.decode(responseBody);
-        return jsonResponse['url']; // Return the image URL
+        return jsonResponse; // Return the created post details
       } else {
-        print('Failed to create post. Status code: ${response.statusCode}');
-        print('Response body: ${await response.stream.bytesToString()}');
-        return null;
+        final responseBody = await response.stream.bytesToString();
+        final Map<String, dynamic> errorResponse = json.decode(responseBody);
+        if (errorResponse['title'] == 'Forbidden') {
+          return errorResponse;
+        }
+        throw Exception('Failed to create post');
       }
     } catch (error) {
       print('Error during createPost: $error');
-      return null;
+      return {'error': error.toString()};
     }
   }
 
@@ -277,73 +278,4 @@ class PostsApi {
       throw Exception('Failed to load comment replies');
     }
   }
-
-  static Future<void> postCommentReply(
-      int postId, int commentId, String content) async {
-    try {
-      // Get token
-      String? token = await Auth.getToken();
-
-      if (token == null) {
-        print('Token not available');
-        throw Exception('Token not available');
-      }
-
-      final Map<String, dynamic> requestData = {
-        "content": content,
-      };
-
-      final String requestBody = jsonEncode(requestData);
-      final Map<String, String> headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      };
-
-      final http.Response response = await http.post(
-        Uri.parse('$apiUrl/$postId/comments/$commentId/replies'),
-        headers: headers,
-        body: requestBody,
-      );
-
-      if (response.statusCode != 201) {
-        print(
-            'Failed to post comment reply. Status Code: ${response.statusCode}');
-        print('Response Body: ${response.body}');
-        throw Exception('Failed to post comment reply');
-      }
-    } catch (error) {
-      // Handle any network or other errors
-      print('Error during postCommentReply: $error');
-      throw error;
-    }
-  }
-
-  // static Future<void> deletePost(String postId) async {
-  //   try {
-  //     String? token = await Auth.getToken();
-
-  //     if (token == null) {
-  //       print('Token not available');
-  //       throw Exception('Token not available');
-  //     }
-
-  //     final Map<String, String> headers = {
-  //       'Authorization': 'Bearer $token',
-  //     };
-
-  //     final http.Response response = await http.delete(
-  //       Uri.parse('$apiUrl/$postId'),
-  //       headers: headers,
-  //     );
-
-  //     if (response.statusCode != 200) {
-  //       print('Failed to delete post. Status Code: ${response.statusCode}');
-  //       print('Response Body: ${response.body}');
-  //       throw Exception('Failed to delete post');
-  //     }
-  //   } catch (error) {
-  //     print('Error during post deletion: $error');
-  //     throw error;
-  //   }
-  // }
 }

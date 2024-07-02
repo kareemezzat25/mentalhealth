@@ -8,6 +8,7 @@ import 'package:mentalhealthh/views/PostEdit.dart';
 import 'package:mentalhealthh/views/ReplayEdit.dart';
 import 'package:mentalhealthh/views/textForm.dart';
 import 'package:intl/intl.dart';
+import 'package:mentalhealthh/widgets/ForbidenDialog.dart';
 import 'package:mentalhealthh/widgets/image_user.dart'; // Import the intl package for formatting
 
 class PostComment extends StatefulWidget {
@@ -280,13 +281,17 @@ class _PostCommentState extends State<PostComment> {
                               onPressed: () async {
                                 String commentContent = commentController.text;
                                 if (commentContent.isNotEmpty) {
-                                  CommentApi.createComment(
-                                      widget.postId, commentContent);
-                                  commentController.clear();
-                                  setState(() {
-                                    postDetails = PostsApi.fetchPostDetails(
-                                        widget.postId);
-                                  });
+                                  final response =
+                                      await CommentApi.createComment(
+                                          widget.postId, commentContent);
+                                  if (response['title'] == 'Forbidden') {
+                                    await showForbiddenDialog(context);
+                                  } else {
+                                    commentController.clear();
+                                    setState(() {
+                                      // Update postDetails to refresh comments
+                                    });
+                                  }
                                 }
                               },
                             ),
@@ -745,15 +750,27 @@ class _PostCommentState extends State<PostComment> {
               onPressed: () async {
                 String replyContent = replyController.text;
                 if (replyContent.isNotEmpty) {
-                  await PostsApi.postCommentReply(
+                  await CommentApi.postCommentReply(
                     widget.postId,
                     commentId,
                     replyContent,
                   );
-                  Navigator.of(context).pop();
-                  setState(() {
-                    // Refresh UI after adding reply
-                  });
+
+                  if (replyContent.isNotEmpty) {
+                    final response = await CommentApi.postCommentReply(
+                      widget.postId,
+                      commentId,
+                      replyContent,
+                    );
+                    if (response['title'] == 'Forbidden') {
+                      await showForbiddenDialog(context);
+                    } else {
+                      Navigator.of(context).pop();
+                      setState(() {
+                        // Refresh UI after adding reply
+                      });
+                    }
+                  }
                 }
               },
               child: Text('Send'),

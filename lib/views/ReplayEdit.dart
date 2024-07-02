@@ -1,6 +1,7 @@
 // ReplyEdit.dart
 import 'package:flutter/material.dart';
 import 'package:mentalhealthh/services/commentsApi.dart';
+import 'package:mentalhealthh/widgets/ForbidenDialog.dart';
 
 class ReplyEdit extends StatefulWidget {
   final int postId;
@@ -51,15 +52,19 @@ class _ReplyEditState extends State<ReplyEdit> {
             ElevatedButton(
               onPressed: () async {
                 // Update reply logic
-                await CommentApi.updateReply(
+
+                final response = await CommentApi.updateReply(
                   widget.postId,
                   widget.commentId,
                   widget.replyId,
                   contentController.text,
                 );
-
-                // Return to PostComment.dart with updated data
-                Navigator.pop(context, contentController.text);
+                if (response['title'] == 'Forbidden') {
+                  await showForbiddenDialog(context);
+                } else {
+                  // Return to PostComment.dart with updated data
+                  Navigator.pop(context, contentController.text);
+                }
               },
               child: Text('Done'),
             ),

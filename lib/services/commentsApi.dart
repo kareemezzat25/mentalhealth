@@ -40,11 +40,8 @@ class CommentApi {
     }
   }
 
-  static Future<void> updateComment(
-    int postId,
-    int commentId,
-    String newContent,
-  ) async {
+  static Future<Map<String, dynamic>> updateComment(
+      int postId, int commentId, String newContent) async {
     try {
       final Map<String, dynamic> requestData = {
         "content": newContent,
@@ -65,20 +62,26 @@ class CommentApi {
           body: requestBody,
         );
 
-        if (response.statusCode != 200) {
+        if (response.statusCode == 200) {
+          return json.decode(response.body);
+        } else {
+          final Map<String, dynamic> errorResponse = json.decode(response.body);
+          if (errorResponse['title'] == 'Forbidden') {
+            return errorResponse;
+          }
           throw Exception('Failed to update comment');
         }
       } else {
-        print('Token not available');
-        // Handle case where token is not available
+        throw Exception('Token not available');
       }
     } catch (error) {
-      // Handle any network or other errors
       print('Error during updateComment: $error');
+      throw error;
     }
   }
 
-  static Future<void> createComment(int postId, String content) async {
+  static Future<Map<String, dynamic>> createComment(
+      int postId, String content) async {
     try {
       final Map<String, dynamic> requestData = {
         "content": content,
@@ -99,16 +102,21 @@ class CommentApi {
           body: requestBody,
         );
 
-        if (response.statusCode != 201) {
+        if (response.statusCode == 201) {
+          return json.decode(response.body);
+        } else {
+          final Map<String, dynamic> errorResponse = json.decode(response.body);
+          if (errorResponse['title'] == 'Forbidden') {
+            return errorResponse;
+          }
           throw Exception('Failed to create comment');
         }
       } else {
-        print('Token not available');
-        // Handle case where token is not available
+        throw Exception('Token not available');
       }
     } catch (error) {
-      // Handle any network or other errors
       print('Error during createComment: $error');
+      throw error;
     }
   }
 
@@ -139,12 +147,8 @@ class CommentApi {
     }
   }
 
-  static Future<void> updateReply(
-    int postId,
-    int commentId,
-    int replyId,
-    String newContent,
-  ) async {
+  static Future<Map<String, dynamic>> updateReply(
+      int postId, int commentId, int replyId, String newContent) async {
     try {
       final Map<String, dynamic> requestData = {
         "content": newContent,
@@ -165,16 +169,21 @@ class CommentApi {
           body: requestBody,
         );
 
-        if (response.statusCode != 200) {
+        if (response.statusCode == 200) {
+          return json.decode(response.body);
+        } else {
+          final Map<String, dynamic> errorResponse = json.decode(response.body);
+          if (errorResponse['title'] == 'Forbidden') {
+            return errorResponse;
+          }
           throw Exception('Failed to update reply');
         }
       } else {
-        print('Token not available');
-        // Handle case where token is not available
+        throw Exception('Token not available');
       }
     } catch (error) {
-      // Handle any network or other errors
       print('Error during updateReply: $error');
+      throw error;
     }
   }
 
@@ -237,6 +246,46 @@ class CommentApi {
     } catch (error) {
       // Handle any network or other errors
       print('Error during fetchReplyDetails: $error');
+      throw error;
+    }
+  }
+
+  static Future<Map<String, dynamic>> postCommentReply(
+      int postId, int commentId, String content) async {
+    try {
+      String? token = await Auth.getToken();
+
+      if (token == null) {
+        throw Exception('Token not available');
+      }
+
+      final Map<String, dynamic> requestData = {
+        "content": content,
+      };
+
+      final String requestBody = jsonEncode(requestData);
+      final Map<String, String> headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      };
+
+      final http.Response response = await http.post(
+        Uri.parse('$apiUrl/$postId/comments/$commentId/replies'),
+        headers: headers,
+        body: requestBody,
+      );
+
+      if (response.statusCode == 201) {
+        return json.decode(response.body);
+      } else {
+        final Map<String, dynamic> errorResponse = json.decode(response.body);
+        if (errorResponse['title'] == 'Forbidden') {
+          return errorResponse;
+        }
+        throw Exception('Failed to post comment reply');
+      }
+    } catch (error) {
+      print('Error during postCommentReply: $error');
       throw error;
     }
   }
