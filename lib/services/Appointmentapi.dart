@@ -58,6 +58,81 @@ class BookingApi {
     }
   }
 
+  Future<void> cancelAppointment(
+      int appointmentId, String cancellationReason) async {
+    try {
+      final String? token = await Auth.getToken();
+
+      if (token != null) {
+        final Map<String, String> headers = {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        };
+
+        final response = await http.put(
+          Uri.parse('$baseUrl/api/appointments/$appointmentId/cancel'),
+          headers: headers,
+          body: jsonEncode(cancellationReason),
+        );
+
+        if (response.statusCode == 200) {
+          print('Appointment $appointmentId cancelled successfully');
+        } else {
+          throw Exception(
+              'Failed to cancel appointment. Status code: ${response.statusCode}, Body: ${response.body}');
+        }
+      } else {
+        throw Exception('Token not available');
+      }
+    } catch (error) {
+      print('Error during cancelAppointment: $error');
+      throw error;
+    }
+  }
+
+  Future<void> confirmAppointment(String appointmentId) async {
+    String? token = await Auth.getToken();
+    final response = await http.put(
+      Uri.parse(
+          'https://nexus-api-h3ik.onrender.com/api/appointments/$appointmentId/confirm'),
+      headers: {
+        'Authorization': 'Bearer $token', // Add your authentication token here
+      },
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to confirm appointment');
+    }
+  }
+
+  Future<void> rejectAppointment(String appointmentId, String reason) async {
+    try {
+      String? token = await Auth.getToken();
+
+      final response = await http.put(
+        Uri.parse(
+          'https://nexus-api-h3ik.onrender.com/api/appointments/$appointmentId/reject',
+        ),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+        body: json.encode(
+            {'reason': reason}), // Assuming reason needs to be sent as JSON
+      );
+
+      if (response.statusCode == 200) {
+        // Appointment rejected successfully
+        return;
+      } else {
+        throw Exception(
+            'Failed to reject appointment. Status code: ${response.statusCode}');
+      }
+    } catch (error) {
+      throw Exception('Failed to reject appointment: $error');
+    }
+  }
+
   Future<bool> bookAppointment({
     required String doctorId,
     required String startTime,

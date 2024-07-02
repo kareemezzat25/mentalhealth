@@ -145,6 +145,57 @@ class _AppointmentsviewState extends State<Appointmentsview> {
     );
   }
 
+  void _cancelAppointment(Appointment appointment) async {
+    String cancellationReason = '';
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Cancel Appointment'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Text('Are you sure you want to cancel this appointment?'),
+              SizedBox(height: 10),
+              TextField(
+                onChanged: (value) {
+                  cancellationReason = value;
+                },
+                decoration: InputDecoration(
+                  labelText: 'Cancellation Reason (Optional)',
+                ),
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Confirm'),
+              onPressed: () async {
+                // Call API to cancel appointment
+                try {
+                  await bookingApi.cancelAppointment(
+                      appointment.id, cancellationReason);
+                  // Refresh appointments after cancellation
+                  _fetchAppointments();
+                } catch (error) {
+                  print('Error cancelling appointment: $error');
+                  // Handle error as needed
+                }
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -232,6 +283,14 @@ class _AppointmentsviewState extends State<Appointmentsview> {
                               Text('Status: ${appointment.status}'),
                               Text('Location: ${appointment.location}'),
                               if (reason != null) Text('Reason: $reason'),
+                              if (appointment.status == 'Pending' ||
+                                  appointment.status == 'Confirmed')
+                                ElevatedButton(
+                                  onPressed: () {
+                                    _cancelAppointment(appointment);
+                                  },
+                                  child: Text('Cancel'),
+                                ),
                             ],
                           ),
                         ),
