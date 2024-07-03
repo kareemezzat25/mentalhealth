@@ -7,17 +7,11 @@ class ImageUser extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 40,
-      height: 40,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(40),
-        border: Border.all(color: Colors.grey, style: BorderStyle.solid),
-        image: DecorationImage(
-          image: NetworkImage(url),
-          fit: BoxFit.cover,
-        ),
-      ),
-    );
+    return CircleAvatar(
+        radius: 20,
+        backgroundColor: Colors.grey,
+        backgroundImage: NetworkImage(url),
+      );
   }
+  
 }

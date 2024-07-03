@@ -153,6 +153,7 @@ class _UserDoctorProfileState extends State<UserDoctorProfile> {
                                 city: userData['city'],
                                 location: userData['location'],
                                 sessionFees: userData['sessionFees'],
+                                roless: widget.roles,
         
                               ),
                             ),
@@ -241,6 +242,7 @@ class _UserDoctorProfileState extends State<UserDoctorProfile> {
                                 gender: userData['gender'],
                                 birthDate: userData['birthDate'],
                                 photoUrl: userData['photoUrl'],
+                                roless: widget.roles,
                               ),
                             ),
                           );
@@ -253,7 +255,7 @@ class _UserDoctorProfileState extends State<UserDoctorProfile> {
                         },
                         child: Text('Edit'),
                         style: ElevatedButton.styleFrom(
-                          primary: Color(0xff01579B),
+                          primary: Color(0xff0098FA),
                           onPrimary: Colors.white,
                           padding: EdgeInsets.symmetric(
                               horizontal: 40, vertical: 16),

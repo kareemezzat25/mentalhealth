@@ -4,8 +4,8 @@ import 'package:intl/intl.dart';
 import 'dart:convert';
 
 import 'package:mentalhealthh/authentication/auth.dart';
-import 'package:mentalhealthh/views/PostComment.dart'; // Import the PostComment.dart page
-import 'package:mentalhealthh/views/Appointmentsview.dart'; // Import the PostComment.dart page
+import 'package:mentalhealthh/views/PostComment.dart';
+import 'package:mentalhealthh/views/Appointmentsview.dart';
 
 class NotificationsPage extends StatefulWidget {
   @override
@@ -17,18 +17,36 @@ class _NotificationsPageState extends State<NotificationsPage> {
   List<Map<String, dynamic>> filteredNotifications = [];
   bool isLoading = true;
   bool showUnreadOnly = false;
+  int pageNumber = 1;
+  int pageSize = 10;
+  bool hasMoreData = true;
+  ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     fetchNotifications();
+
+    // Attach listener to detect scroll end
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
+        loadNextPage();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   Future<void> fetchNotifications() async {
     String? token = await Auth.getToken();
 
     final url = Uri.parse(
-        'https://nexus-api-h3ik.onrender.com/api/notifications/users/me?pageNumber=1&pageSize=10');
+        'https://nexus-api-h3ik.onrender.com/api/notifications/users/me?pageNumber=$pageNumber&pageSize=$pageSize');
     final response = await http.get(
       url,
       headers: {
@@ -40,9 +58,13 @@ class _NotificationsPageState extends State<NotificationsPage> {
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);
       setState(() {
-        notifications =
-            data.map((item) => item as Map<String, dynamic>).toList();
+        notifications.addAll(data.map((item) => item as Map<String, dynamic>));
         filteredNotifications = notifications;
+        if (data.isEmpty) {
+          hasMoreData = false;
+        } else {
+          pageNumber++;
+        }
         isLoading = false;
       });
     } else {
@@ -172,6 +194,12 @@ class _NotificationsPageState extends State<NotificationsPage> {
     }
   }
 
+  void loadNextPage() {
+    if (hasMoreData && !isLoading) {
+      fetchNotifications();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -197,43 +225,54 @@ class _NotificationsPageState extends State<NotificationsPage> {
       body: isLoading
           ? Center(child: CircularProgressIndicator())
           : ListView.builder(
-              itemCount: filteredNotifications.length,
+              controller: _scrollController,
+              itemCount: filteredNotifications.length + 1,
               itemBuilder: (context, index) {
-                final notification = filteredNotifications[index];
-                final formattedDateTime =
-                    _formatDateTime(notification['dateCreated']);
+                if (index < filteredNotifications.length) {
+                  final notification = filteredNotifications[index];
+                  final formattedDateTime =
+                      _formatDateTime(notification['dateCreated']);
 
-                return Container(
-                  color: notification['isRead']
-                      ? Colors.purple.shade50
-                      : Colors.white,
-                  child: ListTile(
-                    leading: CircleAvatar(
-                      backgroundImage:
-                          NetworkImage(notification['notifierPhotoUrl']),
+                  return Container(
+                    color: notification['isRead']
+                        ? Colors.purple.shade50
+                        : Colors.white,
+                    child: ListTile(
+                      leading: CircleAvatar(
+                        backgroundImage:
+                            NetworkImage(notification['notifierPhotoUrl']),
+                      ),
+                      title: Text(notification['notifierUserName']),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            notification['message'],
+                            style: TextStyle(fontSize: 17),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 18.0),
+                            child: Text('$formattedDateTime'),
+                          ),
+                        ],
+                      ),
+                      trailing: notification['isRead']
+                          ? Icon(Icons.check_circle, color: Colors.green)
+                          : Icon(Icons.check_circle_outline,
+                              color: Colors.grey),
+                      onTap: () {
+                        _handleNotificationTap(notification);
+                      },
                     ),
-                    title: Text(notification['notifierUserName']),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          notification['message'],
-                          style: TextStyle(fontSize: 17),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 18.0),
-                          child: Text('$formattedDateTime'),
-                        ),
-                      ],
+                  );
+                } else {
+                  return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Center(
+                      child: CircularProgressIndicator(),
                     ),
-                    trailing: notification['isRead']
-                        ? Icon(Icons.check_circle, color: Colors.green)
-                        : Icon(Icons.check_circle_outline, color: Colors.grey),
-                    onTap: () {
-                      _handleNotificationTap(notification);
-                    },
-                  ),
-                );
+                  );
+                }
               },
             ),
     );

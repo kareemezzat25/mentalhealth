@@ -125,131 +125,146 @@ class PostsState extends State<Posts> {
       builder: (BuildContext context) {
         return Container(
           padding: EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                'Filter Posts',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 16),
-              TextField(
-                onChanged: (value) => titleFilter = value,
-                decoration: InputDecoration(
-                  labelText: 'Title',
-                  border: OutlineInputBorder(),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  'Filter Posts',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
-              ),
-              SizedBox(height: 12),
-              TextField(
-                onChanged: (value) => contentFilter = value,
-                decoration: InputDecoration(
-                  labelText: 'Content',
-                  border: OutlineInputBorder(),
+                SizedBox(height: 16),
+                TextField(
+                  onChanged: (value) => titleFilter = value,
+                  decoration: InputDecoration(
+                    labelText: 'Title',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
                 ),
-              ),
-              SizedBox(height: 12),
-              TextField(
-                onChanged: (value) => usernameFilter = value,
-                decoration: InputDecoration(
-                  labelText: 'Username',
-                  border: OutlineInputBorder(),
+                SizedBox(height: 12),
+                TextField(
+                  onChanged: (value) => contentFilter = value,
+                  decoration: InputDecoration(
+                    labelText: 'Content',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
                 ),
-              ),
-              SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () async {
-                        DateTime? pickedDate = await showDatePicker(
-                          context: context,
-                          initialDate: startTimeFilter ?? DateTime.now(),
-                          firstDate: DateTime(2000),
-                          lastDate: DateTime(2100),
-                        );
-                        if (pickedDate != null) {
-                          setState(() {
-                            startTimeFilter = pickedDate;
-                          });
-                        }
-                      },
-                      child: AbsorbPointer(
-                        child: TextField(
-                          readOnly: true,
-                          controller: TextEditingController(
-                            text: startTimeFilter != null
-                                ? DateFormat('yyyy-MM-dd')
-                                    .format(startTimeFilter!)
-                                : '',
-                          ),
-                          decoration: InputDecoration(
-                            labelText: 'Start Time',
-                            border: OutlineInputBorder(),
-                            suffixIcon: Icon(Icons.calendar_today),
+                SizedBox(height: 12),
+                TextField(
+                  onChanged: (value) => usernameFilter = value,
+                  decoration: InputDecoration(
+                    labelText: 'Username',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () async {
+                          DateTime? pickedDate = await showDatePicker(
+                            context: context,
+                            initialDate: startTimeFilter ?? DateTime.now(),
+                            firstDate: DateTime(2000),
+                            lastDate: DateTime(2100),
+                          );
+                          if (pickedDate != null) {
+                            setState(() {
+                              startTimeFilter = pickedDate;
+                            });
+                          }
+                        },
+                        child: AbsorbPointer(
+                          child: TextField(
+                            readOnly: true,
+                            controller: TextEditingController(
+                              text: startTimeFilter != null
+                                  ? DateFormat('yyyy-MM-dd')
+                                      .format(startTimeFilter!)
+                                  : '',
+                            ),
+                            decoration: InputDecoration(
+                              labelText: 'Start Time',
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              suffixIcon: Icon(Icons.calendar_today),
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                  SizedBox(width: 12),
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () async {
-                        DateTime? pickedDate = await showDatePicker(
-                          context: context,
-                          initialDate: endTimeFilter ?? DateTime.now(),
-                          firstDate: DateTime(2000),
-                          lastDate: DateTime(2100),
-                        );
-                        if (pickedDate != null) {
-                          setState(() {
-                            endTimeFilter = pickedDate;
-                          });
-                        }
-                      },
-                      child: AbsorbPointer(
-                        child: TextField(
-                          readOnly: true,
-                          controller: TextEditingController(
-                            text: endTimeFilter != null
-                                ? DateFormat('yyyy-MM-dd')
-                                    .format(endTimeFilter!)
-                                : '',
-                          ),
-                          decoration: InputDecoration(
-                            labelText: 'End Time',
-                            border: OutlineInputBorder(),
-                            suffixIcon: Icon(Icons.calendar_today),
+                    SizedBox(width: 12),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () async {
+                          DateTime? pickedDate = await showDatePicker(
+                            context: context,
+                            initialDate: endTimeFilter ?? DateTime.now(),
+                            firstDate: DateTime(2000),
+                            lastDate: DateTime(2100),
+                          );
+                          if (pickedDate != null) {
+                            setState(() {
+                              endTimeFilter = pickedDate;
+                            });
+                          }
+                        },
+                        child: AbsorbPointer(
+                          child: TextField(
+                            readOnly: true,
+                            controller: TextEditingController(
+                              text: endTimeFilter != null
+                                  ? DateFormat('yyyy-MM-dd')
+                                      .format(endTimeFilter!)
+                                  : '',
+                            ),
+                            decoration: InputDecoration(
+                              labelText: 'End Time',
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              suffixIcon: Icon(Icons.calendar_today),
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(width: 12),
-                  ElevatedButton(
-                    onPressed: _resetFilters,
-                    style: ElevatedButton.styleFrom(
-                      primary: Colors.red,
-                      onPrimary: Colors.white,
+                  ],
+                ),
+                SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(width: 12),
+                    ElevatedButton(
+                      onPressed: _resetFilters,
+                      style: ElevatedButton.styleFrom(
+                        onPrimary: Colors.blue,
+                      ),
+                      child: Text('Reset Filters'),
                     ),
-                    child: Text('Reset Filters'),
-                  ),
-                  SizedBox(width: 12),
-                  ElevatedButton(
-                    onPressed: _applyFilters,
-                    child: Text('Apply Filters'),
-                  ),
-                ],
-              ),
-            ],
+                    SizedBox(width: 12),
+                    ElevatedButton(
+                      onPressed: _applyFilters,
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.blue,
+                        onPrimary: Colors.white,
+                      ),
+                      child: Text('Apply Filters'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -317,15 +332,14 @@ class PostsState extends State<Posts> {
                                   builder: (context) => PostComment(
                                     postId: postsData[index]['id'],
                                     userId: userId,
-                                    appUserId: postsData[index]['appUserId'],
                                   ),
                                 ),
                               );
-                              if (refresh != null) {
+                              if (refresh == "refresh") {
                                 _refreshPosts();
                               }
                             },
-                            child: Forum(
+                            child:Forum(
                               postId: postsData[index]['id'].toString(),
                               postTitle: postsData[index]['title'],
                               postContent: postsData[index]['content'],
@@ -345,25 +359,25 @@ class PostsState extends State<Posts> {
                   },
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    if (currentPage > 1)
-                      IconButton(
-                        icon: Icon(Icons.arrow_back),
-                        onPressed: _loadPreviousPage,
-                      ),
-                    Text('Page $currentPage'),
-                    if (hasMoreData)
-                      IconButton(
-                        icon: Icon(Icons.arrow_forward),
-                        onPressed: _loadNextPage,
-                      ),
-                  ],
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      if (currentPage > 1)
+                        IconButton(
+                          icon: Icon(Icons.arrow_back),
+                          onPressed: _loadPreviousPage,
+                        ),
+                      Text('Page $currentPage'),
+                      if (hasMoreData)
+                        IconButton(
+                          icon: Icon(Icons.arrow_forward),
+                          onPressed: _loadNextPage,
+                        ),
+                    ],
+                  ),
                 ),
-              ),
             ],
           ),
         ),
@@ -371,3 +385,9 @@ class PostsState extends State<Posts> {
     );
   }
 }
+
+
+
+
+
+

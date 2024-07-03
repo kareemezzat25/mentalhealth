@@ -17,6 +17,8 @@ class _AppointmentsviewState extends State<Appointmentsview> {
   String selectedStatus = 'All';
   String doctorName = '';
   String? userId;
+  int pageNumber = 1; // Track current page number
+  final int pageSize = 10; // Number of items per page
 
   @override
   void initState() {
@@ -36,8 +38,8 @@ class _AppointmentsviewState extends State<Appointmentsview> {
 
     try {
       final newAppointments = await bookingApi.getAppointments(
-        pageNumber: 1,
-        pageSize: 10,
+        pageNumber: pageNumber,
+        pageSize: pageSize,
         doctorName: doctorName.isNotEmpty ? doctorName : null,
         status: selectedStatus != 'All' ? selectedStatus : null,
       );
@@ -145,6 +147,73 @@ class _AppointmentsviewState extends State<Appointmentsview> {
     );
   }
 
+  void _cancelAppointment(Appointment appointment) async {
+    String cancellationReason = '';
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Cancel Appointment'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Text('Are you sure you want to cancel this appointment?'),
+              SizedBox(height: 10),
+              TextField(
+                onChanged: (value) {
+                  cancellationReason = value;
+                },
+                decoration: InputDecoration(
+                  labelText: 'Cancellation Reason (Optional)',
+                ),
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Confirm'),
+              onPressed: () async {
+                // Call API to cancel appointment
+                try {
+                  await bookingApi.cancelAppointment(
+                      appointment.id, cancellationReason);
+                  // Refresh appointments after cancellation
+                  _fetchAppointments();
+                } catch (error) {
+                  print('Error cancelling appointment: $error');
+                  // Handle error as needed
+                }
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _loadNextPage() {
+    setState(() {
+      pageNumber++;
+    });
+    _fetchAppointments();
+  }
+
+  void _loadPreviousPage() {
+    if (pageNumber > 1) {
+      setState(() {
+        pageNumber--;
+      });
+      _fetchAppointments();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -163,81 +232,111 @@ class _AppointmentsviewState extends State<Appointmentsview> {
           ? Center(child: CircularProgressIndicator())
           : filteredAppointments.isEmpty
               ? Center(child: Text('No appointments found'))
-              : ListView.builder(
-                  itemCount: filteredAppointments.length,
-                  itemBuilder: (context, index) {
-                    final appointment = filteredAppointments[index];
-                    Color cardColor;
-                    String imageUrl = (appointment.doctorPhotoUrl.isEmpty ||
-                            !appointment.doctorPhotoUrl.contains('http'))
-                        ? 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-600nw-1677509740.jpg'
-                        : appointment.doctorPhotoUrl;
-                    String? reason;
+              : Column(
+                  children: [
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: filteredAppointments.length,
+                        itemBuilder: (context, index) {
+                          final appointment = filteredAppointments[index];
+                          Color cardColor;
+                          String imageUrl = (appointment
+                                      .doctorPhotoUrl.isEmpty ||
+                                  !appointment.doctorPhotoUrl.contains('http'))
+                              ? 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-600nw-1677509740.jpg'
+                              : appointment.doctorPhotoUrl;
+                          String? reason;
 
-                    switch (appointment.status) {
-                      case 'Cancelled':
-                        cardColor = Color(0xffDADADA);
-                        reason = appointment.cancellationReason;
-                        break;
-                      case 'Rejected':
-                        cardColor = Color.fromARGB(255, 229, 112, 103);
-                        reason = appointment.rejectionReason;
-                        break;
-                      case 'Confirmed':
-                        cardColor = Color.fromARGB(255, 90, 198, 90);
-                        reason = null;
-                        break;
-                      default:
-                        cardColor = Color.fromARGB(255, 225, 209, 59);
-                        reason = null;
-                    }
+                          switch (appointment.status) {
+                            case 'Cancelled':
+                              cardColor = Color(0xffDADADA);
+                              reason = appointment.cancellationReason;
+                              break;
+                            case 'Rejected':
+                              cardColor = Color.fromARGB(255, 229, 112, 103);
+                              reason = appointment.rejectionReason;
+                              break;
+                            case 'Confirmed':
+                              cardColor = Color.fromARGB(255, 90, 198, 90);
+                              reason = null;
+                              break;
+                            default:
+                              cardColor = Color.fromARGB(255, 225, 209, 59);
+                              reason = null;
+                          }
 
-                    final formattedDateTime =
-                        _formatDateTime(appointment.startTime);
+                          final formattedDateTime =
+                              _formatDateTime(appointment.startTime);
 
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Card(
-                        color: cardColor,
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  CircleAvatar(
-                                    backgroundImage: NetworkImage(imageUrl),
-                                    radius: 40,
-                                  ),
-                                  SizedBox(width: 10),
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        appointment.doctorName,
-                                        style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold),
+                          return Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Card(
+                              color: cardColor,
+                              child: Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        CircleAvatar(
+                                          backgroundImage:
+                                              NetworkImage(imageUrl),
+                                          radius: 40,
+                                        ),
+                                        SizedBox(width: 10),
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              appointment.doctorName,
+                                              style: TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                            Text(formattedDateTime),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(height: 10),
+                                    Text('Duration: ${appointment.duration}'),
+                                    Text('Fees: ${appointment.fees}\$'),
+                                    Text('Status: ${appointment.status}'),
+                                    Text('Location: ${appointment.location}'),
+                                    if (reason != null) Text('Reason: $reason'),
+                                    if (appointment.status == 'Pending' ||
+                                        appointment.status == 'Confirmed')
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          _cancelAppointment(appointment);
+                                        },
+                                        child: Text('Cancel'),
                                       ),
-                                      Text(formattedDateTime),
-                                    ],
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                              SizedBox(height: 10),
-                              Text('Duration: ${appointment.duration}'),
-                              Text('Fees: ${appointment.fees}\$'),
-                              Text('Status: ${appointment.status}'),
-                              Text('Location: ${appointment.location}'),
-                              if (reason != null) Text('Reason: $reason'),
-                            ],
-                          ),
-                        ),
+                            ),
+                          );
+                        },
                       ),
-                    );
-                  },
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        IconButton(
+                          icon: Icon(Icons.arrow_back),
+                          onPressed: _loadPreviousPage,
+                        ),
+                        Text('Page $pageNumber'),
+                        IconButton(
+                          icon: Icon(Icons.arrow_forward),
+                          onPressed: _loadNextPage,
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
     );
   }

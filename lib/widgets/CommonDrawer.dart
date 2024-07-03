@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:mentalhealthh/authentication/auth.dart';
 import 'package:mentalhealthh/views/Appointmentsview.dart';
+import 'package:mentalhealthh/views/ArticlesView.dart';
 import 'package:mentalhealthh/views/DoctorsPage.dart';
 import 'package:mentalhealthh/views/ForumsPage.dart';
 import 'package:mentalhealthh/views/Posts.dart';
@@ -221,6 +222,19 @@ class _CommonDrawerState extends State<CommonDrawer> {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => Appointmentsview()),
+              );
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.article_rounded),
+            title: Text("Articles"),
+            onTap: () {
+              Navigator.pop(context); // Close the drawer
+
+              // Navigate to DoctorsPage
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ArticlesView()),
               );
             },
           ),

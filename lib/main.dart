@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:mentalhealthh/providers/schedule_provider.dart'; // Import your ScheduleProvider
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(MyApp());
 }
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:mentalhealthh/services/Appointmentapi.dart';
 import 'package:mentalhealthh/services/doctorapi.dart';
 
 class DoctorAppointmentsPage extends StatefulWidget {
@@ -15,6 +16,8 @@ class _DoctorAppointmentsPageState extends State<DoctorAppointmentsPage> {
   String clientName = '';
   String? startDate;
   String? endDate;
+  int pageNumber = 1; // Track current page number
+  final int pageSize = 10; // Number of items per page
 
   @override
   void initState() {
@@ -29,7 +32,10 @@ class _DoctorAppointmentsPageState extends State<DoctorAppointmentsPage> {
 
     try {
       List<Map<String, dynamic>> fetchedAppointments =
-          await DoctorsApi().fetchDoctorAppointments();
+          await DoctorsApi().fetchDoctorAppointments(
+        pageNumber: pageNumber,
+        pageSize: pageSize,
+      );
       setState(() {
         appointments = fetchedAppointments;
         filteredAppointments = fetchedAppointments;
@@ -40,33 +46,35 @@ class _DoctorAppointmentsPageState extends State<DoctorAppointmentsPage> {
       setState(() {
         isLoading = false;
       });
+      showSnackBar('Failed to fetch appointments');
     }
   }
 
   Future<void> applyFilters() async {
-  setState(() {
-    isLoading = true;
-  });
+    setState(() {
+      isLoading = true;
+    });
 
-  try {
-    List<Map<String, dynamic>> filtered = await DoctorsApi().fetchFilteredAppointments(
-      clientName: clientName.isNotEmpty ? clientName : null,
-      startDate: startDate,
-      endDate: endDate,
-      status: selectedStatus != 'All' ? selectedStatus : null,
-    );
-    setState(() {
-      filteredAppointments = filtered;
-    });
-  } catch (error) {
-    print('Error fetching filtered appointments: $error');
-  } finally {
-    setState(() {
-      isLoading = false;
-    });
+    try {
+      List<Map<String, dynamic>> filtered =
+          await DoctorsApi().fetchFilteredAppointments(
+        clientName: clientName.isNotEmpty ? clientName : null,
+        startDate: startDate,
+        endDate: endDate,
+        status: selectedStatus != 'All' ? selectedStatus : null,
+      );
+      setState(() {
+        filteredAppointments = filtered;
+      });
+    } catch (error) {
+      print('Error fetching filtered appointments: $error');
+      showSnackBar('Failed to apply filters');
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
-}
-
 
   void resetFilters() {
     setState(() {
@@ -80,8 +88,10 @@ class _DoctorAppointmentsPageState extends State<DoctorAppointmentsPage> {
 
   String _formatDateTime(String dateTimeString) {
     final DateTime dateTime = DateTime.parse(dateTimeString);
-    final String formattedDate = DateFormat.yMMMd().format(dateTime); // e.g., Jan 1, 2020
-    final String formattedTime = DateFormat.jm().format(dateTime); // e.g., 6:00 AM
+    final String formattedDate =
+        DateFormat.yMMMd().format(dateTime); // e.g., Jan 1, 2020
+    final String formattedTime =
+        DateFormat.jm().format(dateTime); // e.g., 6:00 AM
     return '$formattedDate at $formattedTime';
   }
 
@@ -95,6 +105,14 @@ class _DoctorAppointmentsPageState extends State<DoctorAppointmentsPage> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              Text(
+                'Filter Appointments',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 16),
               DropdownButtonFormField<String>(
                 value: selectedStatus,
                 onChanged: (String? value) {
@@ -102,8 +120,13 @@ class _DoctorAppointmentsPageState extends State<DoctorAppointmentsPage> {
                     selectedStatus = value ?? 'All';
                   });
                 },
-                items: <String>['All', 'Confirmed', 'Pending', 'Rejected', 'Cancelled']
-                    .map<DropdownMenuItem<String>>((String value) {
+                items: <String>[
+                  'All',
+                  'Confirmed',
+                  'Pending',
+                  'Rejected',
+                  'Cancelled'
+                ].map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
                     child: Text(value),
@@ -116,7 +139,7 @@ class _DoctorAppointmentsPageState extends State<DoctorAppointmentsPage> {
                   ),
                 ),
               ),
-              SizedBox(height: 10),
+              SizedBox(height: 16),
               TextField(
                 onChanged: (value) {
                   setState(() {
@@ -130,38 +153,46 @@ class _DoctorAppointmentsPageState extends State<DoctorAppointmentsPage> {
                   ),
                 ),
               ),
-              SizedBox(height: 10),
-              TextField(
-                decoration: InputDecoration(
-                  labelText: 'Start Date (yyyy-MM-dd)',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
+              SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      decoration: InputDecoration(
+                        labelText: 'Start Date (yyyy-MM-dd)',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                      keyboardType: TextInputType.datetime,
+                      onChanged: (value) {
+                        setState(() {
+                          startDate =
+                              value; // Ensure this is formatted as yyyy-MM-dd
+                        });
+                      },
+                    ),
                   ),
-                ),
-                keyboardType: TextInputType.datetime,
-                onChanged: (value) {
-                  setState(() {
-                    startDate = value; // Ensure this is formatted as yyyy-MM-dd
-                  });
-                },
-              ),
-
-              SizedBox(height: 10),
-              TextField(
-                decoration: InputDecoration(
-                  labelText: 'End Date (yyyy-mm-dd)',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
+                  SizedBox(width: 16),
+                  Expanded(
+                    child: TextField(
+                      decoration: InputDecoration(
+                        labelText: 'End Date (yyyy-MM-dd)',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                      keyboardType: TextInputType.datetime,
+                      onChanged: (value) {
+                        setState(() {
+                          endDate = value;
+                        });
+                      },
+                    ),
                   ),
-                ),
-                keyboardType: TextInputType.datetime,
-                onChanged: (value) {
-                  setState(() {
-                    endDate = value;
-                  });
-                },
+                ],
               ),
-              SizedBox(height: 10),
+              SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -174,7 +205,7 @@ class _DoctorAppointmentsPageState extends State<DoctorAppointmentsPage> {
                       Navigator.pop(context);
                       applyFilters();
                     },
-                    child: Text('Apply Filter'),
+                    child: Text('Apply Filters'),
                   ),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
@@ -197,31 +228,45 @@ class _DoctorAppointmentsPageState extends State<DoctorAppointmentsPage> {
 
   Future<void> confirmAppointment(String appointmentId) async {
     try {
-      await DoctorsApi().confirmAppointment(appointmentId);
+      await BookingApi().confirmAppointment(appointmentId);
       fetchAppointments();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Appointment confirmed successfully')),
-      );
+      showSnackBar('Appointment confirmed successfully');
     } catch (error) {
       print('Error confirming appointment: $error');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to confirm appointment')),
-      );
+      showSnackBar('Failed to confirm appointment');
     }
   }
 
   Future<void> rejectAppointment(String appointmentId, String reason) async {
     try {
-      await DoctorsApi().rejectAppointment(appointmentId, reason);
+      await BookingApi().rejectAppointment(appointmentId, reason);
       fetchAppointments();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Appointment rejected successfully')),
-      );
+      showSnackBar('Appointment rejected successfully');
     } catch (error) {
       print('Error rejecting appointment: $error');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to reject appointment')),
-      );
+      showSnackBar('Failed to reject appointment');
+    }
+  }
+
+  void showSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+  }
+
+  void _loadNextPage() {
+    setState(() {
+      pageNumber++;
+    });
+    fetchAppointments();
+  }
+
+  void _loadPreviousPage() {
+    if (pageNumber > 1) {
+      setState(() {
+        pageNumber--;
+      });
+      fetchAppointments();
     }
   }
 
@@ -241,72 +286,149 @@ class _DoctorAppointmentsPageState extends State<DoctorAppointmentsPage> {
           ? Center(child: CircularProgressIndicator())
           : filteredAppointments.isEmpty
               ? Center(child: Text('No appointments found'))
-              : ListView.builder(
-                  itemCount: filteredAppointments.length,
-                  itemBuilder: (context, index) {
-                    final appointment = filteredAppointments[index];
-                    return ListTile(
-                      leading: CircleAvatar(
-                        backgroundImage: NetworkImage(appointment['clientPhotoUrl']),
-                      ),
-                      title: Text(appointment['clientName']),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Time: ${_formatDateTime(appointment['startTime'])}'),
-                          Text('${_formatDateTime(appointment['endTime'])}'),
-                          Text('Status: ${appointment['status']}'),
-                        ],
-                      ),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          if (appointment['status'] == 'Pending')
-                            IconButton(
-                              icon: Icon(Icons.check, color: Colors.green),
-                              onPressed: () => confirmAppointment(appointment['id'].toString()),
-                            ),
-                          if (appointment['status'] == 'Pending')
-                            IconButton(
-                              icon: Icon(Icons.close, color: Colors.red),
-                              onPressed: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    TextEditingController rejectionReasonController = TextEditingController();
-                                    return AlertDialog(
-                                      title: Text('Reject Appointment'),
-                                      content: TextField(
-                                        controller: rejectionReasonController,
-                                        decoration: InputDecoration(hintText: 'Enter rejection reason'),
+              : Column(
+                  children: [
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: filteredAppointments.length,
+                        itemBuilder: (context, index) {
+                          final appointment = filteredAppointments[index];
+                          return Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 8),
+                            child: Card(
+                              elevation: 4,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: ListTile(
+                                contentPadding: EdgeInsets.all(16),
+                                leading: CircleAvatar(
+                                  backgroundImage: NetworkImage(
+                                      appointment['clientPhotoUrl']),
+                                ),
+                                title: Text(
+                                  appointment['clientName'],
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    SizedBox(height: 4),
+                                    Text(
+                                      'Start Time: ${_formatDateTime(appointment['startTime'])}',
+                                    ),
+                                    Text(
+                                      'End Time: ${_formatDateTime(appointment['endTime'])}',
+                                    ),
+                                    SizedBox(height: 4),
+                                    Text(
+                                      'Status: ${appointment['status']}',
+                                      style: TextStyle(
+                                        color:
+                                            appointment['status'] == 'Pending'
+                                                ? Colors.orange
+                                                : appointment['status'] ==
+                                                        'Rejected'
+                                                    ? Colors.red
+                                                    : appointment['status'] ==
+                                                            'Confirmed'
+                                                        ? Colors.green
+                                                        : Colors.grey,
+                                        fontWeight: FontWeight.bold,
                                       ),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.of(context).pop();
-                                          },
-                                          child: Text('Cancel'),
-                                        ),
-                                        TextButton(
-                                          onPressed: () {
-                                            rejectAppointment(
+                                    ),
+                                    if (appointment['status'] == 'Rejected' &&
+                                        appointment['rejectionReason'] != null)
+                                      Text(
+                                        'Rejection Reason: ${appointment['rejectionReason']}',
+                                        style: TextStyle(color: Colors.red),
+                                      ),
+                                  ],
+                                ),
+                                trailing: appointment['status'] == 'Pending'
+                                    ? Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          IconButton(
+                                            icon: Icon(Icons.check,
+                                                color: Colors.green),
+                                            onPressed: () => confirmAppointment(
                                               appointment['id'].toString(),
-                                              rejectionReasonController.text,
-                                            );
-                                            Navigator.of(context).pop();
-                                          },
-                                          child: Text('Reject'),
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                );
-                              },
+                                            ),
+                                          ),
+                                          IconButton(
+                                            icon: Icon(Icons.close,
+                                                color: Colors.red),
+                                            onPressed: () {
+                                              showDialog(
+                                                context: context,
+                                                builder: (context) {
+                                                  TextEditingController
+                                                      rejectionReasonController =
+                                                      TextEditingController();
+                                                  return AlertDialog(
+                                                    title: Text(
+                                                        'Reject Appointment'),
+                                                    content: TextField(
+                                                      controller:
+                                                          rejectionReasonController,
+                                                      decoration: InputDecoration(
+                                                          hintText:
+                                                              'Enter rejection reason'),
+                                                    ),
+                                                    actions: [
+                                                      TextButton(
+                                                        onPressed: () {
+                                                          Navigator.of(context)
+                                                              .pop();
+                                                        },
+                                                        child: Text('Cancel'),
+                                                      ),
+                                                      TextButton(
+                                                        onPressed: () {
+                                                          rejectAppointment(
+                                                            appointment['id']
+                                                                .toString(),
+                                                            rejectionReasonController
+                                                                .text,
+                                                          );
+                                                          Navigator.of(context)
+                                                              .pop();
+                                                        },
+                                                        child: Text('Reject'),
+                                                      ),
+                                                    ],
+                                                  );
+                                                },
+                                              );
+                                            },
+                                          ),
+                                        ],
+                                      )
+                                    : null,
+                              ),
                             ),
-                        ],
+                          );
+                        },
                       ),
-                    );
-                  },
+                    ),
+                    SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        IconButton(
+                          icon: Icon(Icons.arrow_back),
+                          onPressed: _loadPreviousPage,
+                        ),
+                        Text('Page $pageNumber'),
+                        IconButton(
+                          icon: Icon(Icons.arrow_forward),
+                          onPressed: _loadNextPage,
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
     );
   }

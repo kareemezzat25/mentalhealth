@@ -14,6 +14,8 @@ class DoctorsApi {
     String? city,
     double? minFees,
     double? maxFees,
+    int page = 1,
+    int pageSize = 10,
   }) async {
     try {
       String? token = await Auth.getToken();
@@ -23,7 +25,11 @@ class DoctorsApi {
         throw Exception('Authentication token is missing.');
       }
 
-      Map<String, String> queryParams = {};
+      // Prepare query parameters
+      Map<String, dynamic> queryParams = {
+        'page': page.toString(),
+        'pageSize': pageSize.toString(),
+      };
       if (name != null) queryParams['name'] = name;
       if (specialization != null)
         queryParams['specialization'] = specialization;
@@ -58,8 +64,9 @@ class DoctorsApi {
             photoUrl: json['photoUrl'] ?? '',
             bio: json['biography'] ?? '',
             email: json['email'] ?? '',
-            schedule: {},
-            sessionDuration: Duration(),
+            schedule: {}, // You may need to parse the schedule data if available
+            sessionDuration:
+                Duration(), // Update this based on your actual data structure
           );
         }).toList();
         return doctors;
@@ -68,7 +75,7 @@ class DoctorsApi {
       }
     } catch (error) {
       print('Error fetching doctors: $error');
-      throw error; // Re-throw the error for the caller to handle
+      throw error;
     }
   }
 
@@ -101,12 +108,15 @@ class DoctorsApi {
     }
   }
 
-  Future<List<Map<String, dynamic>>> fetchDoctorAppointments() async {
+  Future<List<Map<String, dynamic>>> fetchDoctorAppointments({
+    required int pageNumber,
+    required int pageSize,
+  }) async {
     String? token = await Auth.getToken();
 
     final response = await http.get(
       Uri.parse(
-          'https://nexus-api-h3ik.onrender.com/api/appointments/doctors/me?pageNumber=1&pageSize=10'),
+          'https://nexus-api-h3ik.onrender.com/api/appointments/doctors/me?pageNumber=$pageNumber&pageSize=$pageSize'),
       headers: {
         'Authorization': 'Bearer $token', // Add your authentication token here
       },
@@ -126,43 +136,44 @@ class DoctorsApi {
   }
 
   Future<List<Map<String, dynamic>>> fetchFilteredAppointments({
-  String? clientName,
-  String? startDate,
-  String? endDate,
-  String? status,
-}) async {
-  String? token = await Auth.getToken();
+    String? clientName,
+    String? startDate,
+    String? endDate,
+    String? status,
+  }) async {
+    String? token = await Auth.getToken();
 
-  Map<String, String> queryParams = {};
-  if (clientName != null) queryParams['clientName'] = clientName;
-  if (startDate != null) queryParams['startDate'] = startDate;
-  if (endDate != null) queryParams['endDate'] = endDate;
-  if (status != null) queryParams['status'] = status;
+    Map<String, String> queryParams = {};
+    if (clientName != null) queryParams['clientName'] = clientName;
+    if (startDate != null) queryParams['startDate'] = startDate;
+    if (endDate != null) queryParams['endDate'] = endDate;
+    if (status != null) queryParams['status'] = status;
 
-  Uri uri = Uri.parse(
-      'https://nexus-api-h3ik.onrender.com/api/appointments/doctors/me')
-      .replace(queryParameters: queryParams);
+    Uri uri = Uri.parse(
+            'https://nexus-api-h3ik.onrender.com/api/appointments/doctors/me')
+        .replace(queryParameters: queryParams);
 
-  final response = await http.get(
-    uri,
-    headers: {
-      'Authorization': 'Bearer $token',
-    },
-  );
+    final response = await http.get(
+      uri,
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
 
-  // Log the request URI and response for debugging
-  print('Request URL: $uri');
-  print('Response status: ${response.statusCode}');
-  print('Response body: ${response.body}');
+    // Log the request URI and response for debugging
+    print('Request URL: $uri');
+    print('Response status: ${response.statusCode}');
+    print('Response body: ${response.body}');
 
-  if (response.statusCode == 200) {
-    List<dynamic> data = json.decode(response.body);
-    return data.map((appointment) => appointment as Map<String, dynamic>).toList();
-  } else {
-    throw Exception('Failed to load appointments');
+    if (response.statusCode == 200) {
+      List<dynamic> data = json.decode(response.body);
+      return data
+          .map((appointment) => appointment as Map<String, dynamic>)
+          .toList();
+    } else {
+      throw Exception('Failed to load appointments');
+    }
   }
-}
-
 
   Future<void> confirmAppointment(String appointmentId) async {
     String? token = await Auth.getToken();

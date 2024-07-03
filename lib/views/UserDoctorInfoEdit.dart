@@ -15,6 +15,8 @@ class UserDoctorInfoEdit extends StatefulWidget {
   final String? city;
   final String? location;
   final double ?sessionFees;
+  final List<String> roless;
+
 
   UserDoctorInfoEdit({
     required this.userId,
@@ -28,6 +30,7 @@ class UserDoctorInfoEdit extends StatefulWidget {
     this.city,
     this.location,
     this.sessionFees,
+    required this.roless
   });
 
   @override
@@ -61,7 +64,9 @@ class _UserDoctorInfoEditState extends State<UserDoctorInfoEdit> {
   }
 
   void _updateProfile(BuildContext context) async {
-    try {
+    try {  
+      if(widget.roless.contains('Doctor')){
+
       await updateDoctorProfile(
         widget.userId,
         _firstNameController.text,
@@ -75,7 +80,18 @@ class _UserDoctorInfoEditState extends State<UserDoctorInfoEdit> {
         _locationController.text,
         double.parse(_sessionFeesController.text),
       );
-
+      }else
+      {
+        await updateUserProfile(
+        widget.userId,
+        _firstNameController.text,
+        _lastNameController.text,
+        _genderController.text,
+        _birthDateController.text,
+        _image
+        );
+      }
+      
       Navigator.pop(context, 'refresh');
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -83,7 +99,7 @@ class _UserDoctorInfoEditState extends State<UserDoctorInfoEdit> {
       );
     }
   }
-
+ 
   Future<void> _getImage() async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
@@ -116,6 +132,10 @@ class _UserDoctorInfoEditState extends State<UserDoctorInfoEdit> {
             ),
             SizedBox(height: 10),
             ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                primary: Color(0xff0098FA),
+                onPrimary: Colors.white
+              ),
               onPressed: _getImage,
               child: Text('Select Photo'),
             ),
@@ -216,6 +236,10 @@ class _UserDoctorInfoEditState extends State<UserDoctorInfoEdit> {
             
             SizedBox(height: 20),
             ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                primary: Color(0xff0098FA),
+                onPrimary: Colors.white
+              ),
               onPressed: () => _updateProfile(context),
               child: Text('Update'),
             ),
