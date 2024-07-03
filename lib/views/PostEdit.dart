@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mentalhealthh/services/postsApi.dart';
+import 'package:mentalhealthh/widgets/ForbidenDialog.dart';
 
 class PostEdit extends StatefulWidget {
   final int postId;
@@ -56,17 +57,20 @@ class _PostEditState extends State<PostEdit> {
               onPressed: () async {
                 // Implement the logic to update the post on the server
                 try {
-                  await PostsApi.editPost(
+                  final response = await PostsApi.editPost(
                     widget.postId,
                     titleController.text,
                     contentController.text,
                   );
-
-                  // Pass 'refresh' as the result to indicate that the post is edited
-                  Navigator.pop(context, {
-                    'title': titleController.text,
-                    'content': contentController.text
-                  });
+                  if (response['title'] == 'Forbidden') {
+                    await showForbiddenDialog(context);
+                  } else {
+                    // Pass 'refresh' as the result to indicate that the post is edited
+                    Navigator.pop(context, {
+                      'title': titleController.text,
+                      'content': contentController.text
+                    });
+                  }
                 } catch (error) {
                   // Handle errors
                   print('Error editing post: $error');

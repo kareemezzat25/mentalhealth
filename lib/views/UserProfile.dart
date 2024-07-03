@@ -34,7 +34,7 @@ class _UserDoctorProfileState extends State<UserDoctorProfile> {
         title: Text(isDoctor ? 'Doctor Profile' : 'User Profile'),
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(vertical:8.0),
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
         child: FutureBuilder(
           future: _userDataFuture,
           builder: (context, snapshot) {
@@ -49,7 +49,7 @@ class _UserDoctorProfileState extends State<UserDoctorProfile> {
             } else {
               Map<String, dynamic> userData =
                   snapshot.data as Map<String, dynamic>;
-        
+
               // Display different details based on roles
               if (widget.roles.contains('Doctor')) {
                 return ListView(
@@ -60,7 +60,8 @@ class _UserDoctorProfileState extends State<UserDoctorProfile> {
                         radius: 122,
                         backgroundImage: _image != null
                             ? FileImage(_image!)
-                            : NetworkImage(userData['photoUrl']) as ImageProvider,
+                            : NetworkImage(userData['photoUrl'])
+                                as ImageProvider,
                       ),
                     ),
                     SizedBox(height: 20),
@@ -85,7 +86,6 @@ class _UserDoctorProfileState extends State<UserDoctorProfile> {
                       ),
                       subtitle: Text('${userData['lastName']}'),
                     ),
-                    
                     ListTile(
                       title: Text(
                         'city:',
@@ -100,7 +100,7 @@ class _UserDoctorProfileState extends State<UserDoctorProfile> {
                       ),
                       subtitle: Text('${userData['location']}'),
                     ),
-                      ListTile(
+                    ListTile(
                       title: Text(
                         'SessionFees:',
                         style: TextStyle(fontWeight: FontWeight.bold),
@@ -154,7 +154,6 @@ class _UserDoctorProfileState extends State<UserDoctorProfile> {
                                 location: userData['location'],
                                 sessionFees: userData['sessionFees'],
                                 roless: widget.roles,
-        
                               ),
                             ),
                           );
@@ -190,7 +189,8 @@ class _UserDoctorProfileState extends State<UserDoctorProfile> {
                         radius: 122,
                         backgroundImage: _image != null
                             ? FileImage(_image!)
-                            : NetworkImage(userData['photoUrl']) as ImageProvider,
+                            : NetworkImage(userData['photoUrl'])
+                                as ImageProvider,
                       ),
                     ),
                     SizedBox(height: 20),
@@ -276,5 +276,3 @@ class _UserDoctorProfileState extends State<UserDoctorProfile> {
     );
   }
 }
-
-

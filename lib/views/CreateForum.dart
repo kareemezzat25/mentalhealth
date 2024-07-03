@@ -6,6 +6,7 @@ import 'package:mentalhealthh/models/button.dart';
 import 'package:http/http.dart' as http;
 import 'package:mentalhealthh/views/textForm.dart';
 import 'package:mentalhealthh/services/postsApi.dart';
+import 'package:mentalhealthh/widgets/ForbidenDialog.dart';
 
 class createForum extends StatefulWidget {
   final TabController tabController;
@@ -38,11 +39,9 @@ class _createForumState extends State<createForum> {
 
   void validateInputs() {
     setState(() {
-      titleError =
-          TitleController.text.isEmpty ? '* Title is required' : '';
-      descriptionError = DescriptionController.text.isEmpty
-          ? '* Description is required'
-          : '';
+      titleError = TitleController.text.isEmpty ? '* Title is required' : '';
+      descriptionError =
+          DescriptionController.text.isEmpty ? '* Description is required' : '';
     });
   }
 
@@ -180,22 +179,25 @@ class _createForumState extends State<createForum> {
                         String? token = await Auth.getToken();
 
                         if (token != null) {
-                          await PostsApi().createPost(
+                          final response = await PostsApi().createPost(
                             TitleController.text,
                             DescriptionController.text,
                             token,
                             isAnonymous,
                             _imageFile,
                           );
-                          // Switch to the "Posts" tab
-                          widget.tabController.animateTo(0);
+                          if (response['title'] == 'Forbidden') {
+                            await showForbiddenDialog(context);
+                          } else {
+                            // Switch to the "Posts" tab
+                            widget.tabController.animateTo(0);
+                          }
                         } else {
                           print('Token not available');
                         }
                       }
                     },
                   ),
-
                 ],
               ),
             ],

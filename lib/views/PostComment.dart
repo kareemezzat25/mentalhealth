@@ -7,6 +7,8 @@ import 'package:mentalhealthh/views/CommentEdit.dart';
 import 'package:mentalhealthh/views/PostEdit.dart';
 import 'package:mentalhealthh/views/ReplayEdit.dart';
 import 'package:mentalhealthh/views/textForm.dart';
+import 'package:intl/intl.dart';
+import 'package:mentalhealthh/widgets/ForbidenDialog.dart';
 import 'package:mentalhealthh/widgets/image_user.dart'; // Import the intl package for formatting
 
 class PostComment extends StatefulWidget {
@@ -50,6 +52,7 @@ class _PostCommentState extends State<PostComment> {
       postDetails = PostsApi.fetchPostDetails(widget.postId);
     });
   }
+
   Future<Map<String, dynamic>> fetchCommentDetails(
       int postId, int commentId) async {
     try {
@@ -61,6 +64,7 @@ class _PostCommentState extends State<PostComment> {
       throw error;
     }
   }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -90,32 +94,52 @@ class _PostCommentState extends State<PostComment> {
                   child: Column(
                     children: [
                       SizedBox(height: 15),
-                      Container(decoration: BoxDecoration(
+                      Container(
+                        decoration: BoxDecoration(
                             color: Color(0xffFFFFFF),
                             borderRadius: BorderRadius.circular(15)),
                         width: screenWidth * 0.9,
                         child: Padding(
-                          padding: const EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 10),
+                          padding: const EdgeInsets.only(
+                              left: 10, right: 10, top: 10, bottom: 10),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(
                                 children: [
-                                  CircleAvatar(
-                                    radius: 20,
-                                    backgroundColor: Colors.grey,
-                                    backgroundImage: postDetailsData['isAnonymous'] == true ||postDetailsData['photoUrl'] == null
-                                        ? AssetImage('assets/images/anonymous.png')
-                                        : NetworkImage(postDetailsData['photoUrl']) as ImageProvider,
+                                  Container(
+                                    width: 40,
+                                    height: 40,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(40),
+                                      border: Border.all(
+                                          color: Colors.grey,
+                                          style: BorderStyle.solid),
+                                      image: DecorationImage(
+                                        image: postDetailsData['isAnonymous'] ==
+                                                    true ||
+                                                postDetailsData['photoUrl'] ==
+                                                    null
+                                            ? AssetImage(
+                                                'assets/images/anonymous.png')
+                                            : NetworkImage(
+                                                    postDetailsData['photoUrl'])
+                                                as ImageProvider,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
                                   ),
                                   SizedBox(width: 10),
                                   Column(
-                                    crossAxisAlignment:CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Text(
                                         '${postDetailsData['username'] ?? 'Anonymous'}',
-                                        style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold),
                                       ),
                                       Text(
                                         '${calculateTimeDifference(postDetailsData['postedOn'])} ',
@@ -123,85 +147,87 @@ class _PostCommentState extends State<PostComment> {
                                       ),
                                     ],
                                   ),
-                                  if (widget.userId ==postDetailsData['appUserId'])
-                                    Padding(
-                                      padding: const EdgeInsets.only(left:88.0),
-                                      child: PopupMenuButton<String>(
-                                        onSelected: (value) async {
-                                          // Handle menu item selection
-                                          if (value == 'edit') {
-                                            // Fetch old title and content
-                                            String oldTitle =
-                                                postDetailsData['title'];
-                                            String oldContent =
-                                                postDetailsData['content'];
-                                            // Navigate to PostEdit.dart and wait for the result
-                                            Map<String, dynamic>? result =
-                                                await Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) => PostEdit(
-                                                  postId: widget.postId,
-                                                  oldTitle: oldTitle,
-                                                  oldContent: oldContent,
-                                                ),
+                                  if (widget.userId ==
+                                      postDetailsData['appUserId'])
+                                    PopupMenuButton<String>(
+                                      onSelected: (value) async {
+                                        // Handle menu item selection
+                                        if (value == 'edit') {
+                                          // Fetch old title and content
+                                          String oldTitle =
+                                              postDetailsData['title'];
+                                          String oldContent =
+                                              postDetailsData['content'];
+                                          // Navigate to PostEdit.dart and wait for the result
+                                          Map<String, dynamic>? result =
+                                              await Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => PostEdit(
+                                                postId: widget.postId,
+                                                oldTitle: oldTitle,
+                                                oldContent: oldContent,
                                               ),
-                                            );
-                                            if (result != null) {
-                                              changePostData();
-                                              // Result is not null, indicating a successful edit
-                                              // Refresh the UI with the updated post details
-                                              setState(() {
-                                                postDetailsData =
-                                                    snapshot.data ?? {};
-                                              });
-                                            }
-                                            // Perform edit action
-                                          } else if (value == 'delete') {
-                                            // Perform delete action
-                                            // Inside your Posts page or wherever you call deletePost
-                                            await PostsApi.deletePost(
-                                              context: context,
-                                              postId: widget.postId,
-                                              onPostDeleted: () {},
-                                            );
+                                            ),
+                                          );
+                                          if (result != null) {
+                                            changePostData();
+                                            // Result is not null, indicating a successful edit
+                                            // Refresh the UI with the updated post details
+                                            setState(() {
+                                              postDetailsData =
+                                                  snapshot.data ?? {};
+                                            });
                                           }
-                                        },
-                                        itemBuilder: (BuildContext context) =>
-                                            <PopupMenuEntry<String>>[
-                                          const PopupMenuItem<String>(
-                                            value: 'edit',
-                                            child: ListTile(
-                                              leading: Icon(Icons.edit),
-                                              title: Text('Edit'),
-                                            ),
+                                          // Perform edit action
+                                        } else if (value == 'delete') {
+                                          // Perform delete action
+                                          // Inside your Posts page or wherever you call deletePost
+                                          await PostsApi.deletePost(
+                                            context: context,
+                                            postId: widget.postId,
+                                            onPostDeleted: () {},
+                                          );
+                                        }
+                                      },
+                                      itemBuilder: (BuildContext context) =>
+                                          <PopupMenuEntry<String>>[
+                                        const PopupMenuItem<String>(
+                                          value: 'edit',
+                                          child: ListTile(
+                                            leading: Icon(Icons.edit),
+                                            title: Text('Edit'),
                                           ),
-                                          const PopupMenuItem<String>(
-                                            value: 'delete',
-                                            child: ListTile(
-                                              leading: Icon(Icons.delete),
-                                              title: Text('Delete'),
-                                            ),
+                                        ),
+                                        const PopupMenuItem<String>(
+                                          value: 'delete',
+                                          child: ListTile(
+                                            leading: Icon(Icons.delete),
+                                            title: Text('Delete'),
                                           ),
-                                        ],
-                                      ),
+                                        ),
+                                      ],
                                     ),
                                 ],
                               ),
                               SizedBox(height: 10),
                               Text(
                                 '${postDetailsData['title']}',
-                                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                style: TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.bold),
                               ),
                               SizedBox(height: 15),
                               Text(
                                 '${postDetailsData['content']}',
                                 style: TextStyle(fontSize: 18),
                               ),
-                              if (postDetailsData['postPhotoUrl']!=null) // Display image if imageUrl is available
+                              if (postDetailsData['postPhotoUrl'] !=
+                                  null) // Display image if imageUrl is available
                                 Padding(
-                                  padding: const EdgeInsets.symmetric(vertical: 10.0),
-                                  child: Image.network(postDetailsData['postPhotoUrl']),
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 10.0),
+                                  child: Image.network(
+                                      postDetailsData['postPhotoUrl']),
                                 ),
                             ],
                           ),
@@ -247,7 +273,7 @@ class _PostCommentState extends State<PostComment> {
                             ),
                             SizedBox(width: 5),
                             Button(
-                              buttonColor: Colors.blue,
+                              buttonColor: Color(0xff0B570E),
                               buttonText: 'Send',
                               textColor: Colors.white,
                               widthButton: 120,
@@ -255,12 +281,17 @@ class _PostCommentState extends State<PostComment> {
                               onPressed: () async {
                                 String commentContent = commentController.text;
                                 if (commentContent.isNotEmpty) {
-                                  CommentApi.createComment(widget.postId, commentContent);
-                                  commentController.clear();
-                                  setState(() {
-                                    postDetails = PostsApi.fetchPostDetails(
-                                        widget.postId);
-                                  });
+                                  final response =
+                                      await CommentApi.createComment(
+                                          widget.postId, commentContent);
+                                  if (response['title'] == 'Forbidden') {
+                                    await showForbiddenDialog(context);
+                                  } else {
+                                    commentController.clear();
+                                    setState(() {
+                                      // Update postDetails to refresh comments
+                                    });
+                                  }
                                 }
                               },
                             ),
@@ -281,26 +312,33 @@ class _PostCommentState extends State<PostComment> {
                               child: Text('Error: ${snapshot.error}'),
                             );
                           } else {
-                            List<Map<String, dynamic>> commentsData = snapshot.data ?? [];
+                            List<Map<String, dynamic>> commentsData =
+                                snapshot.data ?? [];
                             return ListView.builder(
-                              physics:NeverScrollableScrollPhysics(), // Make the ListView unscrollable
+                              physics:
+                                  NeverScrollableScrollPhysics(), // Make the ListView unscrollable
                               shrinkWrap: true,
                               itemCount: commentsData.length,
                               itemBuilder: (context, index) {
                                 int commentId = commentsData[index]['id'];
                                 return FutureBuilder<Map<String, dynamic>>(
-                                  future: fetchCommentDetails(widget.postId, commentId),
+                                  future: fetchCommentDetails(
+                                      widget.postId, commentId),
                                   builder: (context, commentSnapshot) {
                                     if (commentSnapshot.connectionState ==
                                         ConnectionState.waiting) {
                                       return Center();
                                     } else if (commentSnapshot.hasError) {
                                       return Center(
-                                        child: Text('Error: ${commentSnapshot.error}'),
+                                        child: Text(
+                                            'Error: ${commentSnapshot.error}'),
                                       );
                                     } else {
-                                      Map<String, dynamic> commentDetails = commentSnapshot.data ?? {};
-                                      bool isCurrentUserCommentAuthor =widget.userId ==commentDetails['appUserId'];
+                                      Map<String, dynamic> commentDetails =
+                                          commentSnapshot.data ?? {};
+                                      bool isCurrentUserCommentAuthor =
+                                          widget.userId ==
+                                              commentDetails['appUserId'];
 
                                       return Card(
                                         color: Color(0xffFFFFFF),
@@ -308,21 +346,37 @@ class _PostCommentState extends State<PostComment> {
                                             horizontal: 10, vertical: 10),
                                         child: Container(
                                           child: Column(
-                                            crossAxisAlignment:CrossAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
                                             children: [
                                               ListTile(
                                                 title: Row(
                                                   children: [
-                                                    ImageUser(url: commentsData[index]['photoUrl']),
+                                                    ImageUser(
+                                                        url: commentsData[index]
+                                                            ['photoUrl']),
                                                     SizedBox(width: 10),
                                                     Column(
-                                                      crossAxisAlignment:CrossAxisAlignment.start,
-                                                      mainAxisAlignment:MainAxisAlignment.center,
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
                                                       children: [
-                                                        Text('${commentsData[index]['username']}',
-                                                          style:TextStyle(fontSize: 18,fontWeight:FontWeight.bold),),
-                                                        Text('${calculateTimeDifference(commentsData[index]['commentedAt'])} ',
-                                                          style: TextStyle(fontSize: 12),),
+                                                        Text(
+                                                          '${commentsData[index]['username']}',
+                                                          style: TextStyle(
+                                                              fontSize: 18,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold),
+                                                        ),
+                                                        Text(
+                                                          '${calculateTimeDifference(commentsData[index]['commentedAt'])} ',
+                                                          style: TextStyle(
+                                                              fontSize: 12),
+                                                        ),
                                                       ],
                                                     ),
                                                     if (isCurrentUserCommentAuthor)
@@ -332,53 +386,94 @@ class _PostCommentState extends State<PostComment> {
                                                           // Handle menu item selection for comments
                                                           if (value == 'edit') {
                                                             // Navigate to CommentEdit.dart
-                                                            String? result =await Navigator.push(context,MaterialPageRoute(
-                                                                builder:(context) =>CommentEdit(
-                                                                  postId: widget.postId,
-                                                                  commentId:commentId,
-                                                                  oldContent: commentsData[index]['content'],
+                                                            String? result =
+                                                                await Navigator
+                                                                    .push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                builder:
+                                                                    (context) =>
+                                                                        CommentEdit(
+                                                                  postId: widget
+                                                                      .postId,
+                                                                  commentId:
+                                                                      commentId,
+                                                                  oldContent: commentsData[
+                                                                          index]
+                                                                      [
+                                                                      'content'],
                                                                 ),
                                                               ),
                                                             );
-                                                            if (result !=null) {
+
+                                                            if (result !=
+                                                                null) {
                                                               // Refresh UI after returning from CommentEdit.dart
                                                               setState(() {
-                                                                postDetails = PostsApi.fetchPostDetails(widget.postId);
+                                                                postDetails = PostsApi
+                                                                    .fetchPostDetails(
+                                                                        widget
+                                                                            .postId);
                                                               });
                                                             }
-                                                          } else if (value =='delete') {
+                                                          } else if (value ==
+                                                              'delete') {
                                                             // Perform delete action for comments
-                                                            await CommentApi.deleteComment(widget.postId,commentId,
+                                                            await CommentApi
+                                                                .deleteComment(
+                                                              widget.postId,
+                                                              commentId,
                                                             );
                                                             setState(() {
                                                               // Refresh UI after deleting comment
-                                                              commentsData =snapshot.data ??[];
+                                                              commentsData =
+                                                                  snapshot.data ??
+                                                                      [];
                                                             });
                                                           }
                                                         },
-                                                        itemBuilder:(BuildContextcontext) =><PopupMenuEntry<String>>[
-                                                          const PopupMenuItem<String>(
+                                                        itemBuilder:
+                                                            (BuildContext
+                                                                    context) =>
+                                                                <PopupMenuEntry<
+                                                                    String>>[
+                                                          const PopupMenuItem<
+                                                              String>(
                                                             value: 'edit',
                                                             child: ListTile(
-                                                              leading: Icon(Icons.edit),
-                                                              title:Text('Edit'),
+                                                              leading: Icon(
+                                                                  Icons.edit),
+                                                              title:
+                                                                  Text('Edit'),
                                                             ),
                                                           ),
-                                                          const PopupMenuItem<String>(
+                                                          const PopupMenuItem<
+                                                              String>(
                                                             value: 'delete',
                                                             child: ListTile(
-                                                              leading: Icon(Icons.delete),
-                                                              title: Text('Delete'),
+                                                              leading: Icon(
+                                                                  Icons.delete),
+                                                              title: Text(
+                                                                  'Delete'),
                                                             ),
                                                           ),
                                                         ],
                                                       ),
                                                   ],
                                                 ),
-                                                subtitle: Padding(padding:const EdgeInsets.only(top: 10),
-                                                  child: Column(crossAxisAlignment:CrossAxisAlignment.start,
+                                                subtitle: Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          top: 10),
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
                                                     children: [
-                                                      Text('${commentsData[index]['content']}',style: TextStyle(fontSize: 18),
+                                                      Text(
+                                                        '${commentsData[index]['content']}',
+                                                        style: TextStyle(
+                                                            fontSize: 18),
                                                       ),
                                                     ],
                                                   ),
@@ -387,96 +482,172 @@ class _PostCommentState extends State<PostComment> {
                                                   icon: Icon(Icons.reply),
                                                   onPressed: () {
                                                     // Handle reply button tap
-                                                  showReplyTextField(commentId);
+                                                    showReplyTextField(
+                                                        commentId);
                                                   },
                                                 ),
                                               ),
                                               // Display replies for this comment
-                                              FutureBuilder<List<Map<String, dynamic>>>(
-                                                future: PostsApi.fetchCommentReplies(widget.postId,commentId,),
+                                              FutureBuilder<
+                                                  List<Map<String, dynamic>>>(
+                                                future: PostsApi
+                                                    .fetchCommentReplies(
+                                                  widget.postId,
+                                                  commentId,
+                                                ),
                                                 builder: (context, snapshot) {
-                                                  if (snapshot.connectionState ==ConnectionState.waiting) {
+                                                  if (snapshot
+                                                          .connectionState ==
+                                                      ConnectionState.waiting) {
                                                     return Center();
-                                                  } else if (snapshot.hasError) {
+                                                  } else if (snapshot
+                                                      .hasError) {
                                                     return Center(
-                                                      child: Text('Error: ${snapshot.error}'),
+                                                      child: Text(
+                                                          'Error: ${snapshot.error}'),
                                                     );
                                                   } else {
                                                     List<Map<String, dynamic>>
-                                                        repliesData =snapshot.data ?? [];
+                                                        repliesData =
+                                                        snapshot.data ?? [];
                                                     return ListView.builder(
                                                       shrinkWrap: true,
-                                                      physics:NeverScrollableScrollPhysics(),
-                                                      itemCount:repliesData.length,
-                                                      itemBuilder: (context,replyIndex) {
-                                                        int replyId =repliesData[replyIndex]['id'];
+                                                      physics:
+                                                          NeverScrollableScrollPhysics(),
+                                                      itemCount:
+                                                          repliesData.length,
+                                                      itemBuilder: (context,
+                                                          replyIndex) {
+                                                        int replyId =
+                                                            repliesData[
+                                                                    replyIndex]
+                                                                ['id'];
+
                                                         // Check if the logged-in user is the author of the reply
-                                                        bool isCurrentUserReplayAuthor =widget.userId ==repliesData[replyIndex]['appUserId'];
+                                                        bool
+                                                            isCurrentUserReplayAuthor =
+                                                            widget.userId ==
+                                                                repliesData[
+                                                                        replyIndex]
+                                                                    [
+                                                                    'appUserId'];
+
                                                         return Padding(
-                                                          padding:const EdgeInsets.only(top: 10,bottom: 10,left: 30,right: 10),
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .only(
+                                                                  top: 10,
+                                                                  bottom: 10,
+                                                                  left: 30,
+                                                                  right: 10),
                                                           child: ListTile(
                                                             title: Row(
                                                               children: [
-                                                                ImageUser(url: repliesData[replyIndex]['photoUrl']),
-                                                                SizedBox( width: 10),
+                                                                ImageUser(
+                                                                    url: repliesData[
+                                                                            replyIndex]
+                                                                        [
+                                                                        'photoUrl']),
+                                                                SizedBox(
+                                                                    width: 10),
                                                                 Column(
-                                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                                  mainAxisAlignment:MainAxisAlignment.center,
+                                                                  crossAxisAlignment:
+                                                                      CrossAxisAlignment
+                                                                          .start,
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .center,
                                                                   children: [
                                                                     Text(
                                                                       '${repliesData[replyIndex]['username']}',
-                                                                      style: TextStyle(fontSize:16,fontWeight:FontWeight.bold),
+                                                                      style: TextStyle(
+                                                                          fontSize:
+                                                                              16,
+                                                                          fontWeight:
+                                                                              FontWeight.bold),
                                                                     ),
                                                                     Text(
                                                                       '${calculateTimeDifference(repliesData[replyIndex]['repliedAt'])} ',
-                                                                      style: TextStyle(fontSize:12),
+                                                                      style: TextStyle(
+                                                                          fontSize:
+                                                                              12),
                                                                     ),
                                                                   ],
                                                                 ),
                                                                 if (isCurrentUserReplayAuthor)
-                                                                  PopupMenuButton<String>(
-                                                                    onSelected:(value) async {
+                                                                  PopupMenuButton<
+                                                                      String>(
+                                                                    onSelected:
+                                                                        (value) async {
                                                                       // Handle menu item selection for replies
-                                                                      if (value =='edit') {
+                                                                      if (value ==
+                                                                          'edit') {
                                                                         // Navigate to ReplayEdit.dart
-                                                                        String?result = await Navigator.push(context,
+                                                                        String?
+                                                                            result =
+                                                                            await Navigator.push(
+                                                                          context,
                                                                           MaterialPageRoute(
-                                                                            builder: (context) =>ReplyEdit(
+                                                                            builder: (context) =>
+                                                                                ReplyEdit(
                                                                               postId: widget.postId,
                                                                               commentId: commentId,
                                                                               replyId: replyId,
                                                                               oldContent: repliesData[replyIndex]['content'],
                                                                             ),
-                                                                          ),);
-                                                                        if (result !=null) {
+                                                                          ),
+                                                                        );
+
+                                                                        if (result !=
+                                                                            null) {
                                                                           // Refresh UI after returning from ReplayEdit.dart
                                                                           setState(
                                                                               () {
-                                                                            postDetails = PostsApi.fetchPostDetails(widget.postId);
+                                                                            postDetails =
+                                                                                PostsApi.fetchPostDetails(widget.postId);
                                                                           });
                                                                         }
-                                                                      } else if (value =='delete') {
+                                                                      } else if (value ==
+                                                                          'delete') {
                                                                         // Perform delete action for replies
-                                                                        await CommentApi.deleteReply(widget.postId,commentId, replyId);
+                                                                        await CommentApi.deleteReply(
+                                                                            widget.postId,
+                                                                            commentId,
+                                                                            replyId);
                                                                         setState(
                                                                             () {
                                                                           // Refresh UI after deleting reply
-                                                                          repliesData =snapshot.data ?? [];
+                                                                          repliesData =
+                                                                              snapshot.data ?? [];
                                                                         });
-                                                                      }},
-                                                                    itemBuilder: (BuildContextcontext) =><PopupMenuEntry<String>>[
-                                                                      const PopupMenuItem<String>(
-                                                                        value:'edit',
-                                                                        child: ListTile(
-                                                                          leading: Icon(Icons.edit),
-                                                                          title:Text('Edit'),
+                                                                      }
+                                                                    },
+                                                                    itemBuilder: (BuildContext
+                                                                            context) =>
+                                                                        <PopupMenuEntry<
+                                                                            String>>[
+                                                                      const PopupMenuItem<
+                                                                          String>(
+                                                                        value:
+                                                                            'edit',
+                                                                        child:
+                                                                            ListTile(
+                                                                          leading:
+                                                                              Icon(Icons.edit),
+                                                                          title:
+                                                                              Text('Edit'),
                                                                         ),
                                                                       ),
-                                                                      const PopupMenuItem<String>(
-                                                                        value:'delete',
-                                                                        child:ListTile(
-                                                                          leading:Icon(Icons.delete),
-                                                                          title:Text('Delete'),
+                                                                      const PopupMenuItem<
+                                                                          String>(
+                                                                        value:
+                                                                            'delete',
+                                                                        child:
+                                                                            ListTile(
+                                                                          leading:
+                                                                              Icon(Icons.delete),
+                                                                          title:
+                                                                              Text('Delete'),
                                                                         ),
                                                                       ),
                                                                     ],
@@ -484,11 +655,15 @@ class _PostCommentState extends State<PostComment> {
                                                               ],
                                                             ),
                                                             subtitle: Column(
-                                                              crossAxisAlignment:CrossAxisAlignment.start,
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment
+                                                                      .start,
                                                               children: [
                                                                 Text(
                                                                   '${repliesData[replyIndex]['content']}',
-                                                                  style: TextStyle(fontSize: 17),
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          17),
                                                                 ),
                                                               ],
                                                             ),
@@ -525,6 +700,7 @@ class _PostCommentState extends State<PostComment> {
   // Add this function outside the build method
   String calculateTimeDifference(String postDateTime) {
     DateTime postTime = DateTime.parse(postDateTime);
+
     // Consider UTC+2 time zone offset (2 hours)
     DateTime adjustedPostTime = postTime.add(Duration(hours: 3));
 
@@ -574,15 +750,27 @@ class _PostCommentState extends State<PostComment> {
               onPressed: () async {
                 String replyContent = replyController.text;
                 if (replyContent.isNotEmpty) {
-                  await PostsApi.postCommentReply(
+                  await CommentApi.postCommentReply(
                     widget.postId,
                     commentId,
                     replyContent,
                   );
-                  Navigator.of(context).pop();
-                  setState(() {
-                    // Refresh UI after adding reply
-                  });
+
+                  if (replyContent.isNotEmpty) {
+                    final response = await CommentApi.postCommentReply(
+                      widget.postId,
+                      commentId,
+                      replyContent,
+                    );
+                    if (response['title'] == 'Forbidden') {
+                      await showForbiddenDialog(context);
+                    } else {
+                      Navigator.of(context).pop();
+                      setState(() {
+                        // Refresh UI after adding reply
+                      });
+                    }
+                  }
                 }
               },
               child: Text('Send'),
