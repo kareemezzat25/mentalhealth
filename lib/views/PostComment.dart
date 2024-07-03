@@ -273,7 +273,7 @@ class _PostCommentState extends State<PostComment> {
                             ),
                             SizedBox(width: 5),
                             Button(
-                              buttonColor: Color(0xff0B570E),
+                              buttonColor: Color(0xff0098FA),
                               buttonText: 'Send',
                               textColor: Colors.white,
                               widthButton: 120,

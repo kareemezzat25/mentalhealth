@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mentalhealthh/services/DepTestApi.dart';
+import 'package:mentalhealthh/views/DoctorsPage.dart'; // Import your DoctorsPage widget
+import 'package:mentalhealthh/views/Posts.dart'; // Import your Posts widget
+import 'TestResultPage.dart'; // Import your TestResultPage widget
 
 class DepressionTest extends StatefulWidget {
   @override
@@ -38,31 +41,22 @@ class _DepressionTestFormState extends State<DepressionTest> {
         );
 
         String resultMessage;
+
         if (response) {
           resultMessage =
-              'You are depressed. Please seek help from a mental health professional.';
+              'Depression Indicated\n\nHow Our Test Works:\n\nOur 3-Phase Analysis Process:\n\n- Response Weighting: We assign weights to your responses to determine if the overall sentiment tends to be more negative.\n- Sentiment Analysis: We use advanced techniques like VADER and RoBERTa, combined with user analysis, to assess if your responses indicate potential issues.\n- Depression Analysis: We compare your responses against a database of over 10,000 depression cases using machine learning models (decision trees, logistic regression, and support vector machines) to identify similarities.\n\nThis multi-phase approach allows us to provide a comprehensive assessment. However, it\'s important to note that this test is not a clinical diagnosis. Always consult with a mental health professional for a proper evaluation.';
         } else {
           resultMessage =
               'You are normal. Keep maintaining your mental health!';
         }
 
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text('Test Result'),
-              content: Text(resultMessage),
-              actions: [
-                TextButton(
-                  child: Text('OK'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            );
-          },
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => TestResultPage(response),
+          ),
         );
+
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('Failed to submit test: $e'),
@@ -120,8 +114,7 @@ class _DepressionTestFormState extends State<DepressionTest> {
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     primary: Colors.blue,
-                    onPrimary: Colors.white
-
+                    onPrimary: Colors.white,
                   ),
                   onPressed: _submitForm,
                   child: Text('Submit'),
@@ -143,22 +136,22 @@ class _DepressionTestFormState extends State<DepressionTest> {
         children: [
           Text(
             labelText,
-            style: TextStyle(fontSize: 18), // Set the font size here
+            style: TextStyle(fontSize: 18),
           ),
           DropdownButtonFormField<String>(
-            isExpanded: true, // Make dropdown take full width
+            isExpanded: true,
             decoration: InputDecoration(
-              labelStyle: TextStyle(fontSize: 18), // Set the font size here
+              labelStyle: TextStyle(fontSize: 18),
             ),
             hint: Text(
               'Select an option',
-              style: TextStyle(fontSize: 16), // Set the font size here
+              style: TextStyle(fontSize: 16),
             ),
             value: currentValue,
             items: options.map((String option) {
               return DropdownMenuItem<String>(
                 value: option,
-                child: Text(option, style: TextStyle(fontSize: 16)), // Set the font size here
+                child: Text(option, style: TextStyle(fontSize: 16)),
               );
             }).toList(),
             onChanged: (value) {
@@ -166,7 +159,8 @@ class _DepressionTestFormState extends State<DepressionTest> {
                 onSaved(value);
               });
             },
-            validator: (value) => value == null ? 'Please select an option' : null,
+            validator: (value) =>
+                value == null ? 'Please select an option' : null,
             onSaved: (value) {
               onSaved(value);
             },
@@ -183,7 +177,7 @@ class _DepressionTestFormState extends State<DepressionTest> {
         maxLines: 4,
         decoration: InputDecoration(
           labelText: labelText,
-          labelStyle: TextStyle(fontSize: 18), // Set the font size here
+          labelStyle: TextStyle(fontSize: 18),
         ),
         validator: (value) =>
             value == null || value.isEmpty ? 'Please enter a story' : null,
