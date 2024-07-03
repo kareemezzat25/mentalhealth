@@ -214,6 +214,19 @@ class _AppointmentsviewState extends State<Appointmentsview> {
     }
   }
 
+  Color _getStatusTextColor(String status) {
+    switch (status) {
+      case 'Cancelled':
+        return Colors.grey; // Adjust color for Cancelled status
+      case 'Rejected':
+        return Colors.red; // Adjust color for Rejected status
+      case 'Confirmed':
+        return Colors.green; // Adjust color for Confirmed status
+      default:
+        return Colors.orange; // Default color for other statuses
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -239,9 +252,7 @@ class _AppointmentsviewState extends State<Appointmentsview> {
                         itemCount: filteredAppointments.length,
                         itemBuilder: (context, index) {
                           final appointment = filteredAppointments[index];
-                          Color cardColor;
-                          String imageUrl = (appointment
-                                      .doctorPhotoUrl.isEmpty ||
+                          String imageUrl = (appointment.doctorPhotoUrl.isEmpty ||
                                   !appointment.doctorPhotoUrl.contains('http'))
                               ? 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-600nw-1677509740.jpg'
                               : appointment.doctorPhotoUrl;
@@ -249,20 +260,14 @@ class _AppointmentsviewState extends State<Appointmentsview> {
 
                           switch (appointment.status) {
                             case 'Cancelled':
-                              cardColor = Color(0xffDADADA);
                               reason = appointment.cancellationReason;
                               break;
                             case 'Rejected':
-                              cardColor = Color.fromARGB(255, 229, 112, 103);
                               reason = appointment.rejectionReason;
                               break;
-                            case 'Confirmed':
-                              cardColor = Color.fromARGB(255, 90, 198, 90);
+                            default:
                               reason = null;
                               break;
-                            default:
-                              cardColor = Color.fromARGB(255, 225, 209, 59);
-                              reason = null;
                           }
 
                           final formattedDateTime =
@@ -271,7 +276,8 @@ class _AppointmentsviewState extends State<Appointmentsview> {
                           return Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Card(
-                              color: cardColor,
+                              color: Color(0xffFFFFFF),
+                              elevation: 6,
                               child: Padding(
                                 padding: const EdgeInsets.all(16),
                                 child: Column(
@@ -292,8 +298,9 @@ class _AppointmentsviewState extends State<Appointmentsview> {
                                             Text(
                                               appointment.doctorName,
                                               style: TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.bold),
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold,
+                                              ),
                                             ),
                                             Text(formattedDateTime),
                                           ],
@@ -303,16 +310,29 @@ class _AppointmentsviewState extends State<Appointmentsview> {
                                     SizedBox(height: 10),
                                     Text('Duration: ${appointment.duration}'),
                                     Text('Fees: ${appointment.fees}\$'),
-                                    Text('Status: ${appointment.status}'),
+                                    Text(
+                                      'Status: ${appointment.status}',
+                                      style: TextStyle(
+                                        color: _getStatusTextColor(appointment.status),
+                                        fontWeight: FontWeight.bold
+                                      ),
+                                    ),
                                     Text('Location: ${appointment.location}'),
                                     if (reason != null) Text('Reason: $reason'),
                                     if (appointment.status == 'Pending' ||
                                         appointment.status == 'Confirmed')
-                                      ElevatedButton(
-                                        onPressed: () {
-                                          _cancelAppointment(appointment);
-                                        },
-                                        child: Text('Cancel'),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(horizontal: 100.0),
+                                        child: ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                            primary: Colors.blue,
+                                            onPrimary: Colors.white,
+                                          ),
+                                          onPressed: () {
+                                            _cancelAppointment(appointment);
+                                          },
+                                          child: Text('Cancel'),
+                                        ),
                                       ),
                                   ],
                                 ),

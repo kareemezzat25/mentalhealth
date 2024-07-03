@@ -146,21 +146,14 @@ class AppointmentSlotsPage extends StatelessWidget {
     );
   }
 
-// String _getNextDateForDay(String day) {
-//   // Get current date
-//   DateTime now = DateTime.now();
+  String _formatSlot(String slot) {
+    List<String> parts = slot.split(':');
+    int hour = int.parse(parts[0]);
+    int minute = int.parse(parts[1]);
 
-//   // Find the next occurrence of the specified day
-//   DateTime nextDate = now;
-//   while (DateFormat('EEEE', 'en_US').format(nextDate) != day) {
-//     nextDate = nextDate.add(Duration(days: 1));
-//   }
-
-//   // Format the next date in 'yyyy-MM-dd' format
-//   String formattedDate = DateFormat('yyyy-MM-dd').format(nextDate);
-
-//   return formattedDate;
-// }
+    DateTime time = DateTime(0, 0, 0, hour, minute);
+    return DateFormat('h:mm a').format(time);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -186,6 +179,7 @@ class AppointmentSlotsPage extends StatelessWidget {
                 spacing: 10.0,
                 runSpacing: 10.0,
                 children: slots.map((slot) {
+                  String formattedSlot = _formatSlot(slot);
                   return SizedBox(
                     width: MediaQuery.of(context).size.width / 3 - 20,
                     child: GestureDetector(
@@ -199,7 +193,7 @@ class AppointmentSlotsPage extends StatelessWidget {
                           borderRadius: BorderRadius.circular(10.0),
                         ),
                         child: Text(
-                          slot,
+                          formattedSlot,
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,

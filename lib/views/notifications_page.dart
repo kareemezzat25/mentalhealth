@@ -251,7 +251,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                             style: TextStyle(fontSize: 17),
                           ),
                           Padding(
-                            padding: const EdgeInsets.only(left: 18.0),
+                            padding: const EdgeInsets.only(left: 48.0),
                             child: Text('$formattedDateTime'),
                           ),
                         ],
