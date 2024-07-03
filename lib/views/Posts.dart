@@ -3,6 +3,7 @@ import 'package:intl/intl.dart'; // Import for date formatting
 import 'package:mentalhealthh/authentication/auth.dart';
 import 'package:mentalhealthh/views/ForumsPage.dart';
 import 'package:mentalhealthh/views/PostComment.dart';
+import 'package:mentalhealthh/widgets/CommonDrawer.dart';
 import 'package:mentalhealthh/widgets/forum.dart';
 import 'package:mentalhealthh/services/postsApi.dart';
 
@@ -306,6 +307,8 @@ class PostsState extends State<Posts> {
             ),
           ],
         ),
+        drawer: widget.showUserPosts?CommonDrawer(userId: widget.userId!):null
+        ,
         body: RefreshIndicator(
           onRefresh: _refreshPosts,
           child: Column(

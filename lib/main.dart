@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:mentalhealthh/Providers/doctor_notification_count_provider.dart';
@@ -7,9 +6,7 @@ import 'package:mentalhealthh/views/homeview.dart';
 import 'package:provider/provider.dart';
 import 'package:mentalhealthh/providers/schedule_provider.dart';
 import 'package:mentalhealthh/providers/notification_count_provider.dart';
-import 'package:flutter/material.dart';
 
-import 'package:provider/provider.dart';
 
 void main() {
   runApp(MyApp());

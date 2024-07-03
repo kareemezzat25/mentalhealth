@@ -4,8 +4,9 @@ import 'package:mentalhealthh/views/Posts.dart'; // Import your Posts widget
 
 class TestResultPage extends StatelessWidget {
   final bool depressionIndicated;
+  final String? userid;
 
-  TestResultPage(this.depressionIndicated);
+  TestResultPage(this.depressionIndicated,{required this.userid});
 
   @override
   Widget build(BuildContext context) {
@@ -15,15 +16,16 @@ class TestResultPage extends StatelessWidget {
     if (depressionIndicated) {
       resultMessage =
           'Depression Indicated\n\nBased on your responses, there are indications of depression. It\'s important to consult with a mental health professional for a proper diagnosis and support.';
-
+      
       // Add Find Doctor button
       actionButtons.add(
         Expanded(
           child: ElevatedButton(
             onPressed: () {
-              Navigator.push(
+              Navigator.push
+              ( 
                 context,
-                MaterialPageRoute(builder: (context) => DoctorsPage()),
+                MaterialPageRoute(builder: (context) => DoctorsPage(userId: userid!,)),
               );
             },
             style: ElevatedButton.styleFrom(
@@ -58,7 +60,7 @@ class TestResultPage extends StatelessWidget {
       );
     } else {
       resultMessage =
-          'You are normal. Keep maintaining your mental health!';
+          'Depression Indicated\n\n Your responses suggest no significant indicators of depression. However,if you have concerns, don\'t hesitate to speak with a mental health professional.';
 
       // Add Find Doctor button (for consistency)
       actionButtons.add(
@@ -67,7 +69,7 @@ class TestResultPage extends StatelessWidget {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => DoctorsPage()),
+                MaterialPageRoute(builder: (context) => DoctorsPage(userId: userid!,)),
               );
             },
             style: ElevatedButton.styleFrom(

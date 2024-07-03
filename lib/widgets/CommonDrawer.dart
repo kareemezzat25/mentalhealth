@@ -128,7 +128,7 @@ class _CommonDrawerState extends State<CommonDrawer> {
               // Navigate to the Depression Test screen
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => DepressionTest()),
+                MaterialPageRoute(builder: (context) => DepressionTest(userId:widget.userId)),
               );
             },
           ),
@@ -188,7 +188,7 @@ class _CommonDrawerState extends State<CommonDrawer> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => NotificationsPage(),
+                    builder: (context) => NotificationsPage(userId: widget.userId,),
                   ),
                 );
               },
@@ -231,7 +231,7 @@ class _CommonDrawerState extends State<CommonDrawer> {
               // Navigate to DoctorsPage
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => DoctorsPage()),
+                MaterialPageRoute(builder: (context) => DoctorsPage(userId: widget.userId,)),
               );
             },
           ),
@@ -244,7 +244,7 @@ class _CommonDrawerState extends State<CommonDrawer> {
               // Navigate to DoctorsPage
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => Appointmentsview()),
+                MaterialPageRoute(builder: (context) => Appointmentsview(userId: widget.userId,)),
               );
             },
           ),
@@ -257,7 +257,7 @@ class _CommonDrawerState extends State<CommonDrawer> {
               // Navigate to DoctorsPage
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => ArticlesView()),
+                MaterialPageRoute(builder: (context) => ArticlesView(userId: widget.userId,)),
               );
             },
           ),

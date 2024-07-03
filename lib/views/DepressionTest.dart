@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:mentalhealthh/services/DepTestApi.dart';
-import 'package:mentalhealthh/views/DoctorsPage.dart'; // Import your DoctorsPage widget
-import 'package:mentalhealthh/views/Posts.dart'; // Import your Posts widget
-import 'TestResultPage.dart'; // Import your TestResultPage widget
+import 'package:mentalhealthh/views/TestResultPage.dart';
+import 'package:mentalhealthh/widgets/CommonDrawer.dart'; // Import your CommonDrawer widget
 
 class DepressionTest extends StatefulWidget {
+  final String userId; // Add userId parameter
+
+  DepressionTest({required this.userId}); // Update constructor
+
   @override
   _DepressionTestFormState createState() => _DepressionTestFormState();
 }
@@ -53,7 +56,7 @@ class _DepressionTestFormState extends State<DepressionTest> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => TestResultPage(response),
+            builder: (context) => TestResultPage(response,userid: widget.userId,),
           ),
         );
 
@@ -70,7 +73,18 @@ class _DepressionTestFormState extends State<DepressionTest> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Depression Test Form'),
+        leading: Builder(
+          builder: (BuildContext context) {
+            return IconButton(
+              icon: Icon(Icons.menu),
+              onPressed: () {
+                Scaffold.of(context).openDrawer();
+              },
+            );
+          },
+        ),
       ),
+      drawer: CommonDrawer(userId: widget.userId), // Add the CommonDrawer here
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(

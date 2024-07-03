@@ -3,8 +3,11 @@ import 'package:intl/intl.dart';
 import 'package:mentalhealthh/services/AppointmentApi.dart';
 import 'package:mentalhealthh/models/appointment.dart';
 import 'package:mentalhealthh/authentication/auth.dart';
+import 'package:mentalhealthh/widgets/CommonDrawer.dart';
 
 class Appointmentsview extends StatefulWidget {
+    final String userId;
+      Appointmentsview({required this.userId}); // Add userId parameter
   @override
   _AppointmentsviewState createState() => _AppointmentsviewState();
 }
@@ -241,6 +244,7 @@ class _AppointmentsviewState extends State<Appointmentsview> {
           ),
         ],
       ),
+      drawer: CommonDrawer(userId: widget.userId),
       body: isLoading
           ? Center(child: CircularProgressIndicator())
           : filteredAppointments.isEmpty
@@ -345,6 +349,7 @@ class _AppointmentsviewState extends State<Appointmentsview> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                        if(pageNumber>1)
                         IconButton(
                           icon: Icon(Icons.arrow_back),
                           onPressed: _loadPreviousPage,

@@ -3,8 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
+import 'package:mentalhealthh/widgets/CommonDrawer.dart'; // Import your CommonDrawer widget
 
 class ArticlesView extends StatefulWidget {
+  final String userId;
+
+  ArticlesView({required this.userId}); // Add userId parameter
+
   @override
   _ArticlesViewState createState() => _ArticlesViewState();
 }
@@ -70,8 +75,9 @@ class _ArticlesViewState extends State<ArticlesView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Articles Feed'),
+        title: Text('Articles'),
       ),
+      drawer: CommonDrawer(userId: widget.userId), // Add the drawer here
       body: ListView.builder(
         itemCount: articles.length,
         itemBuilder: (context, index) {
@@ -105,6 +111,7 @@ class _ArticlesViewState extends State<ArticlesView> {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: TextButton(
+                      
                       onPressed: () {
                         final url = article['url'];
                         if (url != null) {
@@ -117,7 +124,7 @@ class _ArticlesViewState extends State<ArticlesView> {
                           );
                         }
                       },
-                      child: Text('Read more'),
+                      child: Text('Read more',style: TextStyle(color:Color(0xff01579B)),),
                     ),
                   ),
                 ],

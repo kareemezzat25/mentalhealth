@@ -7,9 +7,14 @@ import 'package:mentalhealthh/authentication/auth.dart';
 import 'package:mentalhealthh/views/Appointmentsview.dart';
 import 'package:mentalhealthh/views/PostComment.dart';
 import 'package:mentalhealthh/providers/notification_count_provider.dart'; // Import the provider
+import 'package:mentalhealthh/widgets/CommonDrawer.dart';
 import 'package:provider/provider.dart'; // Import provider package
 
 class NotificationsPage extends StatefulWidget {
+    final String userId;
+
+  const NotificationsPage({required this.userId});
+
   @override
   _NotificationsPageState createState() => _NotificationsPageState();
 }
@@ -170,7 +175,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
     return '$formattedDate at $formattedTime';
   }
 
-  void _handleNotificationTap(Map<String, dynamic> notification) {
+  Future<void> _handleNotificationTap(Map<String, dynamic> notification) async {
     if (!notification['isRead']) {
       markAsRead(notification['id']);
     }
@@ -201,7 +206,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
         notification['type'] == 'AppointmentRejection') {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => Appointmentsview()),
+        MaterialPageRoute(builder: (context) => Appointmentsview(userId: widget.userId)),
       );
     }
   }
@@ -243,6 +248,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
           ),
         ],
       ),
+      drawer: CommonDrawer(userId: widget.userId),
       body: isLoading
           ? Center(child: CircularProgressIndicator())
           : ListView.builder(

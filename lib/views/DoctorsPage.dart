@@ -2,8 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:mentalhealthh/models/Doctor.dart';
 import 'package:mentalhealthh/services/doctorapi.dart';
 import 'package:mentalhealthh/views/DoctorDetailPage.dart';
+import 'package:mentalhealthh/widgets/CommonDrawer.dart';
 
 class DoctorsPage extends StatefulWidget {
+  final String userId;
+  const DoctorsPage({ required this.userId});
+
+
   @override
   _DoctorsPageState createState() => _DoctorsPageState();
 }
@@ -156,6 +161,7 @@ class _DoctorsPageState extends State<DoctorsPage> {
           ),
         ],
       ),
+      drawer: CommonDrawer(userId: widget.userId),
       body: isLoading
           ? Center(child: CircularProgressIndicator())
           : ListView.builder(
