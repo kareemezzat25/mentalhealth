@@ -60,12 +60,21 @@ class _DoctorsPageState extends State<DoctorsPage> {
   void filterDoctors() {
     setState(() {
       filteredDoctors = doctors.where((doctor) {
-        bool matchesGender = selectedGender == 'All' || doctor.gender == selectedGender;
-        bool matchesName = selectedName.isEmpty || doctor.fullName.toLowerCase().contains(selectedName.toLowerCase());
-        bool matchesFees = doctor.sessionFees >= minSessionFees && doctor.sessionFees <= maxSessionFees;
-        bool matchesSpecialization = selectedSpecialization == 'All' || doctor.specialization == selectedSpecialization;
-        bool matchesCity = selectedCity.isEmpty || doctor.city.toLowerCase().contains(selectedCity.toLowerCase());
-        return matchesGender && matchesName && matchesFees && matchesSpecialization && matchesCity;
+        bool matchesGender =
+            selectedGender == 'All' || doctor.gender == selectedGender;
+        bool matchesName = selectedName.isEmpty ||
+            doctor.fullName.toLowerCase().contains(selectedName.toLowerCase());
+        bool matchesFees = doctor.sessionFees >= minSessionFees &&
+            doctor.sessionFees <= maxSessionFees;
+        bool matchesSpecialization = selectedSpecialization == 'All' ||
+            doctor.specialization == selectedSpecialization;
+        bool matchesCity = selectedCity.isEmpty ||
+            doctor.city.toLowerCase().contains(selectedCity.toLowerCase());
+        return matchesGender &&
+            matchesName &&
+            matchesFees &&
+            matchesSpecialization &&
+            matchesCity;
       }).toList();
     });
   }
@@ -79,6 +88,14 @@ class _DoctorsPageState extends State<DoctorsPage> {
           IconButton(
             icon: Icon(Icons.search),
             onPressed: () {
+              setState(() {
+                selectedName = '';
+                selectedCity = '';
+                selectedGender = 'All';
+                selectedSpecialization = 'All';
+                minSessionFees = 0;
+                maxSessionFees = 1000;
+              });
               showModalBottomSheet(
                 context: context,
                 builder: (context) {
@@ -105,86 +122,8 @@ class _DoctorsPageState extends State<DoctorsPage> {
                                 });
                               },
                             ),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: DropdownButton<String>(
-                                    value: selectedSpecialization,
-                                    items: specializations.map((String specialization) {
-                                      return DropdownMenuItem<String>(
-                                        value: specialization,
-                                        child: Text(specialization),
-                                      );
-                                    }).toList(),
-                                    onChanged: (String? value) {
-                                      setState(() {
-                                        selectedSpecialization = value!;
-                                      });
-                                    },
-                                    hint: Text('Select Specialization'),
-                                    isExpanded: true,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                Text('Gender: '),
-                                Radio<String>(
-                                  value: 'All',
-                                  groupValue: selectedGender,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      selectedGender = value!;
-                                    });
-                                  },
-                                ),
-                                Text('All'),
-                                Radio<String>(
-                                  value: 'Male',
-                                  groupValue: selectedGender,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      selectedGender = value!;
-                                    });
-                                  },
-                                ),
-                                Text('Male'),
-                                Radio<String>(
-                                  value: 'Female',
-                                  groupValue: selectedGender,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      selectedGender = value!;
-                                    });
-                                  },
-                                ),
-                                Text('Female'),
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                Text('Session Fees: '),
-                                Expanded(
-                                  child: RangeSlider(
-                                    min: 0,
-                                    max: 1000,
-                                    values: RangeValues(minSessionFees, maxSessionFees),
-                                    onChanged: (RangeValues values) {
-                                      setState(() {
-                                        minSessionFees = values.start;
-                                        maxSessionFees = values.end;
-                                      });
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ),
+                            // Other filter widgets
                             ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                primary:Colors.blue,
-                                onPrimary: Colors.white
-                              ),
                               onPressed: () {
                                 filterDoctors();
                                 Navigator.pop(context);
@@ -192,9 +131,6 @@ class _DoctorsPageState extends State<DoctorsPage> {
                               child: Text('Apply Filters'),
                             ),
                             ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                onPrimary: Colors.blue
-                              ),
                               onPressed: () {
                                 setState(() {
                                   selectedName = '';
@@ -204,7 +140,7 @@ class _DoctorsPageState extends State<DoctorsPage> {
                                   minSessionFees = 0;
                                   maxSessionFees = 1000;
                                 });
-                                filterDoctors();
+                                fetchDoctorsData();
                                 Navigator.pop(context);
                               },
                               child: Text('Reset Filters'),
@@ -226,7 +162,8 @@ class _DoctorsPageState extends State<DoctorsPage> {
               itemCount: filteredDoctors.length,
               itemBuilder: (context, index) {
                 Doctor doctor = filteredDoctors[index];
-                String imageUrl = (doctor.photoUrl.isEmpty || !doctor.photoUrl.contains('http'))
+                String imageUrl = (doctor.photoUrl.isEmpty ||
+                        !doctor.photoUrl.contains('http'))
                     ? 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-600nw-1677509740.jpg'
                     : doctor.photoUrl; // Set a default image URL
 

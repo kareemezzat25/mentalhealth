@@ -15,7 +15,7 @@ class DoctorsApi {
     double? minFees,
     double? maxFees,
     int page = 1,
-    int pageSize = 10,
+    int pageSize = 30,
   }) async {
     try {
       String? token = await Auth.getToken();
@@ -165,14 +165,15 @@ class DoctorsApi {
     print('Response status: ${response.statusCode}');
     print('Response body: ${response.body}');
 
-  if (response.statusCode == 200) {
-    List<dynamic> data = json.decode(response.body);
-    return data.map((appointment) => appointment as Map<String, dynamic>).toList();
-  } else {
-    throw Exception('Failed to load appointments');
+    if (response.statusCode == 200) {
+      List<dynamic> data = json.decode(response.body);
+      return data
+          .map((appointment) => appointment as Map<String, dynamic>)
+          .toList();
+    } else {
+      throw Exception('Failed to load appointments');
+    }
   }
-}
-
 
   Future<void> confirmAppointment(String appointmentId) async {
     String? token = await Auth.getToken();
