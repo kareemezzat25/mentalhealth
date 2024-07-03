@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "930419519968",
+    "project_id": "nexus-cd283",
+    "storage_bucket": "nexus-cd283.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:930419519968:android:095d30932961016772bb85",
+        "android_client_info": {
+          "package_name": "com.example.mentalhealthh"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyADT4YJ9Yrl-LrPmvzWqtOwmiyQCLXTvk0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,5 +1,3 @@
-// CommonDrawer.dart
-
 import 'package:flutter/material.dart';
 import 'package:mentalhealthh/authentication/auth.dart';
 import 'package:mentalhealthh/views/Appointmentsview.dart';
@@ -12,6 +10,8 @@ import 'package:mentalhealthh/views/UserProfile.dart'; // Import UserProfile.dar
 import 'package:mentalhealthh/views/DepressionTest.dart'; // Import DepressionTest.dart
 import 'package:mentalhealthh/views/chatbot_page.dart';
 import 'package:mentalhealthh/views/notifications_page.dart'; // Import ChatbotPage
+import 'package:provider/provider.dart'; // Import provider package
+import 'package:mentalhealthh/providers/notification_count_provider.dart'; // Import NotificationCountProvider
 
 class CommonDrawer extends StatefulWidget {
   final String userId; // Add userId parameter
@@ -163,15 +163,36 @@ class _CommonDrawerState extends State<CommonDrawer> {
               );
             },
           ),
-          ListTile(
-            leading: Icon(Icons.notifications),
-            title: Text('Notifications'),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => NotificationsPage()),
-              );
-            },
+          Consumer<NotificationCountProvider>(
+            builder: (context, notificationCountProvider, _) => ListTile(
+              leading: Stack(
+                children: [
+                  Icon(Icons.notifications),
+                  if (notificationCountProvider.unreadCount > 0)
+                    Positioned(
+                      right: 0,
+                      child: CircleAvatar(
+                        radius: 8,
+                        backgroundColor: Colors.red,
+                        foregroundColor: Colors.white,
+                        child: Text(
+                          '${notificationCountProvider.unreadCount}',
+                          style: TextStyle(fontSize: 12),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+              title: Text('Notifications'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => NotificationsPage(),
+                  ),
+                );
+              },
+            ),
           ),
           ListTile(
             leading: Icon(Icons.article_outlined),
@@ -180,8 +201,10 @@ class _CommonDrawerState extends State<CommonDrawer> {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                    builder: (context) =>
-                        Posts(userId: widget.userId, showUserPosts: true,)),
+                    builder: (context) => Posts(
+                          userId: widget.userId,
+                          showUserPosts: true,
+                        )),
               );
             },
           ),

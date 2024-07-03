@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:mentalhealthh/DoctorViews/DoctorNotificationsPage.dart';
 import 'package:mentalhealthh/DoctorViews/SchedulePage.dart';
 import 'package:mentalhealthh/models/user_model.dart';
+import 'package:mentalhealthh/providers/notification_count_provider.dart';
 import 'package:mentalhealthh/views/DoctorAppointmentsPage.dart';
 import 'package:mentalhealthh/views/ForumsPage.dart';
 import 'package:mentalhealthh/views/UserProfile.dart';
 import 'package:mentalhealthh/views/login.dart';
 import 'package:provider/provider.dart';
 import 'package:mentalhealthh/authentication/auth.dart';
+import 'package:mentalhealthh/Providers/doctor_notification_count_provider.dart';
 
 class DrCommonDrawer extends StatelessWidget {
   final String doctorId;
@@ -17,6 +19,9 @@ class DrCommonDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     UserModel userModel = Provider.of<UserModel>(context); // Access UserModel
+    DoctorNotificationCountProvider notificationProvider =
+        Provider.of<DoctorNotificationCountProvider>(
+            context); // Access DoctorNotificationCountProvider
 
     return Drawer(
       width: 200,
@@ -112,17 +117,36 @@ class DrCommonDrawer extends StatelessWidget {
               );
             },
           ),
-          ListTile(
-            leading: Icon(Icons.notifications),
-            title: Text('Notifications'),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => DoctorNotificationsPage(),
-                ),
-              );
-            },
+          Consumer<NotificationCountProvider>(
+            builder: (context, notificationCountProvider, _) => ListTile(
+              leading: Stack(
+                children: [
+                  Icon(Icons.notifications),
+                  if (notificationCountProvider.unreadCount > 0)
+                    Positioned(
+                      right: 0,
+                      child: CircleAvatar(
+                        radius: 8,
+                        backgroundColor: Colors.red,
+                        foregroundColor: Colors.white,
+                        child: Text(
+                          '${notificationCountProvider.unreadCount}',
+                          style: TextStyle(fontSize: 12),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+              title: Text('Notifications'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DoctorAppointmentsPage(),
+                  ),
+                );
+              },
+            ),
           ),
           ListTile(
             leading: Icon(Icons.account_circle_outlined),

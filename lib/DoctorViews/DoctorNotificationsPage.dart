@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'dart:convert';
-
+import 'package:provider/provider.dart';
 import 'package:mentalhealthh/authentication/auth.dart';
 import 'package:mentalhealthh/views/DoctorAppointmentsPage.dart';
 import 'package:mentalhealthh/views/PostComment.dart';
+import 'package:mentalhealthh/providers/notification_count_provider.dart'; // Import NotificationCountProvider
 
 class DoctorNotificationsPage extends StatefulWidget {
   @override
@@ -66,6 +67,11 @@ class _DoctorNotificationsPageState extends State<DoctorNotificationsPage> {
           pageNumber++;
         }
         isLoading = false;
+        // Update unread count in NotificationCountProvider
+        Provider.of<NotificationCountProvider>(context, listen: false)
+            .updateUnreadCount(notifications
+                .where((notification) => !notification['isRead'])
+                .length);
       });
     } else {
       // Handle error
@@ -104,6 +110,11 @@ class _DoctorNotificationsPageState extends State<DoctorNotificationsPage> {
         } else {
           filteredNotifications = notifications;
         }
+        // Update unread count in NotificationCountProvider
+        Provider.of<NotificationCountProvider>(context, listen: false)
+            .updateUnreadCount(notifications
+                .where((notification) => !notification['isRead'])
+                .length);
       });
     } else {
       print('Failed to mark notification as read');
@@ -130,6 +141,9 @@ class _DoctorNotificationsPageState extends State<DoctorNotificationsPage> {
           return notification;
         }).toList();
         filteredNotifications = notifications;
+        // Update unread count in NotificationCountProvider
+        Provider.of<NotificationCountProvider>(context, listen: false)
+            .updateUnreadCount(0); // All notifications are read now
       });
     } else {
       print('Failed to mark all notifications as read');

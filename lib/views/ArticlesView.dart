@@ -1,8 +1,8 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class ArticlesView extends StatefulWidget {
   @override
@@ -35,6 +35,34 @@ class _ArticlesViewState extends State<ArticlesView> {
       }
     } catch (e) {
       print('Error: $e');
+    }
+  }
+
+  Future<void> _launchURL(String urlString) async {
+    try {
+      final Uri url = Uri.parse(urlString);
+
+      if (await canLaunch(urlString)) {
+        if (Theme.of(context).platform == TargetPlatform.android) {
+          // Android-specific: try to launch Chrome
+          final String chromeUrl = 'googlechrome://navigate?url=$urlString';
+          if (await canLaunch(chromeUrl)) {
+            await launch(chromeUrl);
+            return;
+          }
+        }
+
+        await launch(urlString);
+      } else {
+        throw 'Could not launch $urlString';
+      }
+    } catch (e) {
+      print('Error launching URL: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Could not launch the article URL.'),
+        ),
+      );
     }
   }
 
@@ -76,33 +104,21 @@ class _ArticlesViewState extends State<ArticlesView> {
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child:TextButton(
-                      onPressed: () async {
-                        try {
-                          final String urlString = article['url'];
-                          print('URL: $urlString');
-                          if (urlString != null && urlString.isNotEmpty) {
-                            final Uri url = Uri.parse(urlString);
-                            if (await canLaunchUrl(url)) {
-                              await launchUrl(url);
-                            } else {
-                              throw 'Could not launch $url';
-                            }
-                          } else {
-                            throw 'Invalid URL: $urlString';
-                          }
-                        } catch (e) {
-                          print('Error launching URL: $e');
+                    child: TextButton(
+                      onPressed: () {
+                        final url = article['url'];
+                        if (url != null) {
+                          launchUrlString(article['url']);
+                        } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('Could not launch the article URL.'),
+                              content: Text('Article URL is not available.'),
                             ),
                           );
                         }
                       },
                       child: Text('Read more'),
-                    )
-
+                    ),
                   ),
                 ],
               ),

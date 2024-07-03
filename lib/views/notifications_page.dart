@@ -4,8 +4,10 @@ import 'package:intl/intl.dart';
 import 'dart:convert';
 
 import 'package:mentalhealthh/authentication/auth.dart';
-import 'package:mentalhealthh/views/PostComment.dart';
 import 'package:mentalhealthh/views/Appointmentsview.dart';
+import 'package:mentalhealthh/views/PostComment.dart';
+import 'package:mentalhealthh/providers/notification_count_provider.dart'; // Import the provider
+import 'package:provider/provider.dart'; // Import provider package
 
 class NotificationsPage extends StatefulWidget {
   @override
@@ -26,6 +28,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
   void initState() {
     super.initState();
     fetchNotifications();
+    _updateUnreadCount(); // Initial fetch for unread count
 
     // Attach listener to detect scroll end
     _scrollController.addListener(() {
@@ -66,6 +69,9 @@ class _NotificationsPageState extends State<NotificationsPage> {
           pageNumber++;
         }
         isLoading = false;
+
+        // Update unread count
+        _updateUnreadCount(); // Update unread count after fetching notifications
       });
     } else {
       // Handle error
@@ -104,6 +110,9 @@ class _NotificationsPageState extends State<NotificationsPage> {
         } else {
           filteredNotifications = notifications;
         }
+
+        // Update unread count
+        _updateUnreadCount();
       });
     } else {
       print('Failed to mark notification as read');
@@ -130,6 +139,9 @@ class _NotificationsPageState extends State<NotificationsPage> {
           return notification;
         }).toList();
         filteredNotifications = notifications;
+
+        // Update unread count
+        _updateUnreadCount();
       });
     } else {
       print('Failed to mark all notifications as read');
@@ -198,6 +210,15 @@ class _NotificationsPageState extends State<NotificationsPage> {
     if (hasMoreData && !isLoading) {
       fetchNotifications();
     }
+  }
+
+  void _updateUnreadCount() {
+    // Calculate unread count
+    int unreadCount = notifications.where((n) => !n['isRead']).length;
+
+    // Update provider
+    Provider.of<NotificationCountProvider>(context, listen: false)
+        .updateUnreadCount(unreadCount);
   }
 
   @override
