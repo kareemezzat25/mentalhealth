@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // for DateFormat
-import 'package:mentalhealthh/models/Doctor.dart'; // Replace with actual path to Doctor.dart
+import 'package:intl/intl.dart';
+import 'package:mentalhealthh/models/Doctor.dart';
 import 'package:mentalhealthh/services/doctorapi.dart';
 import 'package:mentalhealthh/views/AppointmentSlotsPage.dart';
 
@@ -63,13 +63,11 @@ class _DoctorDetailPageState extends State<DoctorDetailPage> {
 
   // Function to format time from HH:mm to h:mm a
   String _formatTime(String timeString) {
-    // Parse time from HH:mm format
     final time = TimeOfDay(
       hour: int.parse(timeString.split(':')[0]),
       minute: int.parse(timeString.split(':')[1]),
     );
 
-    // Format time in h:mm a format
     final formattedTime =
         DateFormat.jm().format(DateTime(1, 1, 1, time.hour, time.minute));
 
@@ -81,7 +79,7 @@ class _DoctorDetailPageState extends State<DoctorDetailPage> {
     String imageUrl = (widget.doctor.photoUrl != null &&
             widget.doctor.photoUrl.isNotEmpty)
         ? widget.doctor.photoUrl
-        : 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-600nw-1677509740.jpg'; // Set a default image URL
+        : 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-600nw-1677509740.jpg';
     return Scaffold(
       appBar: AppBar(
         title: Text('Doctor Details'),
@@ -227,13 +225,20 @@ class _DoctorDetailPageState extends State<DoctorDetailPage> {
                                                     builder: (context) =>
                                                         AppointmentSlotsPage(
                                                       day: day['dayOfWeek']!,
-                                                      startTime:day['startTime']!,
+                                                      startTime:
+                                                          day['startTime']!,
                                                       endTime: day['endTime']!,
                                                       sessionDuration: Duration(
-                                                        minutes: int.parse(day['sessionDuration']!.split(':')[1]),
+                                                        minutes: int.parse(
+                                                            day['sessionDuration']!
+                                                                .split(':')[1]),
                                                       ),
-                                                      doctorId:widget.doctor.id,
-                                                      authToken:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiJiYTI1Y2UxZi03MjA3LTQzOGYtYmEyMi0yYmYzODYzMzY2MjIiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6ImJhMjVjZTFmLTcyMDctNDM4Zi1iYTIyLTJiZjM4NjMzNjYyMiIsImVtYWlsIjoidGVzdEBleGFtcGxlLmNvbSIsIm5hbWUiOiJOb3JtYWwgVXNlciIsInBob3RvVXJsIjoiaHR0cDovL3Jlcy5jbG91ZGluYXJ5LmNvbS9kbHQwZTA5ZTcvaW1hZ2UvdXBsb2FkL3YxNzE5MTY0NDg3L2JnanBoY3Jlb3F3YWxpbGVqOW11LnBuZyIsImp0aSI6InRlc3RAZXhhbXBsZS5jb20iLCJyb2xlcyI6IlVzZXIiLCJleHAiOjE3MjE4NzY3MTksImlzcyI6Imh0dHBzOi8vbmV4dXMtYXBpLWgzaWsub25yZW5kZXIuY29tIiwiYXVkIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NzIzNSJ9.ehfJNrwPTguhrrGGw7lhrNccemwlk6OW8LNrFixyHxs', // Pass doctorId
+                                                      doctorId:
+                                                          widget.doctor.id,
+                                                      location: widget.doctor
+                                                          .city, // Pass the location
+                                                      doctorFees: widget.doctor
+                                                          .sessionFees, // Pass doctor fees
                                                     ),
                                                   ),
                                                 );

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:mentalhealthh/Providers/doctor_notification_count_provider.dart';
 import 'dart:convert';
 import 'package:provider/provider.dart';
 import 'package:mentalhealthh/authentication/auth.dart';
@@ -68,7 +69,7 @@ class _DoctorNotificationsPageState extends State<DoctorNotificationsPage> {
         }
         isLoading = false;
         // Update unread count in NotificationCountProvider
-        Provider.of<NotificationCountProvider>(context, listen: false)
+        Provider.of<DoctorNotificationCountProvider>(context, listen: false)
             .updateUnreadCount(notifications
                 .where((notification) => !notification['isRead'])
                 .length);
@@ -111,7 +112,7 @@ class _DoctorNotificationsPageState extends State<DoctorNotificationsPage> {
           filteredNotifications = notifications;
         }
         // Update unread count in NotificationCountProvider
-        Provider.of<NotificationCountProvider>(context, listen: false)
+        Provider.of<DoctorNotificationCountProvider>(context, listen: false)
             .updateUnreadCount(notifications
                 .where((notification) => !notification['isRead'])
                 .length);
@@ -142,7 +143,7 @@ class _DoctorNotificationsPageState extends State<DoctorNotificationsPage> {
         }).toList();
         filteredNotifications = notifications;
         // Update unread count in NotificationCountProvider
-        Provider.of<NotificationCountProvider>(context, listen: false)
+        Provider.of<DoctorNotificationCountProvider>(context, listen: false)
             .updateUnreadCount(0); // All notifications are read now
       });
     } else {

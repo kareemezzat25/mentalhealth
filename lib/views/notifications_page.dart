@@ -11,7 +11,7 @@ import 'package:mentalhealthh/widgets/CommonDrawer.dart';
 import 'package:provider/provider.dart'; // Import provider package
 
 class NotificationsPage extends StatefulWidget {
-    final String userId;
+  final String userId;
 
   const NotificationsPage({required this.userId});
 
@@ -206,7 +206,8 @@ class _NotificationsPageState extends State<NotificationsPage> {
         notification['type'] == 'AppointmentRejection') {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => Appointmentsview(userId: widget.userId)),
+        MaterialPageRoute(
+            builder: (context) => Appointmentsview(userId: widget.userId)),
       );
     }
   }

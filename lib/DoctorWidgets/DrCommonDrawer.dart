@@ -117,7 +117,7 @@ class DrCommonDrawer extends StatelessWidget {
               );
             },
           ),
-          Consumer<NotificationCountProvider>(
+          Consumer<DoctorNotificationCountProvider>(
             builder: (context, notificationCountProvider, _) => ListTile(
               leading: Stack(
                 children: [
@@ -142,7 +142,7 @@ class DrCommonDrawer extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => DoctorAppointmentsPage(),
+                    builder: (context) => DoctorNotificationsPage(),
                   ),
                 );
               },
