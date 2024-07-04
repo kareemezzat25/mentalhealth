@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:mentalhealthh/DoctorViews/notifications/DoctorNotificationsview.dart';
 import 'package:mentalhealthh/DoctorViews/schedules/Scheduleview.dart';
 import 'package:mentalhealthh/models/user_model.dart';
-import 'package:mentalhealthh/providers/notification_count_provider.dart';
 import 'package:mentalhealthh/views/appointments/DoctorAppointmentsview.dart';
 import 'package:mentalhealthh/views/Profiles/UserProfile.dart';
 import 'package:mentalhealthh/views/authentication/loginview.dart';
@@ -115,7 +114,7 @@ class DrCommonDrawer extends StatelessWidget {
               );
             },
           ),
-          Consumer<NotificationCountProvider>(
+          Consumer<DoctorNotificationCountProvider>(
             builder: (context, notificationCountProvider, _) => ListTile(
               leading: Stack(
                 children: [

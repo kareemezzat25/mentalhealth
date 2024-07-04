@@ -206,7 +206,8 @@ class _NotificationsPageState extends State<Notificationsview> {
         notification['type'] == 'AppointmentRejection') {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => Appointmentsview(userId: widget.userId)),
+        MaterialPageRoute(
+            builder: (context) => Appointmentsview(userId: widget.userId)),
       );
     }
   }

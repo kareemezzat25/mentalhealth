@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:mentalhealthh/authentication/auth.dart';
+import 'package:mentalhealthh/views/Doctors/Doctorsview.dart';
 import 'package:mentalhealthh/views/appointments/Appointmentsview.dart';
 import 'package:mentalhealthh/views/articles/ArticlesView.dart';
-import 'package:mentalhealthh/views/Doctors/Doctorsview.dart';
 import 'package:mentalhealthh/views/Forumsview.dart';
+import 'package:mentalhealthh/views/notifications/notificationsview.dart';
 import 'package:mentalhealthh/views/posts/Posts.dart';
 import 'package:mentalhealthh/views/authentication/loginview.dart';
 import 'package:mentalhealthh/views/Profiles/UserProfile.dart'; // Import UserProfile.dart
 import 'package:mentalhealthh/views/depressiontest/DepressionTest.dart'; // Import DepressionTest.dart
 import 'package:mentalhealthh/views/chatbot/chatbotview.dart';
-import 'package:mentalhealthh/views/notifications/notificationsview.dart'; // Import ChatbotPage
 import 'package:provider/provider.dart'; // Import provider package
 import 'package:mentalhealthh/providers/notification_count_provider.dart'; // Import NotificationCountProvider
 
@@ -128,7 +128,9 @@ class _CommonDrawerState extends State<CommonDrawer> {
               // Navigate to the Depression Test screen
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => DepressionTest(userId:widget.userId)),
+                MaterialPageRoute(
+                    builder: (context) =>
+                        DepressionTest(userId: widget.userId)),
               );
             },
           ),
@@ -244,7 +246,10 @@ class _CommonDrawerState extends State<CommonDrawer> {
               // Navigate to DoctorsPage
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => Appointmentsview(userId: widget.userId,)),
+                MaterialPageRoute(
+                    builder: (context) => Appointmentsview(
+                          userId: widget.userId,
+                        )),
               );
             },
           ),
@@ -257,7 +262,10 @@ class _CommonDrawerState extends State<CommonDrawer> {
               // Navigate to DoctorsPage
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => ArticlesView(userId: widget.userId,)),
+                MaterialPageRoute(
+                    builder: (context) => ArticlesView(
+                          userId: widget.userId,
+                        )),
               );
             },
           ),

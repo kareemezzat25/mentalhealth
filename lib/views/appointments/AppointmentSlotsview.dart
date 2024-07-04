@@ -10,18 +10,21 @@ class AppointmentSlotsPage extends StatelessWidget {
   final String endTime;
   final Duration sessionDuration;
   final String doctorId; // Include doctorId as a parameter
-  final String authToken; // Add auth token parameter
+  final String location; // New parameter for location
+  final double doctorFees; // New parameter for doctor fees
 
   AppointmentSlotsPage({
     required this.day,
     required this.doctorId,
-    required this.authToken,
     required this.startTime,
     required this.endTime,
     required this.sessionDuration,
+    required this.location, // Initialize new parameter
+    required this.doctorFees, // Initialize new parameter
   });
 
   Future<List<String>> _fetchAvailableSlots(String date) async {
+    String? authToken = await Auth.getToken();
     final String apiUrl =
         'https://nexus-api-h3ik.onrender.com/api/doctors/$doctorId/slots?dateTime=$date';
 
@@ -43,61 +46,44 @@ class AppointmentSlotsPage extends StatelessWidget {
   }
 
   String _getNextDateForDay(String day) {
-    // Get current date
     DateTime now = DateTime.now();
-
-    // Find the next occurrence of the specified day
     DateTime nextDate = now;
-    print("nextDate $nextDate");
     while (DateFormat('EEEE').format(nextDate) != day) {
       nextDate = nextDate.add(Duration(days: 1));
     }
-
-    // Format the next date in 'yyyy-MM-dd' format
-    String formattedDate = DateFormat('yyyy-MM-dd').format(nextDate);
-    print("formattedDate $formattedDate");
-
-    return formattedDate;
+    return DateFormat('yyyy-MM-dd').format(nextDate);
   }
 
   Future<void> bookAppointment(
-      BuildContext context, String slot, String day) async {
+      BuildContext context, String slot, String day, String reason) async {
     String? token = await Auth.getToken();
 
-    // Format the session duration
     String formattedDuration =
         '${sessionDuration.inHours.toString().padLeft(2, '0')}:${sessionDuration.inMinutes.remainder(60).toString().padLeft(2, '0')}:${sessionDuration.inSeconds.remainder(60).toString().padLeft(2, '0')}';
 
-    // Get the next occurrence of the selected day
     String nextDate = _getNextDateForDay(day);
 
-    // Parse the time from the slot
     List<String> parts = slot.split(':');
     int hour = int.parse(parts[0]);
     int minute = int.parse(parts[1]);
     int second = int.parse(parts[2]);
     DateTime parsedTime = DateTime.parse(
         '$nextDate ${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}:${second.toString().padLeft(2, '0')}');
-
-    // Adjust the time by adding 3 hours (GMT+3)
     parsedTime = parsedTime.add(Duration(hours: 3));
 
-    // Format the DateTime object to the desired ISO 8601 format in UTC
     final String startTimeISO =
         DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").format(parsedTime.toUtc());
-    print("startTimeISO $startTimeISO");
 
     final String apiUrl =
         'https://nexus-api-h3ik.onrender.com/api/appointments';
-    final Uri uri = Uri.parse(
-        '$apiUrl?doctorId=$doctorId'); // Include doctorId as a query parameter
+    final Uri uri = Uri.parse('$apiUrl?doctorId=$doctorId');
 
     final Map<String, dynamic> requestBody = {
       'startTime': startTimeISO,
-      'duration': formattedDuration, // Use a fixed duration for simplicity
-      'location': '',
-      'reason': '',
-      'fees': 0,
+      'duration': formattedDuration,
+      'location': location,
+      'reason': reason,
+      'fees': doctorFees,
     };
 
     try {
@@ -122,6 +108,54 @@ class AppointmentSlotsPage extends StatelessWidget {
     } catch (e) {
       print('Error booking appointment: $e');
     }
+  }
+
+  void _showBookingDialog(BuildContext context, String slot) {
+    String reason = '';
+    String slotDate = _getNextDateForDay(day) + ' ' + slot;
+    DateTime parsedSlotDate = DateTime.parse(slotDate);
+    String formattedSlotDate =
+        DateFormat('EEEE, MM/dd/yyyy \'at\' HH:mm:ss').format(parsedSlotDate);
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirm Appointment'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                decoration: InputDecoration(
+                  labelText: 'Reason (optional)',
+                ),
+                onChanged: (value) {
+                  reason = value;
+                },
+              ),
+              SizedBox(height: 20),
+              Text(
+                  'Are you sure you want to reserve an appointment with Doctor on $formattedSlotDate?'),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Confirm'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                bookAppointment(context, slot, day, reason);
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _showConfirmationDialog(BuildContext context) {
@@ -183,7 +217,7 @@ class AppointmentSlotsPage extends StatelessWidget {
                     width: MediaQuery.of(context).size.width / 3 - 20,
                     child: GestureDetector(
                       onTap: () {
-                        bookAppointment(context, slot, day);
+                        _showBookingDialog(context, slot);
                       },
                       child: Container(
                         alignment: Alignment.center,
