@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:mentalhealthh/services/SignupApi.dart';
 import 'loginview.dart';
 import '../../widgets/textForm.dart';
 import 'dart:convert';
@@ -29,129 +30,18 @@ class _SignupState extends State<Signup> {
 
   void signup() async {
     try {
-      // API endpoint
-      final String apiUrl =
-          'https://nexus-api-h3ik.onrender.com/api/auth/register';
-
-      // Request data
       Map<String, dynamic> requestData = {
         "firstName": firstNameController.text,
         "lastName": lastNameController.text,
         "email": emailController.text,
         "password": passwordController.text,
         "birthDate": birthDateController.text,
-        "gender":selectedGender,
+        "gender": selectedGender,
+        "role": "User"
       };
 
-      // Convert data to JSON
-      String requestBody = jsonEncode(requestData);
-
-      // Set headers
-      Map<String, String> headers = {
-        'Content-Type': 'application/json',
-      };
-
-      // Print the request data for debugging
-      print('Request Data: $requestData');
-
-      // Perform POST request
-      final http.Response response = await http.post(
-        Uri.parse(apiUrl),
-        headers: headers,
-        body: requestBody,
-      );
-
-      // Print the response for debugging
-      print('Response Status Code: ${response.statusCode}');
-      log('Response Body: ${response.body}');
-
-      // Check response status code
-      if (response.statusCode == 200) {
-        // Show a snackbar with a message
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("Please confirm your Gmail email"),
-            duration: Duration(seconds: 10),
-            action: SnackBarAction(
-              label: "OK",
-              onPressed: () {
-                ScaffoldMessenger.of(context).hideCurrentSnackBar();
-              },
-            ),
-          ),
-        );
-        // Signup successful, handle the response accordingly
-        print('Signup successful');
-      } else if (response.statusCode == 201) {
-        // Signup successful, handle the response accordingly
-        print('Signup successful');
-
-        // Show a snackbar with a message
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content:
-                Text("Signup successful , Please go and confirm your email"),
-            duration: Duration(seconds: 7),
-            action: SnackBarAction(
-              label: "OK",
-              onPressed: () {
-                ScaffoldMessenger.of(context).hideCurrentSnackBar();
-              },
-            ),
-          ),
-        );
-        // Navigate to login page after a delay
-        Future.delayed(Duration(seconds: 7), () {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => Login()),
-          );
-        });
-      } else {
-        // Signup failed, handle the error
-        print('Signup failed. Status code: ${response.statusCode}');
-        print('Response body: ${response.body}');
-
-        try {
-          final Map<String, dynamic> errorBody = jsonDecode(response.body);
-
-          if (errorBody.containsKey('errors') &&
-              errorBody['errors'].isNotEmpty) {
-            final Map<String, dynamic> errors = errorBody['errors'];
-
-            if (errors.containsKey('Email')) {
-              setState(() {
-                emailError = errors['Email'][0];
-                passwordError = ''; // Reset password error
-              });
-            }
-
-            if (errors.containsKey('Password')) {
-              setState(() {
-                passwordError = errors['Password'][0];
-                emailError = ''; // Reset email error
-              });
-            }
-
-            if (errors.containsKey('Gender')) {
-              setState(() {
-                genderError = errors['Gender'][0];
-              });
-            }
-
-            if (errors.containsKey('birthDate')) {
-              setState(() {
-                birthDateError = errors['birthDate'][0];
-              });
-            }
-          }
-        } catch (e) {
-          // Handle JSON decoding error
-          print('Error decoding error response: $e');
-        }
-      }
+      await SignupApi.signup(context, requestData);
     } catch (error) {
-      // Handle any network or other errors
       print('Error during signup: $error');
     }
   }
@@ -323,34 +213,36 @@ class _SignupState extends State<Signup> {
                 ),
               ),
               //TextForm(hintText: "male/female", controller: genderController),
-            
-                 Row(
-                  children: [
-                    Radio(
-                      value: 'male',
-                      groupValue: selectedGender,
-                      onChanged: (value) {
-                        setState(() {
-                          selectedGender = value as String;
-                        });
-                      },
-                    ),
-                    Text('Male',
-                    style: TextStyle(color:Colors.grey,fontSize:15),),
-                    Radio(
-                      value: 'female',
-                      groupValue: selectedGender,
-                      onChanged: (value) {
-                        setState(() {
-                          selectedGender = value as String;
-                        });
-                      },
-                    ),
-                    Text('Female',
-                    style:TextStyle(color:Colors.grey,fontSize:15)),
-                  ],
-                ),
-             
+
+              Row(
+                children: [
+                  Radio(
+                    value: 'male',
+                    groupValue: selectedGender,
+                    onChanged: (value) {
+                      setState(() {
+                        selectedGender = value as String;
+                      });
+                    },
+                  ),
+                  Text(
+                    'Male',
+                    style: TextStyle(color: Colors.grey, fontSize: 15),
+                  ),
+                  Radio(
+                    value: 'female',
+                    groupValue: selectedGender,
+                    onChanged: (value) {
+                      setState(() {
+                        selectedGender = value as String;
+                      });
+                    },
+                  ),
+                  Text('Female',
+                      style: TextStyle(color: Colors.grey, fontSize: 15)),
+                ],
+              ),
+
               if (genderError.isNotEmpty)
                 Padding(
                   padding: EdgeInsets.only(left: 12),

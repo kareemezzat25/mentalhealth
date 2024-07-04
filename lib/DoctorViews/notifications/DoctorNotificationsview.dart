@@ -59,7 +59,9 @@ class _DoctorNotificationsPageState extends State<DoctorNotificationsview> {
           pageNumber++;
         }
         filteredNotifications = showUnreadOnly
-            ? notifications.where((notification) => !notification['isRead']).toList()
+            ? notifications
+                .where((notification) => !notification['isRead'])
+                .toList()
             : notifications;
 
         Provider.of<NotificationCountProvider>(context, listen: false)
@@ -88,7 +90,9 @@ class _DoctorNotificationsPageState extends State<DoctorNotificationsview> {
         }).toList();
 
         filteredNotifications = showUnreadOnly
-            ? notifications.where((notification) => !notification['isRead']).toList()
+            ? notifications
+                .where((notification) => !notification['isRead'])
+                .toList()
             : notifications;
 
         Provider.of<NotificationCountProvider>(context, listen: false)
@@ -122,17 +126,17 @@ class _DoctorNotificationsPageState extends State<DoctorNotificationsview> {
     setState(() {
       showUnreadOnly = !showUnreadOnly;
       filteredNotifications = showUnreadOnly
-          ? notifications.where((notification) => !notification['isRead']).toList()
+          ? notifications
+              .where((notification) => !notification['isRead'])
+              .toList()
           : notifications;
     });
   }
 
   String _formatDateTime(String dateTimeString) {
     final DateTime dateTime = DateTime.parse(dateTimeString);
-    final String formattedDate =
-        DateFormat('d/M/y').format(dateTime);
-    final String formattedTime =
-        DateFormat.jm().format(dateTime);
+    final String formattedDate = DateFormat('d/M/y').format(dateTime);
+    final String formattedTime = DateFormat.jm().format(dateTime);
     return '$formattedDate at $formattedTime';
   }
 
@@ -205,7 +209,8 @@ class _DoctorNotificationsPageState extends State<DoctorNotificationsview> {
                 Expanded(
                   child: ListView.builder(
                     controller: _scrollController,
-                    itemCount: filteredNotifications.length + (hasMoreData ? 1 : 0),
+                    itemCount:
+                        filteredNotifications.length + (hasMoreData ? 1 : 0),
                     itemBuilder: (context, index) {
                       if (index < filteredNotifications.length) {
                         final notification = filteredNotifications[index];
