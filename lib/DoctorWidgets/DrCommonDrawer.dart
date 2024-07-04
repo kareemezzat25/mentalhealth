@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:mentalhealthh/DoctorViews/DoctorNotificationsPage.dart';
-import 'package:mentalhealthh/DoctorViews/SchedulePage.dart';
+import 'package:mentalhealthh/DoctorViews/notifications/DoctorNotificationsview.dart';
+import 'package:mentalhealthh/DoctorViews/schedules/Scheduleview.dart';
 import 'package:mentalhealthh/models/user_model.dart';
 import 'package:mentalhealthh/providers/notification_count_provider.dart';
-import 'package:mentalhealthh/views/DoctorAppointmentsPage.dart';
-import 'package:mentalhealthh/views/ForumsPage.dart';
-import 'package:mentalhealthh/views/UserProfile.dart';
-import 'package:mentalhealthh/views/login.dart';
+import 'package:mentalhealthh/views/appointments/DoctorAppointmentsview.dart';
+import 'package:mentalhealthh/views/Profiles/UserProfile.dart';
+import 'package:mentalhealthh/views/authentication/loginview.dart';
 import 'package:provider/provider.dart';
-import 'package:mentalhealthh/authentication/auth.dart';
 import 'package:mentalhealthh/Providers/doctor_notification_count_provider.dart';
 
 class DrCommonDrawer extends StatelessWidget {
@@ -142,7 +140,7 @@ class DrCommonDrawer extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => DoctorAppointmentsPage(),
+                    builder: (context) => DoctorNotificationsview(),
                   ),
                 );
               },

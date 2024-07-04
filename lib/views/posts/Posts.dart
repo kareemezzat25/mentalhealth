@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // Import for date formatting
 import 'package:mentalhealthh/authentication/auth.dart';
-import 'package:mentalhealthh/views/ForumsPage.dart';
-import 'package:mentalhealthh/views/PostComment.dart';
+import 'package:mentalhealthh/views/Forumsview.dart';
+import 'package:mentalhealthh/views/posts/PostComment.dart';
 import 'package:mentalhealthh/widgets/CommonDrawer.dart';
 import 'package:mentalhealthh/widgets/forum.dart';
 import 'package:mentalhealthh/services/postsApi.dart';
@@ -291,7 +291,7 @@ class PostsState extends State<Posts> {
       onWillPop: () async {
         Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (context) {
-          return ForumsPage(userId: userId);
+          return Forumsview(userId: userId);
         }));
         return false;
       },

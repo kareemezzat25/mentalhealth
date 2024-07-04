@@ -1,23 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'dart:convert';
+import 'package:mentalhealthh/services/notificationsapi.dart';
 import 'package:provider/provider.dart';
-import 'package:mentalhealthh/authentication/auth.dart';
-import 'package:mentalhealthh/views/DoctorAppointmentsPage.dart';
-import 'package:mentalhealthh/views/PostComment.dart';
-import 'package:mentalhealthh/providers/notification_count_provider.dart'; // Import NotificationCountProvider
+import 'package:mentalhealthh/views/appointments/DoctorAppointmentsview.dart';
+import 'package:mentalhealthh/views/posts/PostComment.dart';
+import 'package:mentalhealthh/providers/notification_count_provider.dart';
 
-class DoctorNotificationsPage extends StatefulWidget {
+class DoctorNotificationsview extends StatefulWidget {
   @override
   _DoctorNotificationsPageState createState() =>
       _DoctorNotificationsPageState();
 }
 
-class _DoctorNotificationsPageState extends State<DoctorNotificationsPage> {
+class _DoctorNotificationsPageState extends State<DoctorNotificationsview> {
   List<Map<String, dynamic>> notifications = [];
   List<Map<String, dynamic>> filteredNotifications = [];
-  bool isLoading = true;
+  bool isLoading = false;
   bool showUnreadOnly = false;
   int pageNumber = 1;
   int pageSize = 10;
@@ -29,7 +27,6 @@ class _DoctorNotificationsPageState extends State<DoctorNotificationsPage> {
     super.initState();
     fetchNotifications();
 
-    // Attach listener to detect scroll end
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
@@ -45,57 +42,43 @@ class _DoctorNotificationsPageState extends State<DoctorNotificationsPage> {
   }
 
   Future<void> fetchNotifications() async {
-    String? token = await Auth.getToken();
+    if (isLoading) return;
+    setState(() {
+      isLoading = true;
+    });
 
-    final url = Uri.parse(
-        'https://nexus-api-h3ik.onrender.com/api/notifications/users/me?pageNumber=$pageNumber&pageSize=$pageSize');
-    final response = await http.get(
-      url,
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      },
-    );
+    try {
+      final List<Map<String, dynamic>> newNotifications =
+          await NotificationsApi.fetchNotifications(pageNumber, pageSize);
 
-    if (response.statusCode == 200) {
-      final List<dynamic> data = json.decode(response.body);
       setState(() {
-        notifications.addAll(data.map((item) => item as Map<String, dynamic>));
-        if (data.isEmpty) {
+        if (newNotifications.isEmpty) {
           hasMoreData = false;
         } else {
+          notifications.addAll(newNotifications);
           pageNumber++;
         }
-        isLoading = false;
-        // Update unread count in NotificationCountProvider
+        filteredNotifications = showUnreadOnly
+            ? notifications.where((notification) => !notification['isRead']).toList()
+            : notifications;
+
         Provider.of<NotificationCountProvider>(context, listen: false)
             .updateUnreadCount(notifications
                 .where((notification) => !notification['isRead'])
                 .length);
       });
-    } else {
-      // Handle error
+    } catch (e) {
+      print(e);
+    } finally {
       setState(() {
         isLoading = false;
       });
-      print('Failed to fetch notifications');
     }
   }
 
   Future<void> markAsRead(int id) async {
-    String? token = await Auth.getToken();
-
-    final url = Uri.parse(
-        'https://nexus-api-h3ik.onrender.com/api/notifications/$id/read');
-    final response = await http.put(
-      url,
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      },
-    );
-
-    if (response.statusCode == 200) {
+    try {
+      await NotificationsApi.markAsRead(id);
       setState(() {
         notifications = notifications.map((notification) {
           if (notification['id'] == id) {
@@ -103,72 +86,53 @@ class _DoctorNotificationsPageState extends State<DoctorNotificationsPage> {
           }
           return notification;
         }).toList();
-        if (showUnreadOnly) {
-          filteredNotifications = notifications
-              .where((notification) => !notification['isRead'])
-              .toList();
-        } else {
-          filteredNotifications = notifications;
-        }
-        // Update unread count in NotificationCountProvider
+
+        filteredNotifications = showUnreadOnly
+            ? notifications.where((notification) => !notification['isRead']).toList()
+            : notifications;
+
         Provider.of<NotificationCountProvider>(context, listen: false)
             .updateUnreadCount(notifications
                 .where((notification) => !notification['isRead'])
                 .length);
       });
-    } else {
-      print('Failed to mark notification as read');
+    } catch (e) {
+      print(e);
     }
   }
 
   Future<void> markAllAsRead() async {
-    String? token = await Auth.getToken();
-
-    final url = Uri.parse(
-        'https://nexus-api-h3ik.onrender.com/api/notifications/users/me/read');
-    final response = await http.put(
-      url,
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      },
-    );
-
-    if (response.statusCode == 200) {
+    try {
+      await NotificationsApi.markAllAsRead();
       setState(() {
         notifications = notifications.map((notification) {
           notification['isRead'] = true;
           return notification;
         }).toList();
         filteredNotifications = notifications;
-        // Update unread count in NotificationCountProvider
         Provider.of<NotificationCountProvider>(context, listen: false)
-            .updateUnreadCount(0); // All notifications are read now
+            .updateUnreadCount(0);
       });
-    } else {
-      print('Failed to mark all notifications as read');
+    } catch (e) {
+      print(e);
     }
   }
 
   void toggleUnreadOnly() {
     setState(() {
       showUnreadOnly = !showUnreadOnly;
-      if (showUnreadOnly) {
-        filteredNotifications = notifications
-            .where((notification) => !notification['isRead'])
-            .toList();
-      } else {
-        filteredNotifications = notifications;
-      }
+      filteredNotifications = showUnreadOnly
+          ? notifications.where((notification) => !notification['isRead']).toList()
+          : notifications;
     });
   }
 
   String _formatDateTime(String dateTimeString) {
     final DateTime dateTime = DateTime.parse(dateTimeString);
     final String formattedDate =
-        DateFormat('d/M/y').format(dateTime); // e.g., 26/6/2024
+        DateFormat('d/M/y').format(dateTime);
     final String formattedTime =
-        DateFormat.jm().format(dateTime); // e.g., 6:00 AM
+        DateFormat.jm().format(dateTime);
     return '$formattedDate at $formattedTime';
   }
 
@@ -177,7 +141,6 @@ class _DoctorNotificationsPageState extends State<DoctorNotificationsPage> {
       markAsRead(notification['id']);
     }
 
-    // Navigate based on notification type
     if (notification['type'] == 'Reply') {
       int postId = notification['resources']['postId'];
       int commentId = notification['resources']['commentId'];
@@ -213,17 +176,6 @@ class _DoctorNotificationsPageState extends State<DoctorNotificationsPage> {
     }
   }
 
-  void loadPreviousPage() {
-    if (pageNumber > 1 && !isLoading) {
-      setState(() {
-        pageNumber--;
-        notifications.clear(); // Clear current notifications
-        isLoading = true;
-      });
-      fetchNotifications();
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -246,17 +198,17 @@ class _DoctorNotificationsPageState extends State<DoctorNotificationsPage> {
           ),
         ],
       ),
-      body: isLoading
+      body: isLoading && notifications.isEmpty
           ? Center(child: CircularProgressIndicator())
           : Column(
               children: [
                 Expanded(
                   child: ListView.builder(
                     controller: _scrollController,
-                    itemCount: notifications.length + 1,
+                    itemCount: filteredNotifications.length + (hasMoreData ? 1 : 0),
                     itemBuilder: (context, index) {
-                      if (index < notifications.length) {
-                        final notification = notifications[index];
+                      if (index < filteredNotifications.length) {
+                        final notification = filteredNotifications[index];
                         final formattedDateTime =
                             _formatDateTime(notification['dateCreated']);
 
@@ -295,9 +247,7 @@ class _DoctorNotificationsPageState extends State<DoctorNotificationsPage> {
                       } else {
                         return Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: Center(
-                            child: CircularProgressIndicator(),
-                          ),
+                          child: Center(child: CircularProgressIndicator()),
                         );
                       }
                     },

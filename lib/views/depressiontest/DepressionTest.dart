@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mentalhealthh/services/DepTestApi.dart';
-import 'package:mentalhealthh/views/TestResultPage.dart';
+import 'package:mentalhealthh/views/depressiontest/TestResultview.dart';
 import 'package:mentalhealthh/widgets/CommonDrawer.dart'; // Import your CommonDrawer widget
 
 class DepressionTest extends StatefulWidget {

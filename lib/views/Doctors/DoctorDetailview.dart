@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // for DateFormat
 import 'package:mentalhealthh/models/Doctor.dart'; // Replace with actual path to Doctor.dart
 import 'package:mentalhealthh/services/doctorapi.dart';
-import 'package:mentalhealthh/views/AppointmentSlotsPage.dart';
+import 'package:mentalhealthh/views/appointments/AppointmentSlotsview.dart';
 
-class DoctorDetailPage extends StatefulWidget {
+class DoctorDetailview extends StatefulWidget {
   final Doctor doctor;
 
-  DoctorDetailPage({required this.doctor});
+  DoctorDetailview({required this.doctor});
 
   @override
   _DoctorDetailPageState createState() => _DoctorDetailPageState();
 }
 
-class _DoctorDetailPageState extends State<DoctorDetailPage> {
+class _DoctorDetailPageState extends State<DoctorDetailview> {
   List<Map<String, String>> schedule = [];
   bool isLoading = false;
   PageController _pageController = PageController();

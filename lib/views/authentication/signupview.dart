@@ -1,9 +1,8 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:mentalhealthh/authentication/auth.dart';
-import 'login.dart';
-import 'textForm.dart';
+import 'loginview.dart';
+import '../../widgets/textForm.dart';
 import 'dart:convert';
 import "package:http/http.dart" as http;
 

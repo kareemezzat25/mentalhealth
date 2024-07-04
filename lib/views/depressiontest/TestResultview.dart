@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mentalhealthh/views/DoctorsPage.dart'; // Import your DoctorsPage widget
-import 'package:mentalhealthh/views/Posts.dart'; // Import your Posts widget
+import 'package:mentalhealthh/views/Doctors/Doctorsview.dart'; // Import your DoctorsPage widget
+import 'package:mentalhealthh/views/posts/Posts.dart'; // Import your Posts widget
 
 class TestResultPage extends StatelessWidget {
   final bool depressionIndicated;
@@ -25,7 +25,7 @@ class TestResultPage extends StatelessWidget {
               Navigator.push
               ( 
                 context,
-                MaterialPageRoute(builder: (context) => DoctorsPage(userId: userid!,)),
+                MaterialPageRoute(builder: (context) => Doctorsview(userId: userid!,)),
               );
             },
             style: ElevatedButton.styleFrom(
@@ -69,7 +69,7 @@ class TestResultPage extends StatelessWidget {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => DoctorsPage(userId: userid!,)),
+                MaterialPageRoute(builder: (context) => Doctorsview(userId: userid!,)),
               );
             },
             style: ElevatedButton.styleFrom(

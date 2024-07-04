@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 //import 'package:mentalhealthh/views/MainHomeview.dart';
-import 'login.dart';
-import 'signup.dart';
+import 'authentication/loginview.dart';
+import 'authentication/signupview.dart';
 
 class HomePage extends StatelessWidget {
   HomePage();

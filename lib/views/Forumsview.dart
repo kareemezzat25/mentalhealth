@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:mentalhealthh/views/CreateForum.dart';
-import 'package:mentalhealthh/views/Posts.dart';
+import 'package:mentalhealthh/views/posts/CreateForum.dart';
+import 'package:mentalhealthh/views/posts/Posts.dart';
 import 'package:mentalhealthh/widgets/CommonDrawer.dart';
 
-class ForumsPage extends StatefulWidget {
+class Forumsview extends StatefulWidget {
   final String userId; // Add userId parameter
 
-  ForumsPage({required this.userId}); // Update constructor
+  Forumsview({required this.userId}); // Update constructor
 
   @override
   _ForumsPageState createState() => _ForumsPageState();
 }
 
-class _ForumsPageState extends State<ForumsPage>
+class _ForumsPageState extends State<Forumsview>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 

@@ -1,8 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:mentalhealthh/DoctorWidgets/DrCommonDrawer.dart';
 import 'package:mentalhealthh/services/UserProfileApi.dart';
-import 'package:mentalhealthh/views/UserDoctorInfoEdit.dart';
+import 'package:mentalhealthh/views/Profiles/UserDoctorInfoEdit.dart';
 import 'package:mentalhealthh/widgets/CommonDrawer.dart';
 
 class UserDoctorProfile extends StatefulWidget {
@@ -34,7 +35,7 @@ class _UserDoctorProfileState extends State<UserDoctorProfile> {
       appBar: AppBar(
         title: Text(isDoctor ? 'Doctor Profile' : 'User Profile'),
       ),
-      drawer: CommonDrawer(userId: widget.userId),
+      drawer: isDoctor ? DrCommonDrawer(doctorId: widget.userId):CommonDrawer(userId: widget.userId),
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8.0),
         child: FutureBuilder(

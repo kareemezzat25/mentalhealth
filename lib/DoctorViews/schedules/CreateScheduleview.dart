@@ -3,16 +3,16 @@ import 'package:mentalhealthh/models/schedule_model.dart';
 import 'package:mentalhealthh/services/api_service.dart';
 import 'package:intl/intl.dart';
 
-class CreateSchedulePage extends StatefulWidget {
+class CreateScheduleview extends StatefulWidget {
   final String doctorId;
 
-  CreateSchedulePage({required this.doctorId});
+  CreateScheduleview({required this.doctorId});
 
   @override
   _CreateSchedulePageState createState() => _CreateSchedulePageState();
 }
 
-class _CreateSchedulePageState extends State<CreateSchedulePage> {
+class _CreateSchedulePageState extends State<CreateScheduleview> {
   final _formKey = GlobalKey<FormState>();
   final List<DaySchedule> _weekDays = [
     DaySchedule(dayOfWeek: '', startTime: '', endTime: '', sessionDuration: ''),

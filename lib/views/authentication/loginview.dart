@@ -3,13 +3,13 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
-import 'package:mentalhealthh/DoctorViews/DoctorMainPgae.dart';
+import 'package:mentalhealthh/DoctorViews/DoctorMainview.dart';
 import 'package:mentalhealthh/authentication/auth.dart';
-import 'package:mentalhealthh/views/ForumsPage.dart';
+import 'package:mentalhealthh/views/Forumsview.dart';
 import 'dart:convert';
-import 'textForm.dart';
+import '../../widgets/textForm.dart';
 import 'package:mentalhealthh/models/button.dart';
-import 'package:mentalhealthh/views/signup.dart';
+import 'package:mentalhealthh/views/authentication/signupview.dart';
 import 'package:mentalhealthh/widgets/signinwithgoogle.dart';
 
 class Login extends StatefulWidget {
@@ -98,12 +98,12 @@ class _LoginState extends State<Login> {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-                builder: (context) => DoctorMainPage(doctorId: userId)),
+                builder: (context) => DoctorMainview(doctorId: userId)),
           );
         } else {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => ForumsPage(userId: userId)),
+            MaterialPageRoute(builder: (context) => Forumsview(userId: userId)),
           );
         }
       } else {

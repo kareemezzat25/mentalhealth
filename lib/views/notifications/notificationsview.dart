@@ -4,22 +4,22 @@ import 'package:intl/intl.dart';
 import 'dart:convert';
 
 import 'package:mentalhealthh/authentication/auth.dart';
-import 'package:mentalhealthh/views/Appointmentsview.dart';
-import 'package:mentalhealthh/views/PostComment.dart';
+import 'package:mentalhealthh/views/appointments/Appointmentsview.dart';
+import 'package:mentalhealthh/views/posts/PostComment.dart';
 import 'package:mentalhealthh/providers/notification_count_provider.dart'; // Import the provider
 import 'package:mentalhealthh/widgets/CommonDrawer.dart';
 import 'package:provider/provider.dart'; // Import provider package
 
-class NotificationsPage extends StatefulWidget {
+class Notificationsview extends StatefulWidget {
     final String userId;
 
-  const NotificationsPage({required this.userId});
+  const Notificationsview({required this.userId});
 
   @override
   _NotificationsPageState createState() => _NotificationsPageState();
 }
 
-class _NotificationsPageState extends State<NotificationsPage> {
+class _NotificationsPageState extends State<Notificationsview> {
   List<Map<String, dynamic>> notifications = [];
   List<Map<String, dynamic>> filteredNotifications = [];
   bool isLoading = true;

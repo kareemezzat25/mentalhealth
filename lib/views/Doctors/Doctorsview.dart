@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:mentalhealthh/models/Doctor.dart';
 import 'package:mentalhealthh/services/doctorapi.dart';
-import 'package:mentalhealthh/views/DoctorDetailPage.dart';
+import 'package:mentalhealthh/views/Doctors/DoctorDetailview.dart';
 import 'package:mentalhealthh/widgets/CommonDrawer.dart';
 
-class DoctorsPage extends StatefulWidget {
+class Doctorsview extends StatefulWidget {
   final String userId;
-  const DoctorsPage({ required this.userId});
-
+  const Doctorsview({required this.userId});
 
   @override
   _DoctorsPageState createState() => _DoctorsPageState();
 }
 
-class _DoctorsPageState extends State<DoctorsPage> {
+class _DoctorsPageState extends State<Doctorsview> {
   List<Doctor> doctors = [];
   List<Doctor> filteredDoctors = [];
   bool isLoading = false;
@@ -108,49 +107,135 @@ class _DoctorsPageState extends State<DoctorsPage> {
                     builder: (BuildContext context, StateSetter setState) {
                       return Padding(
                         padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            TextField(
-                              decoration: InputDecoration(labelText: 'Name'),
-                              onChanged: (value) {
-                                setState(() {
-                                  selectedName = value;
-                                });
-                              },
-                            ),
-                            TextField(
-                              decoration: InputDecoration(labelText: 'City'),
-                              onChanged: (value) {
-                                setState(() {
-                                  selectedCity = value;
-                                });
-                              },
-                            ),
-                            // Other filter widgets
-                            ElevatedButton(
-                              onPressed: () {
-                                filterDoctors();
-                                Navigator.pop(context);
-                              },
-                              child: Text('Apply Filters'),
-                            ),
-                            ElevatedButton(
-                              onPressed: () {
-                                setState(() {
-                                  selectedName = '';
-                                  selectedCity = '';
-                                  selectedGender = 'All';
-                                  selectedSpecialization = 'All';
-                                  minSessionFees = 0;
-                                  maxSessionFees = 1000;
-                                });
-                                fetchDoctorsData();
-                                Navigator.pop(context);
-                              },
-                              child: Text('Reset Filters'),
-                            ),
-                          ],
+                        child: SingleChildScrollView(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              TextField(
+                                decoration: InputDecoration(labelText: 'Name'),
+                                onChanged: (value) {
+                                  setState(() {
+                                    selectedName = value;
+                                  });
+                                },
+                              ),
+                              TextField(
+                                decoration: InputDecoration(labelText: 'City'),
+                                onChanged: (value) {
+                                  setState(() {
+                                    selectedCity = value;
+                                  });
+                                },
+                              ),
+                              Row(
+                                children: [
+                                  Text(
+                                    'Gender: ',
+                                    style: TextStyle(fontSize: 16),
+                                  ),
+                                  SizedBox(width: 10),
+                                  Expanded(
+                                    child: DropdownButton<String>(
+                                      value: selectedGender,
+                                      onChanged: (newValue) {
+                                        setState(() {
+                                          selectedGender = newValue!;
+                                        });
+                                      },
+                                      items: <String>['All', 'Male', 'Female']
+                                          .map<DropdownMenuItem<String>>(
+                                              (String value) {
+                                        return DropdownMenuItem<String>(
+                                          value: value,
+                                          child: Text(value),
+                                        );
+                                      }).toList(),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Text(
+                                    'Specialization: ',
+                                    style: TextStyle(fontSize: 16),
+                                  ),
+                                  SizedBox(width: 10),
+                                  Expanded(
+                                    child: DropdownButton<String>(
+                                      value: selectedSpecialization,
+                                      onChanged: (newValue) {
+                                        setState(() {
+                                          selectedSpecialization = newValue!;
+                                        });
+                                      },
+                                      items: specializations
+                                          .map<DropdownMenuItem<String>>(
+                                              (String value) {
+                                        return DropdownMenuItem<String>(
+                                          value: value,
+                                          child: Text(value),
+                                        );
+                                      }).toList(),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Text(
+                                    'Session Fees: ',
+                                    style: TextStyle(fontSize: 16),
+                                  ),
+                                  Expanded(
+                                    child: RangeSlider(
+                                      values: RangeValues(
+                                          minSessionFees, maxSessionFees),
+                                      min: 0,
+                                      max: 1000,
+                                      divisions: 100,
+                                      labels: RangeLabels(
+                                        minSessionFees.toString(),
+                                        maxSessionFees.toString(),
+                                      ),
+                                      onChanged: (RangeValues values) {
+                                        setState(() {
+                                          minSessionFees = values.start;
+                                          maxSessionFees = values.end;
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  primary: Color(0xff0074F1),
+                                  onPrimary: Colors.white,
+                                ),
+                                onPressed: () {
+                                  filterDoctors();
+                                  Navigator.pop(context);
+                                },
+                                child: Text('Apply Filters'),
+                              ),
+                              ElevatedButton(
+                                onPressed: () {
+                                  setState(() {
+                                    selectedName = '';
+                                    selectedCity = '';
+                                    selectedGender = 'All';
+                                    selectedSpecialization = 'All';
+                                    minSessionFees = 0;
+                                    maxSessionFees = 1000;
+                                  });
+                                  fetchDoctorsData();
+                                  Navigator.pop(context);
+                                },
+                                child: Text('Reset Filters'),
+                              ),
+                            ],
+                          ),
                         ),
                       );
                     },
@@ -178,7 +263,7 @@ class _DoctorsPageState extends State<DoctorsPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => DoctorDetailPage(doctor: doctor),
+                        builder: (context) => DoctorDetailview(doctor: doctor),
                       ),
                     );
                   },

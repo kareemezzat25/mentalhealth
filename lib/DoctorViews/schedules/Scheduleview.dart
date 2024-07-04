@@ -1,7 +1,6 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
-import 'package:mentalhealthh/DoctorViews/CreateSchedulePage.dart';
-import 'package:mentalhealthh/DoctorViews/ScheduleDetailsPage.dart';
+import 'package:mentalhealthh/DoctorViews/schedules/CreateScheduleview.dart';
+import 'package:mentalhealthh/DoctorViews/schedules/ScheduleDetailsview.dart';
 import 'package:mentalhealthh/models/schedule_model.dart';
 import 'package:mentalhealthh/services/api_service.dart';
 import 'package:auto_size_text/auto_size_text.dart';
@@ -75,7 +74,7 @@ class _SchedulePageState extends State<SchedulePage> {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => CreateSchedulePage(doctorId: widget.doctorId),
+        builder: (context) => CreateScheduleview(doctorId: widget.doctorId),
       ),
     );
 

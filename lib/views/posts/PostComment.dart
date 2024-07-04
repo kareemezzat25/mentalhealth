@@ -3,10 +3,10 @@ import 'package:mentalhealthh/services/commentsApi.dart';
 import 'package:mentalhealthh/services/postsApi.dart';
 import 'package:mentalhealthh/authentication/auth.dart';
 import 'package:mentalhealthh/models/button.dart';
-import 'package:mentalhealthh/views/CommentEdit.dart';
-import 'package:mentalhealthh/views/PostEdit.dart';
-import 'package:mentalhealthh/views/ReplayEdit.dart';
-import 'package:mentalhealthh/views/textForm.dart';
+import 'package:mentalhealthh/views/posts/CommentEdit.dart';
+import 'package:mentalhealthh/views/posts/PostEdit.dart';
+import 'package:mentalhealthh/views/posts/ReplayEdit.dart';
+import 'package:mentalhealthh/widgets/textForm.dart';
 import 'package:intl/intl.dart';
 import 'package:mentalhealthh/widgets/ForbidenDialog.dart';
 import 'package:mentalhealthh/widgets/image_user.dart'; // Import the intl package for formatting
@@ -258,9 +258,7 @@ class _PostCommentState extends State<PostComment> {
                           ),
                         ),
                       ),
-                      SizedBox(
-                        height: 10,
-                      ),
+                      SizedBox(height: 10,),
                       SizedBox(
                         height: 60,
                         child: Row(

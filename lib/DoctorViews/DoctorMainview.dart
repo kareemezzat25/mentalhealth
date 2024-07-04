@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:mentalhealthh/DoctorWidgets/DrCommonDrawer.dart';
-import 'package:mentalhealthh/views/CreateForum.dart';
-import 'package:mentalhealthh/views/Posts.dart';
+import 'package:mentalhealthh/views/posts/CreateForum.dart';
+import 'package:mentalhealthh/views/posts/Posts.dart';
 
-class DoctorMainPage extends StatefulWidget {
+class DoctorMainview extends StatefulWidget {
   final String doctorId;
 
-  DoctorMainPage({required this.doctorId});
+  DoctorMainview({required this.doctorId});
 
   @override
-  State<DoctorMainPage> createState() => _DoctorMainPageState();
+  State<DoctorMainview> createState() => _DoctorMainPageState();
 }
 
-class _DoctorMainPageState extends State<DoctorMainPage>
+class _DoctorMainPageState extends State<DoctorMainview>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   bool confessionsOnly = false;

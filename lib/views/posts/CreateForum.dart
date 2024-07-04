@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mentalhealthh/authentication/auth.dart';
 import 'package:mentalhealthh/models/button.dart';
-import 'package:http/http.dart' as http;
-import 'package:mentalhealthh/views/textForm.dart';
+import 'package:mentalhealthh/widgets/textForm.dart';
 import 'package:mentalhealthh/services/postsApi.dart';
 import 'package:mentalhealthh/widgets/ForbidenDialog.dart';
 
