@@ -47,9 +47,10 @@ class _PostCommentState extends State<PostComment> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Color(0xffDCDCDC),
+    return Scaffold(      
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         title: Text('Post and Comments'),
       ),
       body: SingleChildScrollView(

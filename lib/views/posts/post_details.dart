@@ -27,12 +27,12 @@ class _PostDetailsState extends State<PostDetails> {
       child: Column(
         children: [
           SizedBox(height: 15),
-          Container(
-            decoration: BoxDecoration(
-              color: Color(0xffFFFFFF),
+          Card(
+            color: Color(0xffFFFFFF),
+            shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(15),
             ),
-            width: screenWidth * 0.9,
+            elevation: 5, // Adjust the elevation as needed
             child: Padding(
               padding: const EdgeInsets.all(10),
               child: Column(
@@ -40,24 +40,14 @@ class _PostDetailsState extends State<PostDetails> {
                 children: [
                   Row(
                     children: [
-                      Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(40),
-                          border: Border.all(
-                              color: Colors.grey, style: BorderStyle.solid),
-                          image: DecorationImage(
-                            image: widget.postDetailsData['isAnonymous'] ==
-                                        true ||
-                                    widget.postDetailsData['photoUrl'] == null
-                                ? AssetImage('assets/images/anonymous.png')
-                                : NetworkImage(
-                                        widget.postDetailsData['photoUrl'])
-                                    as ImageProvider,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
+                      CircleAvatar(
+                        radius: 20,
+                        backgroundImage: widget.postDetailsData['isAnonymous'] == true ||
+                                widget.postDetailsData['photoUrl'] == null
+                            ? AssetImage('assets/images/anonymous.png')
+                            : NetworkImage(widget.postDetailsData['photoUrl'])
+                                as ImageProvider,
+                        backgroundColor: Colors.grey.shade200,
                       ),
                       SizedBox(width: 10),
                       Column(
@@ -91,6 +81,8 @@ class _PostDetailsState extends State<PostDetails> {
                                     postId: widget.widget.postId,
                                     oldTitle: oldTitle,
                                     oldContent: oldContent,
+                                    oldImageUrl: widget.postDetailsData['postPhotoUrl'],
+                                    isAnonymous: widget.postDetailsData['isAnonymous'] ?? false,
                                   ),
                                 ),
                               );
@@ -141,8 +133,7 @@ class _PostDetailsState extends State<PostDetails> {
                   if (widget.postDetailsData['postPhotoUrl'] != null)
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 10.0),
-                      child:
-                          Image.network(widget.postDetailsData['postPhotoUrl']),
+                      child: Image.network(widget.postDetailsData['postPhotoUrl']),
                     ),
                 ],
               ),

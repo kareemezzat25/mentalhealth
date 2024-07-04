@@ -119,18 +119,25 @@ class _CommentSectionState extends State<CommentSection> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(
-          height: 10,
-        ),
-        SizedBox(
-          height: 60,
+        SizedBox(height: 10),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
           child: Row(
             children: [
               Flexible(
-                child: TextField(
-                  controller: commentController,
-                  decoration: InputDecoration(
-                    hintText: 'Add your comment',
+                child: SingleChildScrollView(
+                  child: Container(
+                    constraints: BoxConstraints(maxHeight: 60), // Set a maximum height for the TextField
+                    child: TextField(
+                      controller: commentController,
+                      maxLines: 2, // Allow the TextField to grow
+                      decoration: InputDecoration(
+                        labelText: 'Add your comment',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -195,6 +202,7 @@ class _CommentSectionState extends State<CommentSection> {
 
                         return Card(
                           color: Color(0xffFFFFFF),
+                          elevation: 4,
                           margin: EdgeInsets.symmetric(
                               horizontal: 10, vertical: 10),
                           child: Container(
@@ -204,14 +212,11 @@ class _CommentSectionState extends State<CommentSection> {
                                 ListTile(
                                   title: Row(
                                     children: [
-                                      ImageUser(
-                                          url: commentsData[index]['photoUrl']),
+                                      ImageUser(url: commentsData[index]['photoUrl']),
                                       SizedBox(width: 10),
                                       Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:CrossAxisAlignment.start,
+                                        mainAxisAlignment:MainAxisAlignment.center,
                                         children: [
                                           Text(
                                             '${commentsData[index]['username']}',
@@ -243,17 +248,13 @@ class _CommentSectionState extends State<CommentSection> {
                                                   ),
                                                 ),
                                               );
-
-                                              if (result != null) {
-                                                changePostData();
-                                              }
+                                              if (result != null) {changePostData();}
                                             } else if (value == 'delete') {
                                               await CommentApi.deleteComment(
                                                 widget.postId,
                                                 commentId,
                                               );
-                                              changePostData();
-                                            }
+                                              changePostData();}
                                           },
                                           itemBuilder: (BuildContext context) =>
                                               <PopupMenuEntry<String>>[
@@ -295,7 +296,6 @@ class _CommentSectionState extends State<CommentSection> {
                                     },
                                   ),
                                 ),
-
                                 // Display replies for this comment
                                 FutureBuilder<List<Map<String, dynamic>>>(
                                   future: PostsApi.fetchCommentReplies(
@@ -328,78 +328,44 @@ class _CommentSectionState extends State<CommentSection> {
                                                       ['appUserId'];
 
                                           return Padding(
-                                            padding: const EdgeInsets.only(
-                                                top: 10,
-                                                bottom: 10,
-                                                left: 30,
-                                                right: 10),
-                                            child: ListTile(
-                                              title: Row(
+                                            padding: const EdgeInsets.only(top: 10,bottom: 10,left: 30,right: 10),
+                                            child: ListTile(title: Row(
                                                 children: [
-                                                  ImageUser(
-                                                      url: repliesData[
-                                                              replyIndex]
-                                                          ['photoUrl']),
+                                                  ImageUser(url: repliesData[replyIndex]['photoUrl']),
                                                   SizedBox(width: 10),
                                                   Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
+                                                    crossAxisAlignment:CrossAxisAlignment.start,
+                                                    mainAxisAlignment:MainAxisAlignment.center,
                                                     children: [
                                                       Text(
                                                         '${repliesData[replyIndex]['username']}',
-                                                        style: TextStyle(
-                                                            fontSize: 16,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .bold),
+                                                        style: TextStyle(fontSize: 16,fontWeight:FontWeight.bold),
                                                       ),
                                                       Text(
                                                         '${CalculateTimeDifference().calculateTimeDifference(repliesData[replyIndex]['repliedAt'])} ',
-                                                        style: TextStyle(
-                                                            fontSize: 12),
+                                                        style: TextStyle(fontSize: 12),
                                                       ),
                                                     ],
                                                   ),
                                                   if (isCurrentUserReplayAuthor)
                                                     PopupMenuButton<String>(
-                                                      onSelected:
-                                                          (value) async {
+                                                      onSelected:(value) async {
                                                         // Handle menu item selection for replies
                                                         if (value == 'edit') {
-                                                          String? result =
-                                                              await Navigator
-                                                                  .push(
-                                                            context,
-                                                            MaterialPageRoute(
-                                                              builder:
-                                                                  (context) =>
-                                                                      ReplyEdit(
-                                                                postId: widget
-                                                                    .postId,
-                                                                commentId:
-                                                                    commentId,
-                                                                replyId:
-                                                                    replyId,
-                                                                oldContent:
-                                                                    repliesData[
-                                                                            replyIndex]
-                                                                        [
-                                                                        'content'],
+                                                          String? result =await Navigator.push(context,MaterialPageRoute(
+                                                              builder:(context) =>ReplyEdit(
+                                                                postId: widget.postId,
+                                                                commentId:commentId,
+                                                                replyId:replyId,
+                                                                oldContent:repliesData[replyIndex]['content'],
                                                               ),
                                                             ),
                                                           );
-
                                                           if (result != null) {
                                                             changePostData();
                                                           }
-                                                        } else if (value ==
-                                                            'delete') {
-                                                          await CommentApi
-                                                              .deleteReply(
+                                                        } else if (value =='delete') {
+                                                          await CommentApi.deleteReply(
                                                             widget.postId,
                                                             commentId,
                                                             replyId,
@@ -407,27 +373,19 @@ class _CommentSectionState extends State<CommentSection> {
                                                           changePostData();
                                                         }
                                                       },
-                                                      itemBuilder: (BuildContext
-                                                              context) =>
-                                                          <PopupMenuEntry<
-                                                              String>>[
-                                                        const PopupMenuItem<
-                                                            String>(
+                                                      itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                                                        const PopupMenuItem<String>(
                                                           value: 'edit',
                                                           child: ListTile(
-                                                            leading: Icon(
-                                                                Icons.edit),
+                                                            leading: Icon(Icons.edit),
                                                             title: Text('Edit'),
                                                           ),
                                                         ),
-                                                        const PopupMenuItem<
-                                                            String>(
+                                                        const PopupMenuItem<String>(
                                                           value: 'delete',
                                                           child: ListTile(
-                                                            leading: Icon(
-                                                                Icons.delete),
-                                                            title:
-                                                                Text('Delete'),
+                                                            leading: Icon(Icons.delete),
+                                                            title:Text('Delete'),
                                                           ),
                                                         ),
                                                       ],
@@ -435,13 +393,11 @@ class _CommentSectionState extends State<CommentSection> {
                                                 ],
                                               ),
                                               subtitle: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
+                                                crossAxisAlignment:CrossAxisAlignment.start,
                                                 children: [
                                                   Text(
                                                     '${repliesData[replyIndex]['content']}',
-                                                    style:
-                                                        TextStyle(fontSize: 17),
+                                                    style:TextStyle(fontSize: 17),
                                                   ),
                                                 ],
                                               ),

@@ -102,7 +102,7 @@ class PostsApi {
   }
 
   static Future<Map<String, dynamic>> editPost(
-      int postId, String newTitle, String newContent) async {
+      int postId, String newTitle, String newContent, {File? image, required bool isAnonymous}) async {
     try {
       final String? authToken = await Auth.getToken();
 
@@ -111,27 +111,29 @@ class PostsApi {
         return {'error': 'Token not available'};
       }
 
-      final Map<String, dynamic> requestData = {
-        "title": newTitle,
-        "content": newContent,
-      };
+      var request = http.MultipartRequest('PUT', Uri.parse('$apiUrl/$postId'));
+      request.headers['Authorization'] = 'Bearer $authToken';
 
-      final String requestBody = jsonEncode(requestData);
-      final Map<String, String> headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $authToken',
-      };
+      request.fields['title'] = newTitle;
+      request.fields['content'] = newContent;
+      request.fields['isAnonymous'] = isAnonymous.toString();
 
-      final http.Response response = await http.put(
-        Uri.parse('$apiUrl/$postId'),
-        headers: headers,
-        body: requestBody,
-      );
+      if (image != null) {
+        request.files.add(await http.MultipartFile.fromPath(
+          'photoPost',
+          image.path,
+          filename: image.path.split('/').last,
+        ));
+      }
 
+      var response = await request.send();
       if (response.statusCode == 200) {
-        return json.decode(response.body);
+        final responseBody = await response.stream.bytesToString();
+        final jsonResponse = json.decode(responseBody);
+        return jsonResponse;
       } else {
-        final Map<String, dynamic> errorResponse = json.decode(response.body);
+        final responseBody = await response.stream.bytesToString();
+        final Map<String, dynamic> errorResponse = json.decode(responseBody);
         if (errorResponse['title'] == 'Forbidden') {
           return errorResponse;
         }
