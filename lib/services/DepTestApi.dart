@@ -6,6 +6,8 @@ class DepTestApi {
   static Future<String> submitDepressionTest({
     required String? story,
     required int totalWeight,
+    required String gender,
+    required int age,
   }) async {
     final Uri apiUrl = Uri.parse('https://nexus-api-h3ik.onrender.com/api/users/test-depression');
 
@@ -18,6 +20,8 @@ class DepTestApi {
         body: jsonEncode({
           'text': story ?? '',
           'sum': totalWeight,
+          'gender': gender,
+          'age': age,
         }),
       );
 

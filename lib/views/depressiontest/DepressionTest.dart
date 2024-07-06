@@ -16,11 +16,27 @@ class DepressionTest extends StatefulWidget {
 
 class _DepressionTestFormState extends State<DepressionTest> {
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController _ageController = TextEditingController();
+  final TextEditingController _storyController = TextEditingController(); // Add this line
   Map<int, int?> _answers = {};
   String? _story;
+  String? _gender;
+  int? _age;
+  bool _showGenderError = false;
+
+  @override
+  void dispose() {
+    _ageController.dispose();
+    _storyController.dispose(); // Add this line
+    super.dispose();
+  }
 
   void _submitForm() async {
-    if (_formKey.currentState!.validate()) {
+    setState(() {
+      _showGenderError = _gender == null;
+    });
+
+    if (_formKey.currentState!.validate() && _gender != null) {
       _formKey.currentState!.save();
 
       // Calculate total sum of weights
@@ -30,6 +46,8 @@ class _DepressionTestFormState extends State<DepressionTest> {
         final String response = await DepTestApi.submitDepressionTest(
           story: _story,
           totalWeight: totalWeight,
+          gender: _gender!,
+          age: _age!,
         );
         Navigator.push(
           context,
@@ -70,9 +88,18 @@ class _DepressionTestFormState extends State<DepressionTest> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
-                // Iterate over questions list and build _buildRadioQuestion dynamically
+                _buildGenderField(),
+                if (_showGenderError)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Text(
+                      'Please choose your gender',
+                      style: TextStyle(color: Colors.red, fontSize: 12),
+                    ),
+                  ),
+                _buildAgeField(),
                 for (var question in questions) _buildRadioQuestion(question),
-                _buildTextField('Tell us your story', (value) => _story = value),
+                _buildTextField('Tell us your story', _storyController), // Modify this line
                 SizedBox(height: 20),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -86,6 +113,69 @@ class _DepressionTestFormState extends State<DepressionTest> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildGenderField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Gender:',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        ListTile(
+          title: Text('Male'),
+          leading: Radio<String>(
+            value: 'male',
+            groupValue: _gender,
+            onChanged: (String? value) {
+              setState(() {
+                _gender = value;
+              });
+            },
+          ),
+        ),
+        ListTile(
+          title: Text('Female'),
+          leading: Radio<String>(
+            value: 'female',
+            groupValue: _gender,
+            onChanged: (String? value) {
+              setState(() {
+                _gender = value;
+              });
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAgeField() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: TextFormField(
+        controller: _ageController,
+        keyboardType: TextInputType.number,
+        decoration: InputDecoration(
+          labelText: 'Age',
+          labelStyle: TextStyle(fontSize: 18),
+        ),
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Please enter your age';
+          }
+          final age = int.tryParse(value);
+          if (age == null || age <= 0) {
+            return 'Please enter a valid age';
+          }
+          return null;
+        },
+        onSaved: (value) {
+          _age = int.parse(value!);
+        },
       ),
     );
   }
@@ -175,10 +265,11 @@ class _DepressionTestFormState extends State<DepressionTest> {
     );
   }
 
-  Widget _buildTextField(String labelText, Function(String?) onSaved) {
+  Widget _buildTextField(String labelText, TextEditingController controller) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: TextFormField(
+        controller: controller,
         maxLines: 4,
         decoration: InputDecoration(
           labelText: labelText,
@@ -186,7 +277,9 @@ class _DepressionTestFormState extends State<DepressionTest> {
         ),
         validator: (value) =>
             value == null || value.isEmpty ? 'Please enter a story' : null,
-        onSaved: onSaved,
+        onSaved: (value) {
+          _story = value;
+        },
       ),
     );
   }

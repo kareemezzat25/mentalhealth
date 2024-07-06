@@ -45,51 +45,60 @@ class _PostCommentState extends State<PostComment> {
     });
   }
 
+  Future<bool> _onWillPop() async {
+    Navigator.pop(context, "refresh");
+    return false; // Return false to prevent the default pop behavior
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(      
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: Text('Post and Comments'),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context, "refresh");
-          }
-        )
-      ),
-      body: SingleChildScrollView(
-        child: FutureBuilder<Map<String, dynamic>>(
-          future: postDetails,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
-            } else {
-              postDetailsData = snapshot.data ?? {};
-              return Column(
-                children: [
-                  PostDetails(postDetailsData: postDetailsData,
-                   widget: widget,
-                  changePostData: changePostData,),
-                  CommentSection(
-                    postId: widget.postId,
-                    userId: widget.userId,
-                    appUserId: widget.appUserId,
-                    postDetailsData: postDetailsData,
-                    commentController: commentController,
-                    replyControllers: replyControllers,
-                    changePostData: changePostData,
-                  ),
-                ],
-              );
+    return WillPopScope(
+      onWillPop: _onWillPop,
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          title: Text('Post and Comments'),
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.pop(context, "refresh");
             }
-          },
+          )
+        ),
+        body: SingleChildScrollView(
+          child: FutureBuilder<Map<String, dynamic>>(
+            future: postDetails,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+                return Center(child: Text('Error: ${snapshot.error}'));
+              } else {
+                postDetailsData = snapshot.data ?? {};
+                return Column(
+                  children: [
+                    PostDetails(
+                      postDetailsData: postDetailsData,
+                      widget: widget,
+                      changePostData: changePostData,
+                    ),
+                    CommentSection(
+                      postId: widget.postId,
+                      userId: widget.userId,
+                      appUserId: widget.appUserId,
+                      postDetailsData: postDetailsData,
+                      commentController: commentController,
+                      replyControllers: replyControllers,
+                      changePostData: changePostData,
+                    ),
+                  ],
+                );
+              }
+            },
+          ),
         ),
       ),
-      
     );
   }
 }

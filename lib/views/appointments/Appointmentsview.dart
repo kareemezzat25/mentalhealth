@@ -6,8 +6,9 @@ import 'package:mentalhealthh/authentication/auth.dart';
 import 'package:mentalhealthh/widgets/CommonDrawer.dart';
 
 class Appointmentsview extends StatefulWidget {
-    final String userId;
-      Appointmentsview({required this.userId}); // Add userId parameter
+  final String userId;
+  Appointmentsview({required this.userId}); // Add userId parameter
+
   @override
   _AppointmentsviewState createState() => _AppointmentsviewState();
 }
@@ -17,6 +18,7 @@ class _AppointmentsviewState extends State<Appointmentsview> {
   List<Appointment> appointments = [];
   List<Appointment> filteredAppointments = [];
   bool isLoading = false;
+  bool hasMoreAppointments = true; // Track if there are more appointments
   String selectedStatus = 'All';
   String doctorName = '';
   String? userId;
@@ -48,6 +50,11 @@ class _AppointmentsviewState extends State<Appointmentsview> {
       );
 
       setState(() {
+        if (newAppointments.length < pageSize) {
+          hasMoreAppointments = false;
+        } else {
+          hasMoreAppointments = true;
+        }
         appointments = newAppointments;
         filteredAppointments = newAppointments;
       });
@@ -78,87 +85,90 @@ class _AppointmentsviewState extends State<Appointmentsview> {
   }
 
   void _showSearchModal() {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return Container(
-          padding: EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              DropdownButtonFormField<String>(
-                value: selectedStatus,
-                onChanged: (String? value) {
-                  setState(() {
-                    selectedStatus = value ?? 'All';
-                  });
-                },
-                items: <String>[
-                  'All',
-                  'Pending',
-                  'Cancelled',
-                  'Rejected',
-                  'Confirmed'
-                ].map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-                decoration: InputDecoration(
-                  labelText: 'Select Status',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
-                ),
+  setState(() {
+    doctorName = ''; // Reset doctorName before showing the modal
+  });
+
+  showModalBottomSheet(
+    context: context,
+    builder: (BuildContext context) {
+      return Container(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            DropdownButtonFormField<String>(
+              value: selectedStatus,
+              onChanged: (String? value) {
+                setState(() {
+                  selectedStatus = value ?? 'All';
+                });
+              },
+              items: <String>[
+                'All',
+                'Pending',
+                'Cancelled',
+                'Rejected',
+                'Confirmed'
+              ].map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+              decoration: InputDecoration(
+                labelText: 'Select Status',
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
               ),
-              SizedBox(height: 10),
-              TextField(
-                onChanged: (value) {
-                  setState(() {
-                    doctorName = value;
-                  });
-                },
-                decoration: InputDecoration(
-                  labelText: 'Enter Doctor Name',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
-                ),
+            ),
+            SizedBox(height: 10),
+            TextField(
+              onChanged: (value) {
+                setState(() {
+                  doctorName = value;
+                });
+              },
+              decoration: InputDecoration(
+                labelText: 'Enter Doctor Name',
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
               ),
-              SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      primary: Colors.white,
-                      onPrimary:Colors.blue
-                      
-                    ),
-                    onPressed: () {
-                      Navigator.pop(context); // Close the modal
-                      _resetFilters(); // Reset filters
-                    },
-                    child: Text('Reset Filters'),
+            ),
+            SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.white,
+                    onPrimary: Colors.blue
                   ),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      primary:Colors.blue,
-                      onPrimary: Colors.white
-                    ),
-                    onPressed: () {
-                      Navigator.pop(context); // Close the modal
-                      _fetchAppointments(); // Apply filters and refresh
-                    },
-                    child: Text('Apply Filter'),
+                  onPressed: () {
+                    Navigator.pop(context); // Close the modal
+                    _resetFilters(); // Reset filters
+                  },
+                  child: Text('Reset Filters'),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.blue,
+                    onPrimary: Colors.white
                   ),
-                ],
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
+                  onPressed: () {
+                    Navigator.pop(context); // Close the modal
+                    _fetchAppointments(); // Apply filters and refresh
+                  },
+                  child: Text('Apply Filter'),
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+    },
+  );
+}
+
 
   void _cancelAppointment(Appointment appointment) async {
     String cancellationReason = '';
@@ -194,8 +204,7 @@ class _AppointmentsviewState extends State<Appointmentsview> {
               onPressed: () async {
                 // Call API to cancel appointment
                 try {
-                  await bookingApi.cancelAppointment(
-                      appointment.id, cancellationReason);
+                  await bookingApi.cancelAppointment(appointment.id, cancellationReason);
                   // Refresh appointments after cancellation
                   _fetchAppointments();
                 } catch (error) {
@@ -212,20 +221,23 @@ class _AppointmentsviewState extends State<Appointmentsview> {
   }
 
   void _loadNextPage() {
+  if (hasMoreAppointments) {
     setState(() {
       pageNumber++;
     });
     _fetchAppointments();
   }
+}
 
-  void _loadPreviousPage() {
-    if (pageNumber > 1) {
-      setState(() {
-        pageNumber--;
-      });
-      _fetchAppointments();
-    }
+void _loadPreviousPage() {
+  if (pageNumber > 1) {
+    setState(() {
+      pageNumber--;
+    });
+    _fetchAppointments();
   }
+}
+
 
   Color _getStatusTextColor(String status) {
     switch (status) {
@@ -359,12 +371,13 @@ class _AppointmentsviewState extends State<Appointmentsview> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        if(pageNumber>1)
+                        if(pageNumber > 1)
                         IconButton(
                           icon: Icon(Icons.arrow_back),
                           onPressed: _loadPreviousPage,
                         ),
                         Text('Page $pageNumber'),
+                        if (hasMoreAppointments)
                         IconButton(
                           icon: Icon(Icons.arrow_forward),
                           onPressed: _loadNextPage,
