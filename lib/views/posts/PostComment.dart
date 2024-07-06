@@ -52,6 +52,12 @@ class _PostCommentState extends State<PostComment> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Text('Post and Comments'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context, "refresh");
+          }
+        )
       ),
       body: SingleChildScrollView(
         child: FutureBuilder<Map<String, dynamic>>(
@@ -83,6 +89,7 @@ class _PostCommentState extends State<PostComment> {
           },
         ),
       ),
+      
     );
   }
 }

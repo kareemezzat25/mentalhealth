@@ -108,7 +108,7 @@ class _AppointmentsviewState extends State<Appointmentsview> {
                 }).toList(),
                 decoration: InputDecoration(
                   labelText: 'Select Status',
-                  border: OutlineInputBorder(),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
                 ),
               ),
               SizedBox(height: 10),
@@ -120,26 +120,36 @@ class _AppointmentsviewState extends State<Appointmentsview> {
                 },
                 decoration: InputDecoration(
                   labelText: 'Enter Doctor Name',
-                  border: OutlineInputBorder(),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
                 ),
               ),
               SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
+                  
                   ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context); // Close the modal
-                      _fetchAppointments(); // Apply filters and refresh
-                    },
-                    child: Text('Apply Filter'),
-                  ),
-                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.white,
+                      onPrimary:Colors.blue
+                      
+                    ),
                     onPressed: () {
                       Navigator.pop(context); // Close the modal
                       _resetFilters(); // Reset filters
                     },
                     child: Text('Reset Filters'),
+                  ),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary:Colors.blue,
+                      onPrimary: Colors.white
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context); // Close the modal
+                      _fetchAppointments(); // Apply filters and refresh
+                    },
+                    child: Text('Apply Filter'),
                   ),
                 ],
               ),

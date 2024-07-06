@@ -45,7 +45,7 @@ class HomePage extends StatelessWidget {
                   height: MediaQuery.of(context).size.height / 3,
                   decoration: const BoxDecoration(
                     image: DecorationImage(
-                      image: AssetImage('assets/images/Illustration.png'),
+                      image: AssetImage('assets/images/logooo.png'),
                     ),
                   ),
                 ),
@@ -57,18 +57,18 @@ class HomePage extends StatelessWidget {
                       onPressed: () {
                         Navigator.push(context,
                             MaterialPageRoute(builder: (context) {
-                          return DepressionTest(userId: "",);
+                          return DepressionTest(userId: "");
                         }));
                       },
                       shape: RoundedRectangleBorder(
                         side: BorderSide(color: Colors.black),
                         borderRadius: BorderRadius.circular(20),
                       ),
-                      child: const Text("Depressiontest",
+                      child: const Text("Depression Test",
                           style: TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 18)),
                     ),
-                    SizedBox(height:10),
+                    SizedBox(height: 10),
                     MaterialButton(
                       minWidth: double.infinity,
                       height: 50,

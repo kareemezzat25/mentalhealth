@@ -33,6 +33,9 @@ class PostsState extends State<Posts> {
   DateTime? startTimeFilter;
   DateTime? endTimeFilter;
 
+  TextEditingController startTimeController = TextEditingController();
+  TextEditingController endTimeController = TextEditingController();
+
   Future<void> _refreshPosts() async {
     setState(() {
       // Fetching posts with updated filters
@@ -83,6 +86,13 @@ class PostsState extends State<Posts> {
     });
   }
 
+  @override
+  void dispose() {
+    startTimeController.dispose();
+    endTimeController.dispose();
+    super.dispose();
+  }
+
   Future<void> initUser() async {
     String? fetchedUserId = await Auth.getUserId();
     setState(() {
@@ -119,6 +129,8 @@ class PostsState extends State<Posts> {
       usernameFilter = null;
       startTimeFilter = null;
       endTimeFilter = null;
+      startTimeController.clear();
+      endTimeController.clear();
     });
 
     showModalBottomSheet(
@@ -180,18 +192,15 @@ class PostsState extends State<Posts> {
                           if (pickedDate != null) {
                             setState(() {
                               startTimeFilter = pickedDate;
+                              startTimeController.text =
+                                  DateFormat('yyyy-MM-dd').format(pickedDate);
                             });
                           }
                         },
                         child: AbsorbPointer(
                           child: TextField(
                             readOnly: true,
-                            controller: TextEditingController(
-                              text: startTimeFilter != null
-                                  ? DateFormat('yyyy-MM-dd')
-                                      .format(startTimeFilter!)
-                                  : '',
-                            ),
+                            controller: startTimeController,
                             decoration: InputDecoration(
                               labelText: 'Start Time',
                               border: OutlineInputBorder(
@@ -216,18 +225,15 @@ class PostsState extends State<Posts> {
                           if (pickedDate != null) {
                             setState(() {
                               endTimeFilter = pickedDate;
+                              endTimeController.text =
+                                  DateFormat('yyyy-MM-dd').format(pickedDate);
                             });
                           }
                         },
                         child: AbsorbPointer(
                           child: TextField(
                             readOnly: true,
-                            controller: TextEditingController(
-                              text: endTimeFilter != null
-                                  ? DateFormat('yyyy-MM-dd')
-                                      .format(endTimeFilter!)
-                                  : '',
-                            ),
+                            controller: endTimeController,
                             decoration: InputDecoration(
                               labelText: 'End Time',
                               border: OutlineInputBorder(
@@ -279,6 +285,8 @@ class PostsState extends State<Posts> {
       usernameFilter = null;
       startTimeFilter = null;
       endTimeFilter = null;
+      startTimeController.clear();
+      endTimeController.clear();
     });
     Navigator.pop(context); // Close the bottom sheet after resetting filters
 
@@ -298,7 +306,7 @@ class PostsState extends State<Posts> {
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.transparent,
-          elevation:0,
+          elevation: 0,
           title: Text('Posts'),
           actions: <Widget>[
             IconButton(
@@ -309,8 +317,8 @@ class PostsState extends State<Posts> {
             ),
           ],
         ),
-        drawer: widget.showUserPosts?CommonDrawer(userId: widget.userId!):null
-        ,
+        drawer:
+            widget.showUserPosts ? CommonDrawer(userId: widget.userId!) : null,
         body: RefreshIndicator(
           onRefresh: _refreshPosts,
           child: Column(
@@ -344,7 +352,7 @@ class PostsState extends State<Posts> {
                                 _refreshPosts();
                               }
                             },
-                            child:Forum(
+                            child: Forum(
                               postId: postsData[index]['id'].toString(),
                               postTitle: postsData[index]['title'],
                               postContent: postsData[index]['content'],
@@ -364,25 +372,25 @@ class PostsState extends State<Posts> {
                   },
                 ),
               ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      if (currentPage > 1)
-                        IconButton(
-                          icon: Icon(Icons.arrow_back),
-                          onPressed: _loadPreviousPage,
-                        ),
-                      Text('Page $currentPage'),
-                      if (hasMoreData)
-                        IconButton(
-                          icon: Icon(Icons.arrow_forward),
-                          onPressed: _loadNextPage,
-                        ),
-                    ],
-                  ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    if (currentPage > 1)
+                      IconButton(
+                        icon: Icon(Icons.arrow_back),
+                        onPressed: _loadPreviousPage,
+                      ),
+                    Text('Page $currentPage'),
+                    if (hasMoreData)
+                      IconButton(
+                        icon: Icon(Icons.arrow_forward),
+                        onPressed: _loadNextPage,
+                      ),
+                  ],
                 ),
+              ),
             ],
           ),
         ),
@@ -390,9 +398,3 @@ class PostsState extends State<Posts> {
     );
   }
 }
-
-
-
-
-
-
