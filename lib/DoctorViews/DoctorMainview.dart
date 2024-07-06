@@ -5,8 +5,9 @@ import 'package:mentalhealthh/views/posts/Posts.dart';
 
 class DoctorMainview extends StatefulWidget {
   final String doctorId;
+  List<dynamic>? roles;
 
-  DoctorMainview({required this.doctorId});
+  DoctorMainview({required this.doctorId,this.roles});
 
   @override
   State<DoctorMainview> createState() => _DoctorMainPageState();
@@ -76,6 +77,7 @@ class _DoctorMainPageState extends State<DoctorMainview>
               userId: widget.doctorId,
               showUserPosts: false,
               confessionsOnly: confessionsOnly,
+              roles: widget.roles,
             ),
             createForum(
               tabController: _tabController,

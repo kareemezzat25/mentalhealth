@@ -203,6 +203,7 @@ class _CommonDrawerState extends State<CommonDrawer> {
                     builder: (context) => Posts(
                           userId: widget.userId,
                           showUserPosts: true,
+                          roles: ["User"],
                         )),
               );
             },

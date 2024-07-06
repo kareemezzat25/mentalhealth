@@ -5,8 +5,9 @@ import 'package:mentalhealthh/widgets/CommonDrawer.dart';
 
 class Forumsview extends StatefulWidget {
   final String userId; // Add userId parameter
+    List<dynamic>? roles;
 
-  Forumsview({required this.userId}); // Update constructor
+  Forumsview({required this.userId,this.roles}); // Update constructor
 
   @override
   _ForumsPageState createState() => _ForumsPageState();
@@ -51,7 +52,7 @@ class _ForumsPageState extends State<Forumsview>
         body: TabBarView(
           controller: _tabController,
           children: [
-            Posts(userId: widget.userId, showUserPosts: false),
+            Posts(userId: widget.userId, showUserPosts: false,roles: widget.roles,),
             createForum(
               tabController: _tabController,
             ),

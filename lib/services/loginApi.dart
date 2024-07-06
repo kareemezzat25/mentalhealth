@@ -82,12 +82,12 @@ class LoginApi {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-                builder: (context) => DoctorMainview(doctorId: userId)),
+                builder: (context) => DoctorMainview(doctorId: userId,roles: roles,)),
           );
         } else {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => Forumsview(userId: userId)),
+            MaterialPageRoute(builder: (context) => Forumsview(userId: userId,roles:roles)),
           );
         }
       } else {
