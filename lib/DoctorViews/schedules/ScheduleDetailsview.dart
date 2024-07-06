@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // Add this import for date formatting
+import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:mentalhealthh/models/schedule_model.dart';
-import 'package:mentalhealthh/services/api_service.dart';
+import 'package:mentalhealthh/services/ScheduleApi.dart';
 
 class ScheduleDetailsPage extends StatefulWidget {
   final DaySchedule day;
@@ -18,15 +19,16 @@ class _ScheduleDetailsPageState extends State<ScheduleDetailsPage> {
   late TextEditingController _endTimeController;
   late TextEditingController _sessionDurationController;
 
-  final ApiService _apiService = ApiService();
+  final ScheduleApi _apiService = ScheduleApi();
 
   @override
   void initState() {
     super.initState();
     _startTimeController = TextEditingController(text: widget.day.startTime);
     _endTimeController = TextEditingController(text: widget.day.endTime);
+    // Initialize session duration controller with formatted display
     _sessionDurationController =
-        TextEditingController(text: widget.day.sessionDuration);
+        TextEditingController(text: widget.day.sessionDuration.split(':')[1]);
   }
 
   @override
@@ -152,6 +154,10 @@ class _ScheduleDetailsPageState extends State<ScheduleDetailsPage> {
         Expanded(
           child: TextFormField(
             controller: controller,
+            keyboardType: TextInputType.number,
+            inputFormatters: <TextInputFormatter>[
+              FilteringTextInputFormatter.digitsOnly,
+            ],
             decoration: InputDecoration(
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
@@ -171,7 +177,8 @@ class _ScheduleDetailsPageState extends State<ScheduleDetailsPage> {
   void _updateSchedule(BuildContext context) {
     String startTime = _startTimeController.text;
     String endTime = _endTimeController.text;
-    String sessionDuration = _sessionDurationController.text;
+    // Format session duration to HH:mm:ss format for API request
+    String sessionDuration = '00:${_sessionDurationController.text}:00';
 
     // Update the DaySchedule object
     widget.day.startTime = startTime;

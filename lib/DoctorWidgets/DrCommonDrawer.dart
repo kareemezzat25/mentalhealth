@@ -85,10 +85,6 @@ class DrCommonDrawer extends StatelessWidget {
               ),
             ),
           ),
-          const ListTile(
-            leading: Icon(Icons.home_outlined),
-            title: Text("Home"),
-          ),
           ListTile(
             leading: Icon(Icons.calendar_today),
             title: Text("Schedule"),
@@ -161,12 +157,8 @@ class DrCommonDrawer extends StatelessWidget {
               );
             },
           ),
-          const ListTile(
-            leading: Icon(Icons.dark_mode_outlined),
-            title: Text("Night mode"),
-          ),
           Padding(
-            padding: const EdgeInsets.only(top: 100),
+            padding: const EdgeInsets.only(top: 200),
             child: ListTile(
               tileColor: Color(0xff000000),
               leading: const Icon(

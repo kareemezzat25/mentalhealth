@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:mentalhealthh/models/schedule_model.dart';
-import 'package:mentalhealthh/services/api_service.dart';
 import 'package:intl/intl.dart';
+import 'package:mentalhealthh/models/schedule_model.dart';
+import 'package:mentalhealthh/services/ScheduleApi.dart';
 
 class CreateScheduleview extends StatefulWidget {
   final String doctorId;
@@ -58,9 +58,47 @@ class _CreateSchedulePageState extends State<CreateScheduleview> {
     }
   }
 
+  String formatTimeOfDay(TimeOfDay time) {
+    final dateTime = DateTime(2000, 1, 1, time.hour, time.minute, 0);
+    return DateFormat('HH:mm:ss').format(dateTime);
+  }
+
+  String formatSessionDuration(int minutes) {
+    Duration duration = Duration(minutes: minutes);
+    String formattedDuration =
+        duration.toString().split('.').first.padLeft(8, "0");
+    return formattedDuration;
+  }
+
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
+
+      // Convert session durations to the required format "HH:mm:ss"
+      for (var day in _weekDays) {
+        day.sessionDuration =
+            formatSessionDuration(int.parse(day.sessionDuration));
+      }
+
+      // Check for valid time range
+      for (var day in _weekDays) {
+        if (day.startTime.isNotEmpty && day.endTime.isNotEmpty) {
+          var startTime = DateFormat('HH:mm:ss').parse(day.startTime);
+          var endTime = DateFormat('HH:mm:ss').parse(day.endTime);
+          if (endTime.isBefore(startTime)) {
+            _showErrorDialog('End time must be after start time');
+            return;
+          }
+        }
+      }
+
+      // Check for maximum session duration
+      for (var day in _weekDays) {
+        if (sessionDurationToMinutes(day.sessionDuration) > 60) {
+          _showErrorDialog('The maximum session duration is 60 minutes');
+          return;
+        }
+      }
 
       // Check the number of days being submitted
       if (_weekDays.length == 1) {
@@ -68,7 +106,7 @@ class _CreateSchedulePageState extends State<CreateScheduleview> {
         _submitSingleDay(widget.doctorId, _weekDays[0]);
       } else {
         // Submit multiple days
-        ApiService()
+        ScheduleApi()
             .createDoctorSchedule(widget.doctorId, _weekDays)
             .then((response) {
           if (response) {
@@ -87,8 +125,17 @@ class _CreateSchedulePageState extends State<CreateScheduleview> {
     }
   }
 
+// Helper function to convert formatted session duration to minutes
+  int sessionDurationToMinutes(String sessionDuration) {
+    List<String> parts = sessionDuration.split(':');
+    int hours = int.parse(parts[0]);
+    int minutes = int.parse(parts[1]);
+    int seconds = int.parse(parts[2]);
+    return hours * 60 + minutes + (seconds > 0 ? 1 : 0);
+  }
+
   void _submitSingleDay(String doctorId, DaySchedule daySchedule) {
-    ApiService()
+    ScheduleApi()
         .createDoctorScheduleForSingleDay(doctorId, daySchedule)
         .then((response) {
       if (response == 'Schedule created successfully') {
@@ -218,15 +265,21 @@ class _CreateSchedulePageState extends State<CreateScheduleview> {
                         ),
                         SizedBox(height: 10),
                         TextFormField(
+                          keyboardType: TextInputType.number,
                           decoration: InputDecoration(
-                              labelText: 'Session Duration (HH:MM:SS)'),
-                          validator: (value) => value == null || value.isEmpty
-                              ? 'Please enter session duration'
-                              : null,
-                          onSaved: (value) =>
-                              _weekDays[index].sessionDuration = value!,
-                          controller: TextEditingController(
-                              text: _weekDays[index].sessionDuration),
+                              labelText: 'Session Duration (minutes)'),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter session duration';
+                            }
+                            if (int.tryParse(value) == null) {
+                              return 'Please enter a valid number';
+                            }
+                            return null;
+                          },
+                          onSaved: (value) {
+                            _weekDays[index].sessionDuration = value!;
+                          },
                         ),
                         SizedBox(height: 10),
                         Align(
@@ -267,9 +320,4 @@ class _CreateSchedulePageState extends State<CreateScheduleview> {
       ),
     );
   }
-}
-
-String formatTimeOfDay(TimeOfDay time) {
-  final dateTime = DateTime(2000, 1, 1, time.hour, time.minute, 0);
-  return DateFormat('HH:mm:ss').format(dateTime);
 }

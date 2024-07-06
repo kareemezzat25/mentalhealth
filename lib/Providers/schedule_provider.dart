@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mentalhealthh/models/schedule_model.dart';
-import 'package:mentalhealthh/services/api_service.dart';
+import 'package:mentalhealthh/services/ScheduleApi.dart';
 
 class ScheduleProvider extends ChangeNotifier {
-  final ApiService _apiService = ApiService();
+  final ScheduleApi _apiService = ScheduleApi();
   ScheduleModel? _schedule;
 
   ScheduleModel? get schedule => _schedule;

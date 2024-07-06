@@ -15,7 +15,11 @@ class Posts extends StatefulWidget {
   List<dynamic>? roles;
 
   Posts(
-      {Key? key, this.userId, this.showUserPosts = false, this.confessionsOnly,this.roles})
+      {Key? key,
+      this.userId,
+      this.showUserPosts = false,
+      this.confessionsOnly,
+      this.roles})
       : super(key: key);
 
   @override
@@ -296,113 +300,113 @@ class PostsState extends State<Posts> {
   }
 
   @override
-Widget build(BuildContext context) {
-  return WillPopScope(
-    onWillPop: () async {
-      if (widget.roles != null && widget.roles!.contains("Doctor")) {
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) {
-          return DoctorMainview(doctorId: userId, roles: widget.roles!);
-        }));
-        return false;
-      } else {
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) {
-          return Forumsview(userId: userId, roles: widget.roles!);
-        }));
-        return false;
-      }
-    },
-    child: Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: Text('Posts'),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.search),
-            onPressed: () {
-              _openFilterBottomSheet(); // Open filter bottom sheet
-            },
-          ),
-        ],
-      ),
-      drawer: widget.showUserPosts ? CommonDrawer(userId: widget.userId!) : null,
-      body: RefreshIndicator(
-        onRefresh: _refreshPosts,
-        child: Column(
-          children: [
-            Expanded(
-              child: FutureBuilder<List<Map<String, dynamic>>>(
-                future: posts,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    return Center(child: Text('Error: ${snapshot.error}'));
-                  } else {
-                    List<Map<String, dynamic>> postsData = snapshot.data ?? [];
-                    return ListView.builder(
-                      itemCount: postsData.length,
-                      itemBuilder: (context, index) {
-                        return GestureDetector(
-                          onTap: () async {
-                            String? refresh = await Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => PostComment(
-                                  postId: postsData[index]['id'],
-                                  userId: userId,
-                                ),
-                              ),
-                            );
-                            if (refresh == "refresh") {
-                              _refreshPosts();
-                            }
-                          },
-                          child: Forum(
-                            postId: postsData[index]['id'].toString(),
-                            postTitle: postsData[index]['title'],
-                            postContent: postsData[index]['content'],
-                            username: postsData[index]['username'],
-                            postedOn: postsData[index]['postedOn'],
-                            appUserId: postsData[index]['appUserId'],
-                            isAnonymous: postsData[index]['isAnonymous'],
-                            userId: userId,
-                            photoUrl: postsData[index]['photoUrl'],
-                            postPhotoUrl: postsData[index]['postPhotoUrl'],
-                            commentsCount: postsData[index]['commentsCount'],
-                          ),
-                        );
-                      },
-                    );
-                  }
-                },
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  if (currentPage > 1)
-                    IconButton(
-                      icon: Icon(Icons.arrow_back),
-                      onPressed: _loadPreviousPage,
-                    ),
-                  Text('Page $currentPage'),
-                  if (hasMoreData)
-                    IconButton(
-                      icon: Icon(Icons.arrow_forward),
-                      onPressed: _loadNextPage,
-                    ),
-                ],
-              ),
+  Widget build(BuildContext context) {
+    return WillPopScope(
+      onWillPop: () async {
+        if (widget.roles != null && widget.roles!.contains("Doctor")) {
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
+            return DoctorMainview(doctorId: userId, roles: widget.roles!);
+          }));
+          return false;
+        } else {
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
+            return Forumsview(userId: userId, roles: widget.roles!);
+          }));
+          return false;
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          title: Text('Posts'),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.search),
+              onPressed: () {
+                _openFilterBottomSheet(); // Open filter bottom sheet
+              },
             ),
           ],
         ),
+        drawer:
+            widget.showUserPosts ? CommonDrawer(userId: widget.userId!) : null,
+        body: RefreshIndicator(
+          onRefresh: _refreshPosts,
+          child: Column(
+            children: [
+              Expanded(
+                child: FutureBuilder<List<Map<String, dynamic>>>(
+                  future: posts,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return Center(child: Text('Error: ${snapshot.error}'));
+                    } else {
+                      List<Map<String, dynamic>> postsData =
+                          snapshot.data ?? [];
+                      return ListView.builder(
+                        itemCount: postsData.length,
+                        itemBuilder: (context, index) {
+                          return GestureDetector(
+                            onTap: () async {
+                              String? refresh = await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => PostComment(
+                                    postId: postsData[index]['id'],
+                                    userId: userId,
+                                  ),
+                                ),
+                              );
+                              if (refresh == "refresh") {
+                                _refreshPosts();
+                              }
+                            },
+                            child: Forum(
+                              postId: postsData[index]['id'].toString(),
+                              postTitle: postsData[index]['title'],
+                              postContent: postsData[index]['content'],
+                              username: postsData[index]['username'],
+                              postedOn: postsData[index]['postedOn'],
+                              appUserId: postsData[index]['appUserId'],
+                              isAnonymous: postsData[index]['isAnonymous'],
+                              userId: userId,
+                              photoUrl: postsData[index]['photoUrl'],
+                              postPhotoUrl: postsData[index]['postPhotoUrl'],
+                              commentsCount: postsData[index]['commentsCount'],
+                            ),
+                          );
+                        },
+                      );
+                    }
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    if (currentPage > 1)
+                      IconButton(
+                        icon: Icon(Icons.arrow_back),
+                        onPressed: _loadPreviousPage,
+                      ),
+                    Text('Page $currentPage'),
+                    if (hasMoreData)
+                      IconButton(
+                        icon: Icon(Icons.arrow_forward),
+                        onPressed: _loadNextPage,
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 }

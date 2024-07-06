@@ -102,7 +102,8 @@ class PostsApi {
   }
 
   static Future<Map<String, dynamic>> editPost(
-      int postId, String newTitle, String newContent, {File? image, required bool isAnonymous}) async {
+      int postId, String newTitle, String newContent,
+      {File? image, required bool isAnonymous}) async {
     try {
       final String? authToken = await Auth.getToken();
 

@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:mentalhealthh/authentication/auth.dart';
 import 'package:mentalhealthh/models/schedule_model.dart';
 
-class ApiService {
+class ScheduleApi {
   final String baseUrl = 'https://nexus-api-h3ik.onrender.com/api';
 
   Future<ScheduleModel> fetchDoctorSchedule(String doctorId) async {

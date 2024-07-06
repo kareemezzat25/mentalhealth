@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:mentalhealthh/views/appointments/DoctorAppointmentsview.dart';
 import 'package:mentalhealthh/views/posts/PostComment.dart';
 import 'package:mentalhealthh/providers/notification_count_provider.dart';
+import 'package:mentalhealthh/services/postsApi.dart';
 
 class DoctorNotificationsview extends StatefulWidget {
   @override
@@ -140,37 +141,81 @@ class _DoctorNotificationsPageState extends State<DoctorNotificationsview> {
     return '$formattedDate at $formattedTime';
   }
 
-  void _handleNotificationTap(Map<String, dynamic> notification) {
+  void _handleNotificationTap(Map<String, dynamic> notification) async {
     if (!notification['isRead']) {
       markAsRead(notification['id']);
     }
 
-    if (notification['type'] == 'Reply') {
-      int postId = notification['resources']['postId'];
-      int commentId = notification['resources']['commentId'];
-      int replyId = notification['resources']['replyId'];
-      Navigator.push(
-        context,
-        MaterialPageRoute(
+    try {
+      if (notification['type'] == 'Reply') {
+        int postId = notification['resources']['postId'];
+        int commentId = notification['resources']['commentId'];
+        int replyId = notification['resources']['replyId'];
+        Navigator.push(
+          context,
+          MaterialPageRoute(
             builder: (context) => PostComment(
-                  postId: postId,
-                )),
-      );
-    } else if (notification['type'] == 'Comment') {
-      int postId = notification['resources']['postId'];
-      int commentId = notification['resources']['commentId'];
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => PostComment(
-                  postId: postId,
-                )),
-      );
-    } else if (notification['type'] == 'AppointmentRequest') {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => DoctorAppointmentsPage()),
-      );
+              postId: postId,
+            ),
+          ),
+        );
+      }
+      // else if (notification['type'] == 'Comment') {
+      //   int postId = notification['resources']['postId'];
+      //   int commentId = notification['resources']['commentId'];
+      //   Navigator.push(
+      //     context,
+      //     MaterialPageRoute(
+      //       builder: (context) => PostComment(
+      //         postId: postId,
+      //       ),
+      //     ),
+      //   );
+      // }
+      else if (notification['type'] == 'AppointmentRequest' ||
+          notification['type'] == 'AppointmentCancellation') {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => DoctorAppointmentsPage()),
+        );
+      } else if (notification['type'] == 'Comment') {
+        int postId = notification['resources']['postId'];
+        try {
+          // Attempt to fetch post details
+          Map<String, dynamic> postDetails =
+              await PostsApi.fetchPostDetails(postId);
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => PostComment(
+                postId: postId,
+              ),
+            ),
+          );
+        } catch (e) {
+          // Post details fetch failed (post deleted)
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('Post Deleted'),
+                content:
+                    Text('The post you are trying to view has been deleted.'),
+                actions: <Widget>[
+                  TextButton(
+                    child: Text('OK'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+        }
+      }
+    } catch (e) {
+      print('Error: Exception: $e');
     }
   }
 

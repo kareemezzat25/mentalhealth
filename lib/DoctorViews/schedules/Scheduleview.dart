@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mentalhealthh/DoctorViews/schedules/CreateScheduleview.dart';
 import 'package:mentalhealthh/DoctorViews/schedules/ScheduleDetailsview.dart';
 import 'package:mentalhealthh/models/schedule_model.dart';
-import 'package:mentalhealthh/services/api_service.dart';
+import 'package:mentalhealthh/services/ScheduleApi.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 
 class SchedulePage extends StatefulWidget {
@@ -21,12 +21,12 @@ class _SchedulePageState extends State<SchedulePage> {
   @override
   void initState() {
     super.initState();
-    futureSchedule = ApiService().fetchDoctorSchedule(widget.doctorId);
+    futureSchedule = ScheduleApi().fetchDoctorSchedule(widget.doctorId);
   }
 
   void deleteSchedule(DaySchedule day) async {
     try {
-      await ApiService().deleteDoctorSchedule(widget.doctorId, day.dayOfWeek);
+      await ScheduleApi().deleteDoctorSchedule(widget.doctorId, day.dayOfWeek);
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -35,7 +35,7 @@ class _SchedulePageState extends State<SchedulePage> {
       );
 
       setState(() {
-        futureSchedule = ApiService().fetchDoctorSchedule(widget.doctorId);
+        futureSchedule = ScheduleApi().fetchDoctorSchedule(widget.doctorId);
       });
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -49,7 +49,7 @@ class _SchedulePageState extends State<SchedulePage> {
 
   void deleteEntireSchedule() async {
     try {
-      await ApiService().deleteEntireDoctorSchedule(widget.doctorId);
+      await ScheduleApi().deleteEntireDoctorSchedule(widget.doctorId);
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -58,7 +58,7 @@ class _SchedulePageState extends State<SchedulePage> {
       );
 
       setState(() {
-        futureSchedule = ApiService().fetchDoctorSchedule(widget.doctorId);
+        futureSchedule = ScheduleApi().fetchDoctorSchedule(widget.doctorId);
       });
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -80,7 +80,7 @@ class _SchedulePageState extends State<SchedulePage> {
 
     if (result != null && result is List<DaySchedule>) {
       setState(() {
-        futureSchedule = ApiService().fetchDoctorSchedule(widget.doctorId);
+        futureSchedule = ScheduleApi().fetchDoctorSchedule(widget.doctorId);
       });
     }
   }
@@ -207,6 +207,20 @@ class ScheduleCard extends StatefulWidget {
 }
 
 class _ScheduleCardState extends State<ScheduleCard> {
+  String formatDuration(String durationString) {
+    if (durationString.isNotEmpty) {
+      // Assuming durationString is in format "HH:mm:ss"
+      List<String> parts = durationString.split(':');
+      // Calculate total minutes
+      int hours = int.parse(parts[0]);
+      int minutes = int.parse(parts[1]);
+      int totalMinutes = (hours * 60) + minutes;
+      return 'Duration $totalMinutes mins';
+    } else {
+      return '';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -311,7 +325,7 @@ class _ScheduleCardState extends State<ScheduleCard> {
               ),
               SizedBox(height: 5),
               AutoSizeText(
-                "Session Duration: ${widget.day.sessionDuration}",
+                "${formatDuration(widget.day.sessionDuration)}",
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
@@ -368,6 +382,7 @@ class _ScheduleCardState extends State<ScheduleCard> {
 
     if (updatedDay != null) {
       setState(() {
+        // Update the day in the list
         widget.day = updatedDay;
       });
     }
