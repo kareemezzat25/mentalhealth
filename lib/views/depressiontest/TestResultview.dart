@@ -1,21 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:mentalhealthh/views/Doctors/Doctorsview.dart'; // Import your DoctorsPage widget
+import 'package:mentalhealthh/views/authentication/signupview.dart';
 import 'package:mentalhealthh/views/posts/Posts.dart'; // Import your Posts widget
 
 class TestResultPage extends StatelessWidget {
-  final bool depressionIndicated;
-  final String? userid;
+  final String depressionIndicated;
+  final String userid;
 
   TestResultPage(this.depressionIndicated,{required this.userid});
 
   @override
   Widget build(BuildContext context) {
     String resultMessage;
+    String userID =userid;
     List<Widget> actionButtons = [];
 
-    if (depressionIndicated) {
+    if (depressionIndicated=="Depressed") {
       resultMessage =
-          'Depression Indicated\n\nBased on your responses, there are indications of depression. It\'s important to consult with a mental health professional for a proper diagnosis and support.';
+          'Based on your answers, you might be experiencing symptoms of depression. Please consider reaching out to a mental health professional for further evaluation and support.';
       
       // Add Find Doctor button
       actionButtons.add(
@@ -25,7 +27,7 @@ class TestResultPage extends StatelessWidget {
               Navigator.push
               ( 
                 context,
-                MaterialPageRoute(builder: (context) => Doctorsview(userId: userid!,)),
+                MaterialPageRoute(builder: (context) => Doctorsview(userId: userid,)),
               );
             },
             style: ElevatedButton.styleFrom(
@@ -60,7 +62,7 @@ class TestResultPage extends StatelessWidget {
       );
     } else {
       resultMessage =
-          'Depression Indicated\n\n Your responses suggest no significant indicators of depression. However,if you have concerns, don\'t hesitate to speak with a mental health professional.';
+          'Your responses do not indicate symptoms of depression at this time. If you have concerns, please consult with a mental health professional.';
 
       // Add Find Doctor button (for consistency)
       actionButtons.add(
@@ -69,7 +71,7 @@ class TestResultPage extends StatelessWidget {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => Doctorsview(userId: userid!,)),
+                MaterialPageRoute(builder: (context) => Doctorsview(userId: userid)),
               );
             },
             style: ElevatedButton.styleFrom(
@@ -103,6 +105,7 @@ class TestResultPage extends StatelessWidget {
         ),
       );
     }
+    
 
     return Scaffold(
       appBar: AppBar(
@@ -119,23 +122,60 @@ class TestResultPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    const Text("Result",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Color(0xff3699A2),
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold
+                    ),),
+                    
+                    SizedBox(height: 40,),
                     Text(
                       resultMessage,
                       textAlign: TextAlign.center,
                       style: TextStyle(fontSize: 18.0),
                     ),
                     SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: actionButtons,
+                    Divider(
+                      thickness: 1,
+                      indent: 20,
+                      endIndent: 20,
                     ),
+                    SizedBox(height: 20),
+                    userid!=""?Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: actionButtons,):
+                    Column(
+                      children: [
+                        Text("Join to our commuinty",
+                        textAlign: TextAlign.center,
+                        style:TextStyle(fontSize: 18)),
+                        SizedBox(height: 20,),
+                        ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => Signup()),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.blue,
+                          onPrimary: Colors.white,
+                          minimumSize: Size(250,50)
+                        ),
+                        child: Text('Sign Up'),
+                      ),
+                      ],
+                    ),
+
                   ],
                 ),
               ),
             ),
           ),
           SizedBox(height: 20),
-          Card(
+          /*Card(
             elevation: 2,
             margin: EdgeInsets.symmetric(horizontal: 16.0),
             child: Padding(
@@ -166,21 +206,9 @@ class TestResultPage extends StatelessWidget {
                 ],
               ),
             ),
-          ),
-          SizedBox(height: 20),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                primary: Colors.blue,
-                onPrimary: Colors.white
-              ),
-              onPressed: () {
-                Navigator.pop(context); // Navigate back to previous screen
-              },
-              child: Text('Back to Form'),
-            ),
-          ),
+          ),*/
+          
+          
         ],
       ),
     );

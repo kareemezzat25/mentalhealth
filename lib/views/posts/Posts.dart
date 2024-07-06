@@ -297,6 +297,8 @@ class PostsState extends State<Posts> {
       },
       child: Scaffold(
         appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation:0,
           title: Text('Posts'),
           actions: <Widget>[
             IconButton(

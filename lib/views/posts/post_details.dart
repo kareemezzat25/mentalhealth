@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mentalhealthh/views/posts/PostComment.dart';
 import 'package:mentalhealthh/views/posts/calculateTimeDifference.dart';
 import 'package:mentalhealthh/views/posts/PostEdit.dart';
 import 'package:mentalhealthh/services/postsApi.dart';
@@ -6,11 +7,13 @@ import 'package:mentalhealthh/services/postsApi.dart';
 class PostDetails extends StatefulWidget {
   Map<String, dynamic> postDetailsData;
   final dynamic widget;
+   final Function changePostData;
 
   PostDetails({
     Key? key,
     required this.postDetailsData,
     required this.widget,
+    required this.changePostData
   }) : super(key: key);
 
   @override
@@ -71,8 +74,7 @@ class _PostDetailsState extends State<PostDetails> {
                           onSelected: (value) async {
                             if (value == 'edit') {
                               String oldTitle = widget.postDetailsData['title'];
-                              String oldContent =
-                                  widget.postDetailsData['content'];
+                              String oldContent =widget.postDetailsData['content'];
                               Map<String, dynamic>? result =
                                   await Navigator.push(
                                 context,
@@ -87,7 +89,7 @@ class _PostDetailsState extends State<PostDetails> {
                                 ),
                               );
                               if (result != null) {
-                                widget.widget.changePostData();
+                                widget.changePostData();
                                 setState(() {
                                   widget.postDetailsData = result;
                                 });

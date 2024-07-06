@@ -65,7 +65,9 @@ class _PostCommentState extends State<PostComment> {
               postDetailsData = snapshot.data ?? {};
               return Column(
                 children: [
-                  PostDetails(postDetailsData: postDetailsData, widget: widget),
+                  PostDetails(postDetailsData: postDetailsData,
+                   widget: widget,
+                  changePostData: changePostData,),
                   CommentSection(
                     postId: widget.postId,
                     userId: widget.userId,

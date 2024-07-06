@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:mentalhealthh/services/DepTestApi.dart';
 import 'package:mentalhealthh/views/depressiontest/TestResultview.dart';
-import 'package:mentalhealthh/widgets/CommonDrawer.dart'; // Import your CommonDrawer widget
+import 'package:mentalhealthh/views/depressiontest/questionslistview.dart';
+import 'package:mentalhealthh/widgets/CommonDrawer.dart';
+import 'package:mentalhealthh/models/Questions.dart'; // Import your Question model
 
 class DepressionTest extends StatefulWidget {
-  final String userId; // Add userId parameter
+  final String userId;
 
-  DepressionTest({required this.userId}); // Update constructor
+  DepressionTest({required this.userId});
 
   @override
   _DepressionTestFormState createState() => _DepressionTestFormState();
@@ -14,58 +16,41 @@ class DepressionTest extends StatefulWidget {
 
 class _DepressionTestFormState extends State<DepressionTest> {
   final _formKey = GlobalKey<FormState>();
+  Map<int, int?> _answers = {};
   String? _story;
-  String? _hopeless;
-  String? _sleepProblems;
-  String? _tired;
-  String? _lossInterest;
-  String? _concentration;
-  String? _worthless;
-
-  final List<String> options = ['Sometimes', 'Always', 'Never', 'Usually'];
 
   void _submitForm() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
-      Map<String, String?> answers = {
-        'hopeless': _hopeless,
-        'sleepProblems': _sleepProblems,
-        'tired': _tired,
-        'lossInterest': _lossInterest,
-        'concentration': _concentration,
-        'worthless': _worthless,
-      };
+      // Calculate total sum of weights
+      int totalWeight = _calculateTotalWeight();
 
       try {
-        final response = await DepTestApi.submitDepressionTest(
+        final String response = await DepTestApi.submitDepressionTest(
           story: _story,
-          answers: answers,
+          totalWeight: totalWeight,
         );
-
-        String resultMessage;
-
-        if (response) {
-          resultMessage =
-              'Depression Indicated\n\nHow Our Test Works:\n\nOur 3-Phase Analysis Process:\n\n- Response Weighting: We assign weights to your responses to determine if the overall sentiment tends to be more negative.\n- Sentiment Analysis: We use advanced techniques like VADER and RoBERTa, combined with user analysis, to assess if your responses indicate potential issues.\n- Depression Analysis: We compare your responses against a database of over 10,000 depression cases using machine learning models (decision trees, logistic regression, and support vector machines) to identify similarities.\n\nThis multi-phase approach allows us to provide a comprehensive assessment. However, it\'s important to note that this test is not a clinical diagnosis. Always consult with a mental health professional for a proper evaluation.';
-        } else {
-          resultMessage =
-              'You are normal. Keep maintaining your mental health!';
-        }
-
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => TestResultPage(response,userid: widget.userId,),
+            builder: (context) => TestResultPage(response, userid: widget.userId),
           ),
         );
-
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Failed to submit test: $e'),
-        ));
+        print('Failed to submit test: $e');
       }
     }
+  }
+
+  int _calculateTotalWeight() {
+    int totalWeight = 0;
+    _answers.forEach((key, value) {
+      if (value != null) {
+        totalWeight += value!;
+      }
+    });
+    return totalWeight;
   }
 
   @override
@@ -73,18 +58,10 @@ class _DepressionTestFormState extends State<DepressionTest> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Depression Test Form'),
-        leading: Builder(
-          builder: (BuildContext context) {
-            return IconButton(
-              icon: Icon(Icons.menu),
-              onPressed: () {
-                Scaffold.of(context).openDrawer();
-              },
-            );
-          },
-        ),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
       ),
-      drawer: CommonDrawer(userId: widget.userId), // Add the CommonDrawer here
+      drawer: widget.userId != "" ? CommonDrawer(userId: widget.userId) : null,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -93,41 +70,13 @@ class _DepressionTestFormState extends State<DepressionTest> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
-                _buildDropdown(
-                  'How often do you feel hopeless or helpless?',
-                  (value) => _hopeless = value,
-                  _hopeless,
-                ),
-                _buildDropdown(
-                  'How often do you have trouble sleeping or experience changes in your sleep patterns (e.g., insomnia or oversleeping)?',
-                  (value) => _sleepProblems = value,
-                  _sleepProblems,
-                ),
-                _buildDropdown(
-                  'How often do you feel excessively tired or lack energy?',
-                  (value) => _tired = value,
-                  _tired,
-                ),
-                _buildDropdown(
-                  'How often do you lose interest or pleasure in activities you used to enjoy?',
-                  (value) => _lossInterest = value,
-                  _lossInterest,
-                ),
-                _buildDropdown(
-                  'How often do you experience difficulty concentrating or making decisions?',
-                  (value) => _concentration = value,
-                  _concentration,
-                ),
-                _buildDropdown(
-                  'How often do you feel worthless or excessively guilty?',
-                  (value) => _worthless = value,
-                  _worthless,
-                ),
+                // Iterate over questions list and build _buildRadioQuestion dynamically
+                for (var question in questions) _buildRadioQuestion(question),
                 _buildTextField('Tell us your story', (value) => _story = value),
                 SizedBox(height: 20),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.blue,
+                    primary: Color(0xff3699A2),
                     onPrimary: Colors.white,
                   ),
                   onPressed: _submitForm,
@@ -141,45 +90,87 @@ class _DepressionTestFormState extends State<DepressionTest> {
     );
   }
 
-  Widget _buildDropdown(
-      String labelText, Function(String?) onSaved, String? currentValue) {
+  Widget _buildRadioQuestion(Question question) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            labelText,
-            style: TextStyle(fontSize: 18),
-          ),
-          DropdownButtonFormField<String>(
-            isExpanded: true,
-            decoration: InputDecoration(
-              labelStyle: TextStyle(fontSize: 18),
-            ),
-            hint: Text(
-              'Select an option',
-              style: TextStyle(fontSize: 16),
-            ),
-            value: currentValue,
-            items: options.map((String option) {
-              return DropdownMenuItem<String>(
-                value: option,
-                child: Text(option, style: TextStyle(fontSize: 16)),
-              );
-            }).toList(),
-            onChanged: (value) {
-              setState(() {
-                onSaved(value);
-              });
-            },
-            validator: (value) =>
-                value == null ? 'Please select an option' : null,
-            onSaved: (value) {
-              onSaved(value);
-            },
-          ),
-        ],
+      child: FormField<int>(
+        validator: (value) {
+          if (_answers[question.questionNumber] == null) {
+            return 'Please enter an answer';
+          }
+          return null;
+        },
+        builder: (FormFieldState<int> state) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Question ${question.questionNumber}:',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              ListTile(
+                title: Text(question.option1),
+                leading: Radio<int>(
+                  value: 0,
+                  groupValue: _answers[question.questionNumber],
+                  onChanged: (int? value) {
+                    setState(() {
+                      _answers[question.questionNumber] = value;
+                    });
+                    state.didChange(value);
+                  },
+                ),
+              ),
+              ListTile(
+                title: Text(question.option2),
+                leading: Radio<int>(
+                  value: 1,
+                  groupValue: _answers[question.questionNumber],
+                  onChanged: (int? value) {
+                    setState(() {
+                      _answers[question.questionNumber] = value;
+                    });
+                    state.didChange(value);
+                  },
+                ),
+              ),
+              ListTile(
+                title: Text(question.option3),
+                leading: Radio<int>(
+                  value: 2,
+                  groupValue: _answers[question.questionNumber],
+                  onChanged: (int? value) {
+                    setState(() {
+                      _answers[question.questionNumber] = value;
+                    });
+                    state.didChange(value);
+                  },
+                ),
+              ),
+              ListTile(
+                title: Text(question.option4),
+                leading: Radio<int>(
+                  value: 3,
+                  groupValue: _answers[question.questionNumber],
+                  onChanged: (int? value) {
+                    setState(() {
+                      _answers[question.questionNumber] = value;
+                    });
+                    state.didChange(value);
+                  },
+                ),
+              ),
+              if (state.hasError)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Text(
+                    state.errorText!,
+                    style: TextStyle(color: Colors.red),
+                  ),
+                ),
+            ],
+          );
+        },
       ),
     );
   }

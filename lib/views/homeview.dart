@@ -1,7 +1,6 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
-//import 'package:mentalhealthh/views/MainHomeview.dart';
+import 'package:mentalhealthh/views/depressiontest/DepressionTest.dart';
 import 'authentication/loginview.dart';
 import 'authentication/signupview.dart';
 
@@ -54,7 +53,25 @@ class HomePage extends StatelessWidget {
                   children: [
                     MaterialButton(
                       minWidth: double.infinity,
-                      height: 60,
+                      height: 50,
+                      onPressed: () {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) {
+                          return DepressionTest(userId: "",);
+                        }));
+                      },
+                      shape: RoundedRectangleBorder(
+                        side: BorderSide(color: Colors.black),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: const Text("Depressiontest",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 18)),
+                    ),
+                    SizedBox(height:10),
+                    MaterialButton(
+                      minWidth: double.infinity,
+                      height: 50,
                       onPressed: () {
                         Navigator.push(context,
                             MaterialPageRoute(builder: (context) {
@@ -69,11 +86,11 @@ class HomePage extends StatelessWidget {
                           style: TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 18)),
                     ),
-                    SizedBox(height: 20),
+                    SizedBox(height: 10),
                     MaterialButton(
                       color: Color(0xff01579B),
                       minWidth: double.infinity,
-                      height: 60,
+                      height: 50,
                       onPressed: () {
                         Navigator.push(context,
                             MaterialPageRoute(builder: (context) {

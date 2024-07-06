@@ -71,11 +71,9 @@ class _CommonDrawerState extends State<CommonDrawer> {
                       borderRadius: BorderRadius.circular(40),
                       border: Border.all(
                           color: Colors.grey, style: BorderStyle.solid),
-                      image: photoUrl
-                              .isNotEmpty // Check if photoUrl is not empty
+                      image: photoUrl.isNotEmpty // Check if photoUrl is not empty
                           ? DecorationImage(
-                              image: NetworkImage(
-                                  photoUrl), // Use NetworkImage with photoUrl
+                              image: NetworkImage(photoUrl), // Use NetworkImage with photoUrl
                               fit: BoxFit.cover,
                             )
                           : null, // If photoUrl is empty, don't display any image
@@ -129,8 +127,7 @@ class _CommonDrawerState extends State<CommonDrawer> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) =>
-                        DepressionTest(userId: widget.userId)),
+                    builder: (context) =>DepressionTest(userId: widget.userId)),
               );
             },
           ),
