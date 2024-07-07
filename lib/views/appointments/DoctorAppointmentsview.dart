@@ -95,174 +95,172 @@ class _DoctorAppointmentsPageState extends State<DoctorAppointmentsPage> {
     return '$formattedDate at $formattedTime';
   }
 
- void _showSearchModal() {
-  showModalBottomSheet(
-    context: context,
-    builder: (BuildContext context) {
-      return StatefulBuilder(
-        builder: (context, setState) {
-          return Container(
-            padding: EdgeInsets.all(16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  'Filter Appointments',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 16),
-                DropdownButtonFormField<String>(
-                  value: selectedStatus,
-                  onChanged: (String? value) {
-                    setState(() {
-                      selectedStatus = value ?? 'All';
-                    });
-                  },
-                  items: <String>[
-                    'All',
-                    'Confirmed',
-                    'Pending',
-                    'Rejected',
-                    'Cancelled'
-                  ].map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                  decoration: InputDecoration(
-                    labelText: 'Select Status',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16),
+  void _showSearchModal() {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return Container(
+              padding: EdgeInsets.all(16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    'Filter Appointments',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                ),
-                SizedBox(height: 16),
-                TextField(
-                  onChanged: (value) {
-                    setState(() {
-                      clientName = value;
-                    });
-                  },
-                  decoration: InputDecoration(
-                    labelText: 'Enter Client Name',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16),
+                  SizedBox(height: 16),
+                  DropdownButtonFormField<String>(
+                    value: selectedStatus,
+                    onChanged: (String? value) {
+                      setState(() {
+                        selectedStatus = value ?? 'All';
+                      });
+                    },
+                    items: <String>[
+                      'All',
+                      'Confirmed',
+                      'Pending',
+                      'Rejected',
+                      'Cancelled'
+                    ].map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                    decoration: InputDecoration(
+                      labelText: 'Select Status',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
                     ),
                   ),
-                ),
-                SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () async {
-                          DateTime? pickedDate = await showDatePicker(
-                            context: context,
-                            initialDate: startDate != null
-                                ? DateTime.parse(startDate!)
-                                : DateTime.now(),
-                            firstDate: DateTime(2000),
-                            lastDate: DateTime(2100),
-                          );
-                          if (pickedDate != null) {
-                            setState(() {
-                              startDate =
-                                  DateFormat('yyyy-MM-dd').format(pickedDate);
-                            });
-                          }
-                        },
-                        child: AbsorbPointer(
-                          child: TextField(
-                            controller:
-                                TextEditingController(text: startDate),
-                            decoration: InputDecoration(
-                              labelText: 'Start Date',
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16),
+                  SizedBox(height: 16),
+                  TextField(
+                    onChanged: (value) {
+                      setState(() {
+                        clientName = value;
+                      });
+                    },
+                    decoration: InputDecoration(
+                      labelText: 'Enter Client Name',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () async {
+                            DateTime? pickedDate = await showDatePicker(
+                              context: context,
+                              initialDate: startDate != null
+                                  ? DateTime.parse(startDate!)
+                                  : DateTime.now(),
+                              firstDate: DateTime(2000),
+                              lastDate: DateTime(2100),
+                            );
+                            if (pickedDate != null) {
+                              setState(() {
+                                startDate =
+                                    DateFormat('yyyy-MM-dd').format(pickedDate);
+                              });
+                            }
+                          },
+                          child: AbsorbPointer(
+                            child: TextField(
+                              controller:
+                                  TextEditingController(text: startDate),
+                              decoration: InputDecoration(
+                                labelText: 'Start Date',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                suffixIcon: Icon(Icons.calendar_today),
                               ),
-                              suffixIcon: Icon(Icons.calendar_today),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                    SizedBox(width: 16),
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () async {
-                          DateTime? pickedDate = await showDatePicker(
-                            context: context,
-                            initialDate: endDate != null
-                                ? DateTime.parse(endDate!)
-                                : DateTime.now(),
-                            firstDate: DateTime(2000),
-                            lastDate: DateTime(2100),
-                          );
-                          if (pickedDate != null) {
-                            setState(() {
-                              endDate =
-                                  DateFormat('yyyy-MM-dd').format(pickedDate);
-                            });
-                          }
-                        },
-                        child: AbsorbPointer(
-                          child: TextField(
-                            controller:
-                                TextEditingController(text: endDate),
-                            decoration: InputDecoration(
-                              labelText: 'End Date',
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16),
+                      SizedBox(width: 16),
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () async {
+                            DateTime? pickedDate = await showDatePicker(
+                              context: context,
+                              initialDate: endDate != null
+                                  ? DateTime.parse(endDate!)
+                                  : DateTime.now(),
+                              firstDate: DateTime(2000),
+                              lastDate: DateTime(2100),
+                            );
+                            if (pickedDate != null) {
+                              setState(() {
+                                endDate =
+                                    DateFormat('yyyy-MM-dd').format(pickedDate);
+                              });
+                            }
+                          },
+                          child: AbsorbPointer(
+                            child: TextField(
+                              controller: TextEditingController(text: endDate),
+                              decoration: InputDecoration(
+                                labelText: 'End Date',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                suffixIcon: Icon(Icons.calendar_today),
                               ),
-                              suffixIcon: Icon(Icons.calendar_today),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        onPrimary: Colors.blue,
+                    ],
+                  ),
+                  SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          onPrimary: Colors.blue,
+                        ),
+                        onPressed: () {
+                          Navigator.pop(context);
+                          resetFilters();
+                        },
+                        child: Text('Reset Filters'),
                       ),
-                      onPressed: () {
-                        Navigator.pop(context);
-                        resetFilters();
-                      },
-                      child: Text('Reset Filters'),
-                    ),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        primary: Colors.blue,
-                        onPrimary: Colors.white,
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.blue,
+                          onPrimary: Colors.white,
+                        ),
+                        onPressed: () {
+                          Navigator.pop(context);
+                          applyFilters();
+                        },
+                        child: Text('Apply Filters'),
                       ),
-                      onPressed: () {
-                        Navigator.pop(context);
-                        applyFilters();
-                      },
-                      child: Text('Apply Filters'),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          );
-        },
-      );
-    },
-  );
-}
-
+                    ],
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
 
   Future<void> confirmAppointment(String appointmentId) async {
     try {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mentalhealthh/DoctorViews/notifications/DoctorNotificationsview.dart';
 import 'package:mentalhealthh/DoctorViews/schedules/Scheduleview.dart';
+import 'package:mentalhealthh/authentication/auth.dart';
 import 'package:mentalhealthh/models/user_model.dart';
 import 'package:mentalhealthh/views/appointments/DoctorAppointmentsview.dart';
 import 'package:mentalhealthh/views/Profiles/UserProfile.dart';
@@ -168,6 +169,7 @@ class DrCommonDrawer extends StatelessWidget {
               title:
                   const Text("Logout", style: TextStyle(color: Colors.white)),
               onTap: () {
+                Auth.clearUser();
                 Navigator.pop(context); // Close the drawer
                 Navigator.pushAndRemoveUntil(
                   context,

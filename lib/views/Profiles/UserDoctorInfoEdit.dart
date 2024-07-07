@@ -1,7 +1,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mentalhealthh/authentication/auth.dart';
+import 'package:mentalhealthh/models/user_model.dart';
 import 'package:mentalhealthh/services/UserProfileApi.dart';
+import 'package:provider/provider.dart';
 
 class UserDoctorInfoEdit extends StatefulWidget {
   final String userId;
@@ -14,24 +17,22 @@ class UserDoctorInfoEdit extends StatefulWidget {
   final String? biography;
   final String? city;
   final String? location;
-  final double ?sessionFees;
+  final double? sessionFees;
   final List<String> roless;
 
-
-  UserDoctorInfoEdit({
-    required this.userId,
-    required this.firstName,
-    required this.lastName,
-    required this.gender,
-    required this.birthDate,
-    required this.photoUrl,
-    this.specialization,
-    this.biography,
-    this.city,
-    this.location,
-    this.sessionFees,
-    required this.roless
-  });
+  UserDoctorInfoEdit(
+      {required this.userId,
+      required this.firstName,
+      required this.lastName,
+      required this.gender,
+      required this.birthDate,
+      required this.photoUrl,
+      this.specialization,
+      this.biography,
+      this.city,
+      this.location,
+      this.sessionFees,
+      required this.roless});
 
   @override
   _UserDoctorInfoEditState createState() => _UserDoctorInfoEditState();
@@ -64,34 +65,39 @@ class _UserDoctorInfoEditState extends State<UserDoctorInfoEdit> {
   }
 
   void _updateProfile(BuildContext context) async {
-    try {  
-      if(widget.roless.contains('Doctor')){
-
-      await updateDoctorProfile(
-        widget.userId,
-        _firstNameController.text,
-        _lastNameController.text,
-        _genderController.text,
-        _birthDateController.text,
-        _image,
-        _specializationController.text,
-        _biographyController.text,
-        _cityController.text,
-        _locationController.text,
-        double.parse(_sessionFeesController.text),
-      );
-      }else
-      {
-        await updateUserProfile(
-        widget.userId,
-        _firstNameController.text,
-        _lastNameController.text,
-        _genderController.text,
-        _birthDateController.text,
-        _image
+    try {
+      if (widget.roless.contains('Doctor')) {
+        await updateDoctorProfile(
+          widget.userId,
+          _firstNameController.text,
+          _lastNameController.text,
+          _genderController.text,
+          _birthDateController.text,
+          _image,
+          _specializationController.text,
+          _biographyController.text,
+          _cityController.text,
+          _locationController.text,
+          double.parse(_sessionFeesController.text),
         );
+        Provider.of<UserModel>(context, listen: false).setUserInfo(
+            '${_firstNameController.text} ${_lastNameController.text}',
+            await Auth.getEmail(),
+            await Auth.getPhotoUrl());
+      } else {
+        await updateUserProfile(
+            widget.userId,
+            _firstNameController.text,
+            _lastNameController.text,
+            _genderController.text,
+            _birthDateController.text,
+            _image);
+        Provider.of<UserModel>(context, listen: false).setUserInfo(
+            '${_firstNameController.text} ${_lastNameController.text}',
+            await Auth.getEmail(),
+            await Auth.getPhotoUrl());
       }
-      
+
       Navigator.pop(context, 'refresh');
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -99,7 +105,7 @@ class _UserDoctorInfoEditState extends State<UserDoctorInfoEdit> {
       );
     }
   }
- 
+
   Future<void> _getImage() async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
@@ -133,9 +139,7 @@ class _UserDoctorInfoEditState extends State<UserDoctorInfoEdit> {
             SizedBox(height: 10),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                primary: Color(0xff0098FA),
-                onPrimary: Colors.white
-              ),
+                  primary: Color(0xff0098FA), onPrimary: Colors.white),
               onPressed: _getImage,
               child: Text('Select Photo'),
             ),
@@ -202,44 +206,41 @@ class _UserDoctorInfoEditState extends State<UserDoctorInfoEdit> {
                 maxLines: 3,
               ),
               SizedBox(height: 10),
-            TextFormField(
-              controller: _cityController,
-              decoration: InputDecoration(
-                labelText: 'City',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(15),
+              TextFormField(
+                controller: _cityController,
+                decoration: InputDecoration(
+                  labelText: 'City',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
                 ),
               ),
-            ),
-            SizedBox(height: 10),
-            TextFormField(
-              controller: _locationController,
-              decoration: InputDecoration(
-                labelText: 'Location',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(15),
+              SizedBox(height: 10),
+              TextFormField(
+                controller: _locationController,
+                decoration: InputDecoration(
+                  labelText: 'Location',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
                 ),
               ),
-            ),
-            SizedBox(height: 10),
-            TextFormField(
-              controller: _sessionFeesController,
-              decoration: InputDecoration(
-                labelText: 'Session Fees',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(15),
+              SizedBox(height: 10),
+              TextFormField(
+                controller: _sessionFeesController,
+                decoration: InputDecoration(
+                  labelText: 'Session Fees',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
                 ),
+                keyboardType: TextInputType.number,
               ),
-              keyboardType: TextInputType.number,
-            ),
             ],
-            
             SizedBox(height: 20),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                primary: Color(0xff0098FA),
-                onPrimary: Colors.white
-              ),
+                  primary: Color(0xff0098FA), onPrimary: Colors.white),
               onPressed: () => _updateProfile(context),
               child: Text('Update'),
             ),

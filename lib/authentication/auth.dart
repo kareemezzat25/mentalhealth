@@ -68,9 +68,14 @@ class Auth {
     return prefs.getString(_userNameKey);
   }
 
-  static Future<void> setPhotoUrl(String photoUrl) async {
+  static Future<void> setPhotoUrl(BuildContext context, String photoUrl) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString(_photoUrlKey, photoUrl);
+    final userEmail = await getEmail() ?? ''; // Handle nullable string
+    final userName = await getUserName() ?? ''; // Handle nullable string
+
+    Provider.of<UserModel>(context, listen: false)
+        .setUserInfo(userName, userEmail, photoUrl);
   }
 
   static Future<String?> getPhotoUrl() async {

@@ -2,9 +2,11 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:mentalhealthh/DoctorWidgets/DrCommonDrawer.dart';
+import 'package:mentalhealthh/models/user_model.dart';
 import 'package:mentalhealthh/services/UserProfileApi.dart';
 import 'package:mentalhealthh/views/Profiles/UserDoctorInfoEdit.dart';
 import 'package:mentalhealthh/widgets/CommonDrawer.dart';
+import 'package:provider/provider.dart';
 
 class UserDoctorProfile extends StatefulWidget {
   final String userId;
@@ -29,13 +31,17 @@ class _UserDoctorProfileState extends State<UserDoctorProfile> {
 
   @override
   Widget build(BuildContext context) {
+    UserModel userModel = Provider.of<UserModel>(context); // Access UserModel
+
     final isDoctor = widget.roles.contains('Doctor');
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
         title: Text(isDoctor ? 'Doctor Profile' : 'User Profile'),
       ),
-      drawer: isDoctor ? DrCommonDrawer(doctorId: widget.userId):CommonDrawer(userId: widget.userId),
+      drawer: isDoctor
+          ? DrCommonDrawer(doctorId: widget.userId)
+          : CommonDrawer(userId: widget.userId),
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8.0),
         child: FutureBuilder(

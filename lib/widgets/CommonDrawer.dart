@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mentalhealthh/authentication/auth.dart';
+import 'package:mentalhealthh/models/user_model.dart';
 import 'package:mentalhealthh/views/Doctors/Doctorsview.dart';
 import 'package:mentalhealthh/views/appointments/Appointmentsview.dart';
 import 'package:mentalhealthh/views/articles/ArticlesView.dart';
@@ -22,35 +23,14 @@ class CommonDrawer extends StatefulWidget {
 }
 
 class _CommonDrawerState extends State<CommonDrawer> {
-  String userName = '';
-  String userEmail = '';
-  String photoUrl = '';
-
   @override
   void initState() {
     super.initState();
-    _loadUserData();
-  }
-
-  _loadUserData() async {
-    try {
-      // Fetch user data
-      String? retrievedUserName = await Auth.getUserName();
-      String? retrievedUserEmail = await Auth.getEmail();
-      String? retrievedPhotoUrl = await Auth.getPhotoUrl();
-
-      setState(() {
-        this.userName = retrievedUserName ?? '';
-        this.userEmail = retrievedUserEmail ?? '';
-        this.photoUrl = retrievedPhotoUrl ?? '';
-      });
-    } catch (error) {
-      print('Error loading user data: $error');
-    }
   }
 
   @override
   Widget build(BuildContext context) {
+    UserModel userModel = Provider.of<UserModel>(context); // Access UserModel
     return Drawer(
       width: 200,
       child: ListView(
@@ -71,17 +51,17 @@ class _CommonDrawerState extends State<CommonDrawer> {
                       borderRadius: BorderRadius.circular(40),
                       border: Border.all(
                           color: Colors.grey, style: BorderStyle.solid),
-                      image: photoUrl.isNotEmpty // Check if photoUrl is not empty
+                      image: userModel.photoUrl.isNotEmpty
                           ? DecorationImage(
-                              image: NetworkImage(photoUrl), // Use NetworkImage with photoUrl
+                              image: NetworkImage(userModel.photoUrl),
                               fit: BoxFit.cover,
                             )
-                          : null, // If photoUrl is empty, don't display any image
+                          : const DecorationImage(
+                              image: AssetImage(
+                                  'assets/images/Memoji Boys 3-15.png'),
+                              fit: BoxFit.cover,
+                            ), // If photoUrl is empty, don't display any image
                     ),
-                    child: photoUrl
-                            .isEmpty // If photoUrl is empty, display a default icon
-                        ? Icon(Icons.account_circle_outlined, size: 40)
-                        : null,
                   ),
                   SizedBox(width: 10),
                   Expanded(
@@ -90,7 +70,7 @@ class _CommonDrawerState extends State<CommonDrawer> {
                       children: [
                         Flexible(
                           child: Text(
-                            userName,
+                            userModel.userName,
                             style: TextStyle(
                               color: Colors.black,
                               fontSize: 16,
@@ -102,7 +82,7 @@ class _CommonDrawerState extends State<CommonDrawer> {
                         ),
                         Flexible(
                           child: Text(
-                            userEmail,
+                            userModel.userEmail,
                             style: TextStyle(
                               color: Colors.black,
                               fontSize: 14,
@@ -127,7 +107,8 @@ class _CommonDrawerState extends State<CommonDrawer> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) =>DepressionTest(userId: widget.userId)),
+                    builder: (context) =>
+                        DepressionTest(userId: widget.userId)),
               );
             },
           ),
@@ -187,7 +168,9 @@ class _CommonDrawerState extends State<CommonDrawer> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => Notificationsview(userId: widget.userId,),
+                    builder: (context) => Notificationsview(
+                      userId: widget.userId,
+                    ),
                   ),
                 );
               },
@@ -231,7 +214,10 @@ class _CommonDrawerState extends State<CommonDrawer> {
               // Navigate to DoctorsPage
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => Doctorsview(userId: widget.userId,)),
+                MaterialPageRoute(
+                    builder: (context) => Doctorsview(
+                          userId: widget.userId,
+                        )),
               );
             },
           ),
@@ -269,7 +255,7 @@ class _CommonDrawerState extends State<CommonDrawer> {
           ),
           Padding(
             padding: const EdgeInsets.only(
-              top: 60,
+              top: 20,
             ),
             child: ListTile(
               tileColor: Color(0xff000000),
@@ -280,6 +266,7 @@ class _CommonDrawerState extends State<CommonDrawer> {
               title:
                   const Text("Logout", style: TextStyle(color: Colors.white)),
               onTap: () {
+                Auth.clearUser();
                 Navigator.pop(context); // Close the drawer
 
                 Navigator.pushAndRemoveUntil(

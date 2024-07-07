@@ -74,7 +74,7 @@ class LoginApi {
 
         await Auth.setToken(context, token, email, userId);
         await Auth.setUserName(context, userName);
-        await Auth.setPhotoUrl(photoUrl);
+        await Auth.setPhotoUrl(context, photoUrl);
 
         log('Response body: ${response.body}');
 
@@ -82,12 +82,16 @@ class LoginApi {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-                builder: (context) => DoctorMainview(doctorId: userId,roles: roles,)),
+                builder: (context) => DoctorMainview(
+                      doctorId: userId,
+                      roles: roles,
+                    )),
           );
         } else {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => Forumsview(userId: userId,roles:roles)),
+            MaterialPageRoute(
+                builder: (context) => Forumsview(userId: userId, roles: roles)),
           );
         }
       } else {
