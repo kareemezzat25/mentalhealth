@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:mentalhealthh/authentication/auth.dart';
+import 'package:mentalhealthh/models/Dayschedule.dart';
 import 'package:mentalhealthh/models/schedule_model.dart';
 
 class ScheduleApi {
