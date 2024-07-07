@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class UserModel extends ChangeNotifier {
+class UserModelProvider extends ChangeNotifier {
   String userName = '';
   String userEmail = '';
   String photoUrl = ''; // Add photoUrl field

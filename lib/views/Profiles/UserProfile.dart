@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:mentalhealthh/DoctorWidgets/DrCommonDrawer.dart';
-import 'package:mentalhealthh/models/user_model.dart';
+import 'package:mentalhealthh/Providers/user_model.dart';
 import 'package:mentalhealthh/services/UserProfileApi.dart';
 import 'package:mentalhealthh/views/Profiles/UserDoctorInfoEdit.dart';
 import 'package:mentalhealthh/widgets/CommonDrawer.dart';
@@ -31,7 +31,8 @@ class _UserDoctorProfileState extends State<UserDoctorProfile> {
 
   @override
   Widget build(BuildContext context) {
-    UserModel userModel = Provider.of<UserModel>(context); // Access UserModel
+    UserModelProvider userModel =
+        Provider.of<UserModelProvider>(context); // Access UserModel
 
     final isDoctor = widget.roles.contains('Doctor');
     return Scaffold(

@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:animated_splash_screen/animated_splash_screen.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:mentalhealthh/Providers/doctor_notification_count_provider.dart';
-import 'package:mentalhealthh/models/user_model.dart';
+import 'package:mentalhealthh/Providers/user_model.dart';
 import 'package:mentalhealthh/views/homeview.dart';
 import 'package:provider/provider.dart';
 import 'package:mentalhealthh/providers/schedule_provider.dart';
 import 'package:mentalhealthh/providers/notification_count_provider.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
   runApp(MyApp());
 }
 
@@ -17,7 +21,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => ScheduleProvider()),
-        ChangeNotifierProvider(create: (_) => UserModel()),
+        ChangeNotifierProvider(create: (_) => UserModelProvider()),
         ChangeNotifierProvider(create: (_) => NotificationCountProvider()),
         ChangeNotifierProvider(
             create: (_) => DoctorNotificationCountProvider()),

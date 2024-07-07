@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-import 'package:mentalhealthh/models/schedule_model.dart';
+import 'package:mentalhealthh/models/Dayschedule.dart';
 import 'package:mentalhealthh/services/ScheduleApi.dart';
 
 class ScheduleDetailsPage extends StatefulWidget {

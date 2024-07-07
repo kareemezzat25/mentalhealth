@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:mentalhealthh/DoctorViews/DoctorMainview.dart';
 import 'package:mentalhealthh/DoctorViews/notifications/DoctorNotificationsview.dart';
 import 'package:mentalhealthh/DoctorViews/schedules/Scheduleview.dart';
 import 'package:mentalhealthh/authentication/auth.dart';
-import 'package:mentalhealthh/models/user_model.dart';
+import 'package:mentalhealthh/Providers/user_model.dart';
 import 'package:mentalhealthh/views/appointments/DoctorAppointmentsview.dart';
 import 'package:mentalhealthh/views/Profiles/UserProfile.dart';
 import 'package:mentalhealthh/views/authentication/loginview.dart';
+import 'package:mentalhealthh/views/posts/Posts.dart';
 import 'package:provider/provider.dart';
 import 'package:mentalhealthh/Providers/doctor_notification_count_provider.dart';
 
@@ -16,7 +18,8 @@ class DrCommonDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    UserModel userModel = Provider.of<UserModel>(context); // Access UserModel
+    UserModelProvider userModel =
+        Provider.of<UserModelProvider>(context); // Access UserModel
     DoctorNotificationCountProvider notificationProvider =
         Provider.of<DoctorNotificationCountProvider>(
             context); // Access DoctorNotificationCountProvider
@@ -96,6 +99,22 @@ class DrCommonDrawer extends StatelessWidget {
                 MaterialPageRoute(
                     builder: (context) => SchedulePage(
                           doctorId: doctorId,
+                        )),
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.bookmark_outline_outlined),
+            title: Text("Community"),
+            onTap: () {
+              Navigator.pop(context);
+              // Navigate to forums screen and replace the current route
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => DoctorMainview(
+                          doctorId: doctorId,
+                          roles: ['Doctor'],
                         )),
               );
             },

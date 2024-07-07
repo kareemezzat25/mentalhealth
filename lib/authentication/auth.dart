@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mentalhealthh/models/user_model.dart';
+import 'package:mentalhealthh/Providers/user_model.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -29,7 +29,7 @@ class Auth {
     final userName = await getUserName() ?? ''; // Handle nullable string
     final photoUrl =
         await getPhotoUrl() ?? ''; // Handle nullable string for photo URL
-    Provider.of<UserModel>(context, listen: false)
+    Provider.of<UserModelProvider>(context, listen: false)
         .setUserInfo(userName, email, photoUrl);
   }
 
@@ -59,7 +59,7 @@ class Auth {
     final photoUrl =
         await getPhotoUrl() ?? ''; // Handle nullable string for photo URL
 
-    Provider.of<UserModel>(context, listen: false)
+    Provider.of<UserModelProvider>(context, listen: false)
         .setUserInfo(userName, userEmail, photoUrl);
   }
 
@@ -74,7 +74,7 @@ class Auth {
     final userEmail = await getEmail() ?? ''; // Handle nullable string
     final userName = await getUserName() ?? ''; // Handle nullable string
 
-    Provider.of<UserModel>(context, listen: false)
+    Provider.of<UserModelProvider>(context, listen: false)
         .setUserInfo(userName, userEmail, photoUrl);
   }
 

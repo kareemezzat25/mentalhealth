@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mentalhealthh/authentication/auth.dart';
-import 'package:mentalhealthh/models/user_model.dart';
+import 'package:mentalhealthh/Providers/user_model.dart';
 import 'package:mentalhealthh/services/UserProfileApi.dart';
 import 'package:provider/provider.dart';
 
@@ -80,7 +80,7 @@ class _UserDoctorInfoEditState extends State<UserDoctorInfoEdit> {
           _locationController.text,
           double.parse(_sessionFeesController.text),
         );
-        Provider.of<UserModel>(context, listen: false).setUserInfo(
+        Provider.of<UserModelProvider>(context, listen: false).setUserInfo(
             '${_firstNameController.text} ${_lastNameController.text}',
             await Auth.getEmail(),
             await Auth.getPhotoUrl());
@@ -92,7 +92,7 @@ class _UserDoctorInfoEditState extends State<UserDoctorInfoEdit> {
             _genderController.text,
             _birthDateController.text,
             _image);
-        Provider.of<UserModel>(context, listen: false).setUserInfo(
+        Provider.of<UserModelProvider>(context, listen: false).setUserInfo(
             '${_firstNameController.text} ${_lastNameController.text}',
             await Auth.getEmail(),
             await Auth.getPhotoUrl());

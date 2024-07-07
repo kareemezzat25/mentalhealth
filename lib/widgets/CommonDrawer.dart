@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mentalhealthh/authentication/auth.dart';
-import 'package:mentalhealthh/models/user_model.dart';
+import 'package:mentalhealthh/Providers/user_model.dart';
 import 'package:mentalhealthh/views/Doctors/Doctorsview.dart';
 import 'package:mentalhealthh/views/appointments/Appointmentsview.dart';
 import 'package:mentalhealthh/views/articles/ArticlesView.dart';
@@ -30,7 +30,8 @@ class _CommonDrawerState extends State<CommonDrawer> {
 
   @override
   Widget build(BuildContext context) {
-    UserModel userModel = Provider.of<UserModel>(context); // Access UserModel
+    UserModelProvider userModel =
+        Provider.of<UserModelProvider>(context); // Access UserModel
     return Drawer(
       width: 200,
       child: ListView(

@@ -45,6 +45,9 @@ dependencies:
   webview_flutter: ^3.0.4
   flutter_launcher_icons: "^0.13.1"
   url_launcher: ^6.0.20
+  hive: ^2.0.4
+  hive_flutter: ^1.1.0
+  path_provider: ^2.0.2
 
 flutter_launcher_icons:
   android: "launcher_icon"
