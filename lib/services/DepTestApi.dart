@@ -24,7 +24,7 @@ class DepTestApi {
           'age': age,
         }),
       );
-
+      print('Text :${story}');
       // Print the response to debug console
       print('Response status: ${response.statusCode}');
       print('Response body: ${response.body}');

@@ -5,7 +5,7 @@ import 'package:mentalhealthh/widgets/CommonDrawer.dart';
 
 class Forumsview extends StatefulWidget {
   final String userId; // Add userId parameter
-    List<dynamic>? roles;
+    List<dynamic>? roles =["User"];
 
   Forumsview({required this.userId,this.roles}); // Update constructor
 

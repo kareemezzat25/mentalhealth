@@ -320,13 +320,14 @@ class _CommentSectionState extends State<CommentSection> {
 
                                           // Check if the logged-in user is the author of the reply
                                           bool isCurrentUserReplayAuthor =
-                                              widget.userId ==
-                                                  repliesData[replyIndex]['appUserId'];
+                                              widget.userId ==repliesData[replyIndex]['appUserId'];
 
                                           return Padding(
                                             padding: const EdgeInsets.only(top: 10,bottom: 10,left: 30,right: 10),
                                             child: ListTile(title: Row(
                                                 children: [
+                                                  repliesData[replyIndex]['photoUrl']==null?
+                                                  ImageUser(url: "https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-600nw-1677509740.jpg"):
                                                   ImageUser(url: repliesData[replyIndex]['photoUrl']),
                                                   SizedBox(width: 10),
                                                   Column(
@@ -334,6 +335,7 @@ class _CommentSectionState extends State<CommentSection> {
                                                     mainAxisAlignment:MainAxisAlignment.center,
                                                     children: [
                                                       Text(
+                                                        repliesData[replyIndex]['username']==null?"Anonymous":
                                                         '${repliesData[replyIndex]['username']}',
                                                         style: TextStyle(fontSize: 16,fontWeight:FontWeight.bold),
                                                       ),
