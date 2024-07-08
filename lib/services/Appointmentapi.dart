@@ -153,7 +153,7 @@ class BookingApi {
         "fees": fees,
       }),
     );
-
+    print("Feess:{$fees}");
     return response.statusCode == 200;
   }
 }

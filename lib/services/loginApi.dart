@@ -15,12 +15,10 @@ class LoginApi {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
 
       if (googleUser != null) {
-        final GoogleSignInAuthentication googleAuth =
-            await googleUser.authentication;
+        final GoogleSignInAuthentication googleAuth =await googleUser.authentication;
         final String accessToken = googleAuth.accessToken!;
 
-        final String apiUrl =
-            'https://mentalmediator.somee.com/api/auth/external-login-callback';
+        final String apiUrl ='https://mentalmediator.somee.com/api/auth/external-login';
         final http.Response response = await http.get(
           Uri.parse(apiUrl),
           headers: {

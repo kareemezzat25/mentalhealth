@@ -196,20 +196,30 @@ Future<List<Map<String, dynamic>>> fetchFilteredAppointments({
   }
 
   Future<void> rejectAppointment(String appointmentId, String reason) async {
-    String? token = await Auth.getToken();
+    try {
+      String? token = await Auth.getToken();
 
-    final response = await http.put(
-      Uri.parse(
-          'https://nexus-api-h3ik.onrender.com/api/appointments/$appointmentId/reject'),
-      headers: {
-        'Authorization': 'Bearer $token', // Add your authentication token here
-        'Content-Type': 'application/json',
-      },
-      body: json.encode(reason),
-    );
+      final response = await http.put(
+        Uri.parse(
+          'https://nexus-api-h3ik.onrender.com/api/appointments/$appointmentId/reject',
+        ),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+        body: json.encode(
+            {'reason': reason}), // Assuming reason needs to be sent as JSON
+      );
 
-    if (response.statusCode != 200) {
-      throw Exception('Failed to reject appointment');
+      if (response.statusCode == 200) {
+        // Appointment rejected successfully
+        return;
+      } else {
+        throw Exception(
+            'Failed to reject appointment. Status code: ${response.statusCode}');
+      }
+    } catch (error) {
+      throw Exception('Failed to reject appointment: $error');
     }
   }
 }

@@ -310,7 +310,7 @@ class PostsState extends State<Posts> {
           return false;
         } else {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return Forumsview(userId: userId, roles: widget.roles!);
+            return Forumsview(userId: userId, roles: ["User"]);
           }));
           return false;
         }
@@ -320,14 +320,16 @@ class PostsState extends State<Posts> {
           backgroundColor: Colors.transparent,
           elevation: 0,
           title: Text('Posts'),
-          actions: <Widget>[
+          
+          actions:widget.showUserPosts!=true? 
+          <Widget>[
             IconButton(
               icon: Icon(Icons.search),
               onPressed: () {
                 _openFilterBottomSheet(); // Open filter bottom sheet
               },
             ),
-          ],
+          ]:null,
         ),
         drawer:
             widget.showUserPosts ? CommonDrawer(userId: widget.userId!) : null,

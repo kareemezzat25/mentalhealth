@@ -98,6 +98,7 @@ class AppointmentSlotsPage extends StatelessWidget {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         print('Appointment booked successfully');
+        print("Fees:{$doctorFees}");
         print('Response body: ${response.body}');
         _showConfirmationDialog(context);
       } else {

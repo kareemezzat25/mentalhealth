@@ -17,9 +17,24 @@ class DepressionTest extends StatefulWidget {
 class _DepressionTestFormState extends State<DepressionTest> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _ageController = TextEditingController();
-  final TextEditingController _storyController = TextEditingController(); // Add this line
+  final TextEditingController _storyController = TextEditingController();
+  final TextEditingController _fatherPunishmentController = TextEditingController();
+  final TextEditingController _houseAtmosphereController = TextEditingController();
+  final TextEditingController _importantPeopleController = TextEditingController();
+  final TextEditingController _problemController = TextEditingController();
+  final TextEditingController _importantEventsController = TextEditingController();
+  final TextEditingController _solutionsController = TextEditingController();
+  final TextEditingController _suicidalThoughtsController = TextEditingController();
+  
   Map<int, int?> _answers = {};
   String? _story;
+  String? _fatherPunishment;
+  String? _houseAtmosphere;
+  String? _importantPeople;
+  String? _problem;
+  String? _importantEvents;
+  String? _solutions;
+  String? _suicidalThoughts;
   String? _gender;
   int? _age;
   bool _showGenderError = false;
@@ -27,7 +42,14 @@ class _DepressionTestFormState extends State<DepressionTest> {
   @override
   void dispose() {
     _ageController.dispose();
-    _storyController.dispose(); // Add this line
+    _storyController.dispose();
+    _fatherPunishmentController.dispose();
+    _houseAtmosphereController.dispose();
+    _importantPeopleController.dispose();
+    _problemController.dispose();
+    _importantEventsController.dispose();
+    _solutionsController.dispose();
+    _suicidalThoughtsController.dispose();
     super.dispose();
   }
 
@@ -42,9 +64,19 @@ class _DepressionTestFormState extends State<DepressionTest> {
       // Calculate total sum of weights
       int totalWeight = _calculateTotalWeight();
 
+      // Concatenate the relevant text fields into a single story string
+      String fullStory = [
+        _story,
+        _houseAtmosphere,
+        _problem,
+        _importantEvents,
+        _solutions,
+        _suicidalThoughts
+      ].where((text) => text != null && text!.isNotEmpty).join(' ');
+
       try {
         final String response = await DepTestApi.submitDepressionTest(
-          story: _story,
+          story: fullStory,
           totalWeight: totalWeight,
           gender: _gender!,
           age: _age!,
@@ -98,8 +130,15 @@ class _DepressionTestFormState extends State<DepressionTest> {
                     ),
                   ),
                 _buildAgeField(),
-                for (var question in questions) _buildRadioQuestion(question),
-                _buildTextField('Tell us your story', _storyController), // Modify this line
+                for (var question in questions) _buildRadioQuestion(question),                 
+                _buildTextField('Tell us your story', _storyController),
+                _buildTextField('How did your father and mother punish you?', _fatherPunishmentController),
+                _buildTextField('What is your impression of the atmosphere of the house?', _houseAtmosphereController),
+                _buildTextField('Who are the most important people in your life?', _importantPeopleController),
+                _buildTextField('Tell us your problem', _problemController),
+                _buildTextField('Mention the most important events that you believe are related to this problem', _importantEventsController),
+                _buildTextField('What solutions do you think will help solve your problem?', _solutionsController),
+                _buildTextField('Tell us about your experience with suicidal thoughts or attempts if you have any (if you don\'t have any, leave it blank)', _suicidalThoughtsController),
                 SizedBox(height: 20),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -276,9 +315,25 @@ class _DepressionTestFormState extends State<DepressionTest> {
           labelStyle: TextStyle(fontSize: 18),
         ),
         validator: (value) =>
-            value == null || value.isEmpty ? 'Please enter a story' : null,
+            value == null || value.isEmpty ? 'Please enter $labelText' : null,
         onSaved: (value) {
-          _story = value;
+          if (controller == _storyController) {
+            _story = value;
+          } else if (controller == _fatherPunishmentController) {
+            _fatherPunishment = value;
+          } else if (controller == _houseAtmosphereController) {
+            _houseAtmosphere = value;
+          } else if (controller == _importantPeopleController) {
+            _importantPeople = value;
+          } else if (controller == _problemController) {
+            _problem = value;
+          } else if (controller == _importantEventsController) {
+            _importantEvents = value;
+          } else if (controller == _solutionsController) {
+            _solutions = value;
+          } else if (controller == _suicidalThoughtsController) {
+            _suicidalThoughts = value;
+          }
         },
       ),
     );

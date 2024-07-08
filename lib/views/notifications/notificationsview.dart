@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'dart:convert';
 
 import 'package:mentalhealthh/authentication/auth.dart';
+import 'package:mentalhealthh/services/postsApi.dart';
 import 'package:mentalhealthh/views/appointments/Appointmentsview.dart';
 import 'package:mentalhealthh/views/posts/PostComment.dart';
 import 'package:mentalhealthh/providers/notification_count_provider.dart'; // Import the provider
@@ -11,7 +12,7 @@ import 'package:mentalhealthh/widgets/CommonDrawer.dart';
 import 'package:provider/provider.dart'; // Import provider package
 
 class Notificationsview extends StatefulWidget {
-    final String userId;
+  final String userId;
 
   const Notificationsview({required this.userId});
 
@@ -185,23 +186,74 @@ class _NotificationsPageState extends State<Notificationsview> {
       int postId = notification['resources']['postId'];
       int commentId = notification['resources']['commentId'];
       int replyId = notification['resources']['replyId'];
-      Navigator.push(
-        context,
-        MaterialPageRoute(
+      try {
+        // Attempt to fetch post details
+        Map<String, dynamic> postDetails =
+            await PostsApi.fetchPostDetails(postId);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
             builder: (context) => PostComment(
-                  postId: postId,
-                )),
-      );
+              postId: postId,
+            ),
+          ),
+        );
+      } catch (e) {
+        // Post details fetch failed (post deleted)
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Post Deleted'),
+              content:
+                  Text('The post you are trying to view has been deleted.'),
+              actions: <Widget>[
+                TextButton(
+                  child: Text('OK'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      }
     } else if (notification['type'] == 'Comment') {
       int postId = notification['resources']['postId'];
-      int commentId = notification['resources']['commentId'];
-      Navigator.push(
-        context,
-        MaterialPageRoute(
+      try {
+        // Attempt to fetch post details
+        Map<String, dynamic> postDetails =
+            await PostsApi.fetchPostDetails(postId);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
             builder: (context) => PostComment(
-                  postId: postId,
-                )),
-      );
+              postId: postId,
+            ),
+          ),
+        );
+      } catch (e) {
+        // Post details fetch failed (post deleted)
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Post Deleted'),
+              content:
+                  Text('The post you are trying to view has been deleted.'),
+              actions: <Widget>[
+                TextButton(
+                  child: Text('OK'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      }
     } else if (notification['type'] == 'AppointmentConfirmation' ||
         notification['type'] == 'AppointmentRejection') {
       Navigator.push(
