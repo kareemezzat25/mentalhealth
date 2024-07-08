@@ -151,28 +151,40 @@ class _DoctorNotificationsPageState extends State<DoctorNotificationsview> {
         int postId = notification['resources']['postId'];
         int commentId = notification['resources']['commentId'];
         int replyId = notification['resources']['replyId'];
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => PostComment(
-              postId: postId,
+        try {
+          // Attempt to fetch post details
+          Map<String, dynamic> postDetails =
+              await PostsApi.fetchPostDetails(postId);
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => PostComment(
+                postId: postId,
+              ),
             ),
-          ),
-        );
-      }
-      // else if (notification['type'] == 'Comment') {
-      //   int postId = notification['resources']['postId'];
-      //   int commentId = notification['resources']['commentId'];
-      //   Navigator.push(
-      //     context,
-      //     MaterialPageRoute(
-      //       builder: (context) => PostComment(
-      //         postId: postId,
-      //       ),
-      //     ),
-      //   );
-      // }
-      else if (notification['type'] == 'AppointmentRequest' ||
+          );
+        } catch (e) {
+          // Post details fetch failed (post deleted)
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('Post Deleted'),
+                content:
+                    Text('The post you are trying to view has been deleted.'),
+                actions: <Widget>[
+                  TextButton(
+                    child: Text('OK'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+        }
+      } else if (notification['type'] == 'AppointmentRequest' ||
           notification['type'] == 'AppointmentCancellation') {
         Navigator.push(
           context,

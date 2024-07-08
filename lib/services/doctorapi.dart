@@ -134,51 +134,51 @@ class DoctorsApi {
       throw Exception('Failed to load appointments');
     }
   }
-Future<List<Map<String, dynamic>>> fetchFilteredAppointments({
-  String? clientName,
-  String? startDate,
-  String? endDate,
-  String? status,
-  int pageNumber = 1,
-  int pageSize = 10,
-}) async {
-  String? token = await Auth.getToken();
 
-  Map<String, String> queryParams = {
-    'pageNumber': pageNumber.toString(),
-    'pageSize': pageSize.toString(),
-  };
-  if (clientName != null) queryParams['clientName'] = clientName;
-  if (startDate != null) queryParams['startDate'] = startDate;
-  if (endDate != null) queryParams['endDate'] = endDate;
-  if (status != null) queryParams['status'] = status;
+  Future<List<Map<String, dynamic>>> fetchFilteredAppointments({
+    String? clientName,
+    String? startDate,
+    String? endDate,
+    String? status,
+    int pageNumber = 1,
+    int pageSize = 10,
+  }) async {
+    String? token = await Auth.getToken();
 
-  Uri uri = Uri.parse(
-          'https://nexus-api-h3ik.onrender.com/api/appointments/doctors/me')
-      .replace(queryParameters: queryParams);
+    Map<String, String> queryParams = {
+      'pageNumber': pageNumber.toString(),
+      'pageSize': pageSize.toString(),
+    };
+    if (clientName != null) queryParams['clientName'] = clientName;
+    if (startDate != null) queryParams['startDate'] = startDate;
+    if (endDate != null) queryParams['endDate'] = endDate;
+    if (status != null) queryParams['status'] = status;
 
-  final response = await http.get(
-    uri,
-    headers: {
-      'Authorization': 'Bearer $token',
-    },
-  );
+    Uri uri = Uri.parse(
+            'https://nexus-api-h3ik.onrender.com/api/appointments/doctors/me')
+        .replace(queryParameters: queryParams);
 
-  // Log the request URI and response for debugging
-  print('Request URL: $uri');
-  print('Response status: ${response.statusCode}');
-  print('Response body: ${response.body}');
+    final response = await http.get(
+      uri,
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
 
-  if (response.statusCode == 200) {
-    List<dynamic> data = json.decode(response.body);
-    return data
-        .map((appointment) => appointment as Map<String, dynamic>)
-        .toList();
-  } else {
-    throw Exception('Failed to load appointments');
+    // Log the request URI and response for debugging
+    print('Request URL: $uri');
+    print('Response status: ${response.statusCode}');
+    print('Response body: ${response.body}');
+
+    if (response.statusCode == 200) {
+      List<dynamic> data = json.decode(response.body);
+      return data
+          .map((appointment) => appointment as Map<String, dynamic>)
+          .toList();
+    } else {
+      throw Exception('Failed to load appointments');
+    }
   }
-}
-
 
   Future<void> confirmAppointment(String appointmentId) async {
     String? token = await Auth.getToken();
@@ -196,20 +196,48 @@ Future<List<Map<String, dynamic>>> fetchFilteredAppointments({
   }
 
   Future<void> rejectAppointment(String appointmentId, String reason) async {
-    String? token = await Auth.getToken();
+    try {
+      String? token = await Auth.getToken();
 
-    final response = await http.put(
-      Uri.parse(
-          'https://nexus-api-h3ik.onrender.com/api/appointments/$appointmentId/reject'),
-      headers: {
-        'Authorization': 'Bearer $token', // Add your authentication token here
-        'Content-Type': 'application/json',
-      },
-      body: json.encode(reason),
-    );
+      final response = await http.put(
+        Uri.parse(
+          'https://nexus-api-h3ik.onrender.com/api/appointments/$appointmentId/reject',
+        ),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+        body: json.encode(
+            {'reason': reason}), // Assuming reason needs to be sent as JSON
+      );
 
-    if (response.statusCode != 200) {
-      throw Exception('Failed to reject appointment');
+      if (response.statusCode == 200) {
+        // Appointment rejected successfully
+        return;
+      } else {
+        throw Exception(
+            'Failed to reject appointment. Status code: ${response.statusCode}');
+      }
+    } catch (error) {
+      throw Exception('Failed to reject appointment: $error');
     }
   }
+
+  // Future<void> rejectAppointment(String appointmentId, String reason) async {
+  //   String? token = await Auth.getToken();
+
+  //   final response = await http.put(
+  //     Uri.parse(
+  //         'https://nexus-api-h3ik.onrender.com/api/appointments/$appointmentId/reject'),
+  //     headers: {
+  //       'Authorization': 'Bearer $token', // Add your authentication token here
+  //       'Content-Type': 'application/json',
+  //     },
+  //     body: json.encode(reason),
+  //   );
+
+  //   if (response.statusCode != 200) {
+  //     throw Exception('Failed to reject appointment');
+  //   }
+  // }
 }

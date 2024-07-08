@@ -81,9 +81,10 @@ class _UserDoctorInfoEditState extends State<UserDoctorInfoEdit> {
           double.parse(_sessionFeesController.text),
         );
         Provider.of<UserModelProvider>(context, listen: false).setUserInfo(
-            '${_firstNameController.text} ${_lastNameController.text}',
-            await Auth.getEmail(),
-            await Auth.getPhotoUrl());
+          '${_firstNameController.text} ${_lastNameController.text}',
+          await Auth.getEmail(),
+          await Auth.getPhotoUrl(),
+        );
       } else {
         await updateUserProfile(
             widget.userId,
