@@ -131,14 +131,15 @@ class _DepressionTestFormState extends State<DepressionTest> {
                   ),
                 _buildAgeField(),
                 for (var question in questions) _buildRadioQuestion(question),                 
-                _buildTextField('Tell us your story', _storyController),
-                _buildTextField('How did your father and mother punish you?', _fatherPunishmentController),
-                _buildTextField('What is your impression of the atmosphere of the house?', _houseAtmosphereController),
-                _buildTextField('Who are the most important people in your life?', _importantPeopleController),
-                _buildTextField('Tell us your problem', _problemController),
-                _buildTextField('Mention the most important events that you believe are related to this problem', _importantEventsController),
-                _buildTextField('What solutions do you think will help solve your problem?', _solutionsController),
-                _buildTextField('Tell us about your experience with suicidal thoughts or attempts if you have any (if you don\'t have any, leave it blank)', _suicidalThoughtsController),
+                _buildTextField( _storyController,'Tell us your story'),
+                _buildTextField( _fatherPunishmentController,'How did your father and mother punish you?'),
+                _buildTextField( _houseAtmosphereController,'What is your impression of the atmosphere of the house?'),
+                _buildTextField( _importantPeopleController,'Who are the most important people in your life?'),
+                _buildTextField(_problemController,'Tell us your problem'),
+                _buildTextField(_importantEventsController,'Mention the most important events that you believe are related to this problem'),
+                _buildTextField( _solutionsController,'What solutions do you think will help solve your problem?'),
+                _buildTextField(_suicidalThoughtsController,'Tell us about your experience with suicidal thoughts or attempts if you have any (if you don\'t have any, leave it blank)',
+),
                 SizedBox(height: 20),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -304,38 +305,48 @@ class _DepressionTestFormState extends State<DepressionTest> {
     );
   }
 
-  Widget _buildTextField(String labelText, TextEditingController controller) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: TextFormField(
-        controller: controller,
-        maxLines: 4,
-        decoration: InputDecoration(
-          labelText: labelText,
-          labelStyle: TextStyle(fontSize: 18),
-        ),
-        validator: (value) =>
-            value == null || value.isEmpty ? 'Please enter $labelText' : null,
-        onSaved: (value) {
-          if (controller == _storyController) {
-            _story = value;
-          } else if (controller == _fatherPunishmentController) {
-            _fatherPunishment = value;
-          } else if (controller == _houseAtmosphereController) {
-            _houseAtmosphere = value;
-          } else if (controller == _importantPeopleController) {
-            _importantPeople = value;
-          } else if (controller == _problemController) {
-            _problem = value;
-          } else if (controller == _importantEventsController) {
-            _importantEvents = value;
-          } else if (controller == _solutionsController) {
-            _solutions = value;
-          } else if (controller == _suicidalThoughtsController) {
-            _suicidalThoughts = value;
-          }
-        },
+  Widget _buildTextField(TextEditingController controller, String questionText) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+        questionText,
+        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
       ),
-    );
-  }
+      Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: SingleChildScrollView(
+          child: TextFormField(
+            controller: controller,
+            maxLines: 4,
+            decoration: InputDecoration(
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+            ),
+            validator: (value) =>
+                value == null || value.isEmpty ? 'Please enter $questionText' : null,
+            onSaved: (value) {
+              if (controller == _storyController) {
+                _story = value;
+              } else if (controller == _fatherPunishmentController) {
+                _fatherPunishment = value;
+              } else if (controller == _houseAtmosphereController) {
+                _houseAtmosphere = value;
+              } else if (controller == _importantPeopleController) {
+                _importantPeople = value;
+              } else if (controller == _problemController) {
+                _problem = value;
+              } else if (controller == _importantEventsController) {
+                _importantEvents = value;
+              } else if (controller == _solutionsController) {
+                _solutions = value;
+              } else if (controller == _suicidalThoughtsController) {
+                _suicidalThoughts = value;
+              }
+            },
+          ),
+        ),
+      ),
+    ],
+  );
+}
 }
