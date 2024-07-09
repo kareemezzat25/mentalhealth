@@ -27,7 +27,7 @@ class SignupApi {
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("Please confirm your email"),
+            content: Text("Please go confirm your email"),
             duration: Duration(seconds: 10),
             action: SnackBarAction(
               label: "OK",

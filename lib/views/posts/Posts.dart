@@ -46,8 +46,10 @@ class PostsState extends State<Posts> {
     setState(() {
       // Fetching posts with updated filters
       posts = widget.showUserPosts && widget.userId != null
+          // get user posts
           ? PostsApi.fetchUserPosts(widget.userId!, currentPage, pageSize)
           : widget.confessionsOnly != null
+              // get annoynmous posts
               ? PostsApi.fetchPaginatedPosts(
                   currentPage,
                   pageSize,
@@ -58,6 +60,7 @@ class PostsState extends State<Posts> {
                   startTime: startTimeFilter,
                   endTime: endTimeFilter,
                 )
+              // get all posts
               : PostsApi.fetchPaginatedPosts(
                   currentPage,
                   pageSize,
@@ -296,7 +299,7 @@ class PostsState extends State<Posts> {
     });
     Navigator.pop(context); // Close the bottom sheet after resetting filters
 
-    _refreshPosts(); // Refresh posts after resetting filters
+    _refreshPosts(); // Refresh posts after resetting filters to get all posts
   }
 
   @override
@@ -320,16 +323,17 @@ class PostsState extends State<Posts> {
           backgroundColor: Colors.transparent,
           elevation: 0,
           title: Text('Posts'),
-          
-          actions:widget.showUserPosts!=true? 
-          <Widget>[
-            IconButton(
-              icon: Icon(Icons.search),
-              onPressed: () {
-                _openFilterBottomSheet(); // Open filter bottom sheet
-              },
-            ),
-          ]:null,
+          // check if i want user posts there is no search , if not show search icon
+          actions: widget.showUserPosts != true
+              ? <Widget>[
+                  IconButton(
+                    icon: Icon(Icons.search),
+                    onPressed: () {
+                      _openFilterBottomSheet(); // Open filter bottom sheet
+                    },
+                  ),
+                ]
+              : null,
         ),
         drawer:
             widget.showUserPosts ? CommonDrawer(userId: widget.userId!) : null,

@@ -267,6 +267,7 @@ class _DoctorAppointmentsPageState extends State<DoctorAppointmentsPage> {
                             ),
                             SizedBox(height: 10),
                             Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
                                 ElevatedButton(
                                   style: ElevatedButton.styleFrom(

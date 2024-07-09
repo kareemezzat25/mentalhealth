@@ -26,7 +26,6 @@ class _ScheduleDetailsPageState extends State<ScheduleDetailsPage> {
     super.initState();
     _startTimeController = TextEditingController(text: widget.day.startTime);
     _endTimeController = TextEditingController(text: widget.day.endTime);
-    // Initialize session duration controller with formatted display
     _sessionDurationController =
         TextEditingController(text: widget.day.sessionDuration.split(':')[1]);
   }
@@ -174,122 +173,96 @@ class _ScheduleDetailsPageState extends State<ScheduleDetailsPage> {
     );
   }
 
-  void _updateSchedule(BuildContext context) {
+  void _updateSchedule(BuildContext context) async {
     String startTime = _startTimeController.text;
     String endTime = _endTimeController.text;
-    // Format session duration to HH:mm:ss format for API request
-    // String sessionDuration = '00:${_sessionDurationController.text}:00';
     int sessionDuration = int.tryParse(_sessionDurationController.text) ?? 0;
 
-    // Validate session duration
     if (sessionDuration <= 0 || sessionDuration > 60) {
-      // Show error dialog
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            backgroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(15.0)),
-            ),
-            title: Text(
-              'Error',
-              style: TextStyle(
-                color: Colors.red,
-                fontWeight: FontWeight.bold,
-                fontSize: 20,
-              ),
-            ),
-            content: Text(
-              "Session Duration must greater than 60 minutes.",
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 16,
-              ),
-            ),
-            actions: <Widget>[
-              TextButton(
-                child: Text(
-                  'OK',
-                  style: TextStyle(
-                    color: Colors.blue,
-                    fontSize: 16,
-                  ),
-                ),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        },
-      );
-      return; // Exit function if validation fails
+      _showErrorDialog(context,
+          'Session Duration must be greater than 0 and less than or equal to 60 minutes.');
+      return;
     }
 
-    // Validate if endTime is greater than startTime
     if (isEndTimeBeforeStartTime(startTime, endTime)) {
-      // Show error dialog
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            backgroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(15.0)),
-            ),
-            title: Text(
-              'Error',
-              style: TextStyle(
-                color: Colors.red,
-                fontWeight: FontWeight.bold,
-                fontSize: 20,
-              ),
-            ),
-            content: Text(
-              "End Time must be greater than Start Time.",
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 16,
-              ),
-            ),
-            actions: <Widget>[
-              TextButton(
-                child: Text("OK"),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        },
-      );
-      return; // Exit function if validation fails
+      _showErrorDialog(context, 'End Time must be greater than Start Time.');
+      return;
     }
 
-    // Format session duration to HH:mm:ss format for API request
     String formattedSessionDuration =
         '00:${sessionDuration.toString().padLeft(2, '0')}:00';
 
-    // Update the DaySchedule object
-    widget.day.startTime = startTime;
-    widget.day.endTime = endTime;
-    widget.day.sessionDuration = formattedSessionDuration;
+    try {
+      await _apiService.updateDoctorScheduleDay(
+        widget.doctorId,
+        widget.day.dayOfWeek,
+        startTime,
+        endTime,
+        formattedSessionDuration,
+      );
 
-    // Show success message
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text("Schedule updated"),
-      ),
-    );
+      widget.day.startTime = startTime;
+      widget.day.endTime = endTime;
+      widget.day.sessionDuration = formattedSessionDuration;
 
-    // Return to previous screen and pass updated DaySchedule
-    Navigator.of(context).pop(widget.day);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Schedule updated"),
+        ),
+      );
+
+      Navigator.of(context).pop(widget.day);
+    } catch (e) {
+      _showErrorDialog(context, 'Failed to update schedule: ${e.toString()}');
+    }
   }
 
   bool isEndTimeBeforeStartTime(String startTime, String endTime) {
     DateTime start = DateFormat('HH:mm:ss').parse(startTime);
     DateTime end = DateFormat('HH:mm:ss').parse(endTime);
     return end.isBefore(start);
+  }
+
+  void _showErrorDialog(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(15.0)),
+          ),
+          title: Text(
+            'Error',
+            style: TextStyle(
+              color: Colors.red,
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+            ),
+          ),
+          content: Text(
+            message,
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 16,
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text(
+                'OK',
+                style: TextStyle(
+                  color: Colors.blue,
+                  fontSize: 16,
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }

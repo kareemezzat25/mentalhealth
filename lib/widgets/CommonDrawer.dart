@@ -8,7 +8,7 @@ import 'package:mentalhealthh/views/Forumsview.dart';
 import 'package:mentalhealthh/views/notifications/notificationsview.dart';
 import 'package:mentalhealthh/views/posts/Posts.dart';
 import 'package:mentalhealthh/views/authentication/loginview.dart';
-import 'package:mentalhealthh/views/Profiles/UserProfile.dart'; // Import UserProfile.dart
+import 'package:mentalhealthh/views/Profiles/UserDoctorProfile.dart'; // Import UserProfile.dart
 import 'package:mentalhealthh/views/depressiontest/DepressionTest.dart'; // Import DepressionTest.dart
 import 'package:mentalhealthh/views/chatbot/chatbotview.dart';
 import 'package:provider/provider.dart'; // Import provider package
@@ -207,7 +207,7 @@ class _CommonDrawerState extends State<CommonDrawer> {
             },
           ),
           ListTile(
-            leading: Icon(Icons.schedule),
+            leading: Icon(Icons.calendar_today),
             title: Text("Doctors"),
             onTap: () {
               Navigator.pop(context); // Close the drawer

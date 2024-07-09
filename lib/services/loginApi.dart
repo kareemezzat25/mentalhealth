@@ -9,37 +9,6 @@ import 'package:mentalhealthh/authentication/auth.dart';
 import 'package:mentalhealthh/views/Forumsview.dart';
 
 class LoginApi {
-  static Future<void> signInWithGoogle(BuildContext context) async {
-    try {
-      final GoogleSignIn _googleSignIn = GoogleSignIn();
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-
-      if (googleUser != null) {
-        final GoogleSignInAuthentication googleAuth =await googleUser.authentication;
-        final String accessToken = googleAuth.accessToken!;
-
-        final String apiUrl ='https://mentalmediator.somee.com/api/auth/external-login';
-        final http.Response response = await http.get(
-          Uri.parse(apiUrl),
-          headers: {
-            'Authorization': 'Bearer $accessToken',
-          },
-        );
-
-        if (response.statusCode == 200) {
-          print("login Successful");
-        } else {
-          print('Login failed. Status code: ${response.statusCode}');
-          log('Response body: ${response.body}');
-        }
-      } else {
-        print("User canceled Google Sign-In");
-      }
-    } catch (error) {
-      print('Error during Google Sign-In: $error');
-    }
-  }
-
   static Future<void> login(
       BuildContext context, String email, String password) async {
     try {

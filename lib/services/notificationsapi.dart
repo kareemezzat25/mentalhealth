@@ -2,8 +2,9 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:mentalhealthh/authentication/auth.dart';
 
-class NotificationsApi {
-  static Future<List<Map<String, dynamic>>> fetchNotifications(int pageNumber, int pageSize) async {
+class NotificationApi {
+  static Future<List<Map<String, dynamic>>> fetchNotifications(
+      int pageNumber, int pageSize) async {
     String? token = await Auth.getToken();
 
     final url = Uri.parse(

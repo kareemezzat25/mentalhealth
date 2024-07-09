@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'dart:convert';
-
 import 'package:mentalhealthh/authentication/auth.dart';
+import 'package:mentalhealthh/services/notificationsapi.dart';
 import 'package:mentalhealthh/services/postsApi.dart';
 import 'package:mentalhealthh/views/appointments/Appointmentsview.dart';
 import 'package:mentalhealthh/views/posts/PostComment.dart';
@@ -52,22 +50,14 @@ class _NotificationsPageState extends State<Notificationsview> {
   }
 
   Future<void> fetchNotifications() async {
-    String? token = await Auth.getToken();
-
-    final url = Uri.parse(
-        'https://nexus-api-h3ik.onrender.com/api/notifications/users/me?pageNumber=$pageNumber&pageSize=$pageSize');
-    final response = await http.get(
-      url,
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      },
-    );
-
-    if (response.statusCode == 200) {
-      final List<dynamic> data = json.decode(response.body);
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      List<Map<String, dynamic>> data =
+          await NotificationApi.fetchNotifications(pageNumber, pageSize);
       setState(() {
-        notifications.addAll(data.map((item) => item as Map<String, dynamic>));
+        notifications.addAll(data);
         filteredNotifications = notifications;
         if (data.isEmpty) {
           hasMoreData = false;
@@ -79,29 +69,17 @@ class _NotificationsPageState extends State<Notificationsview> {
         // Update unread count
         _updateUnreadCount(); // Update unread count after fetching notifications
       });
-    } else {
-      // Handle error
+    } catch (e) {
       setState(() {
         isLoading = false;
       });
-      print('Failed to fetch notifications');
+      print('Failed to fetch notifications: $e');
     }
   }
 
   Future<void> markAsRead(int id) async {
-    String? token = await Auth.getToken();
-
-    final url = Uri.parse(
-        'https://nexus-api-h3ik.onrender.com/api/notifications/$id/read');
-    final response = await http.put(
-      url,
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      },
-    );
-
-    if (response.statusCode == 200) {
+    try {
+      await NotificationApi.markAsRead(id);
       setState(() {
         notifications = notifications.map((notification) {
           if (notification['id'] == id) {
@@ -120,25 +98,14 @@ class _NotificationsPageState extends State<Notificationsview> {
         // Update unread count
         _updateUnreadCount();
       });
-    } else {
-      print('Failed to mark notification as read');
+    } catch (e) {
+      print('Failed to mark notification as read: $e');
     }
   }
 
   Future<void> markAllAsRead() async {
-    String? token = await Auth.getToken();
-
-    final url = Uri.parse(
-        'https://nexus-api-h3ik.onrender.com/api/notifications/users/me/read');
-    final response = await http.put(
-      url,
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      },
-    );
-
-    if (response.statusCode == 200) {
+    try {
+      await NotificationApi.markAllAsRead();
       setState(() {
         notifications = notifications.map((notification) {
           notification['isRead'] = true;
@@ -149,8 +116,8 @@ class _NotificationsPageState extends State<Notificationsview> {
         // Update unread count
         _updateUnreadCount();
       });
-    } else {
-      print('Failed to mark all notifications as read');
+    } catch (e) {
+      print('Failed to mark all notifications as read: $e');
     }
   }
 

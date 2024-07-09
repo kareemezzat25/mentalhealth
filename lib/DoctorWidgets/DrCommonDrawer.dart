@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:mentalhealthh/DoctorViews/Appointment/DoctorAppointmentsview.dart';
 import 'package:mentalhealthh/DoctorViews/DoctorMainview.dart';
 import 'package:mentalhealthh/DoctorViews/notifications/DoctorNotificationsview.dart';
 import 'package:mentalhealthh/DoctorViews/schedules/Scheduleview.dart';
 import 'package:mentalhealthh/authentication/auth.dart';
 import 'package:mentalhealthh/Providers/user_model.dart';
-import 'package:mentalhealthh/views/appointments/DoctorAppointmentsview.dart';
-import 'package:mentalhealthh/views/Profiles/UserProfile.dart';
+import 'package:mentalhealthh/views/Profiles/UserDoctorProfile.dart';
 import 'package:mentalhealthh/views/authentication/loginview.dart';
 import 'package:mentalhealthh/views/posts/Posts.dart';
 import 'package:provider/provider.dart';

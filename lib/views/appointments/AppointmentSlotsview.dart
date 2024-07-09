@@ -164,8 +164,8 @@ class AppointmentSlotsPage extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Appointment Booked'),
-          content: Text(
+          title: const Text('Appointment Booked'),
+          content: const Text(
               'Appointment booked successfully. Check your appointments page.'),
           actions: <Widget>[
             TextButton(

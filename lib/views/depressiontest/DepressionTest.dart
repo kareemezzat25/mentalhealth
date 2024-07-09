@@ -18,14 +18,19 @@ class _DepressionTestFormState extends State<DepressionTest> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _ageController = TextEditingController();
   final TextEditingController _storyController = TextEditingController();
-  final TextEditingController _fatherPunishmentController = TextEditingController();
-  final TextEditingController _houseAtmosphereController = TextEditingController();
-  final TextEditingController _importantPeopleController = TextEditingController();
+  final TextEditingController _fatherPunishmentController =
+      TextEditingController();
+  final TextEditingController _houseAtmosphereController =
+      TextEditingController();
+  final TextEditingController _importantPeopleController =
+      TextEditingController();
   final TextEditingController _problemController = TextEditingController();
-  final TextEditingController _importantEventsController = TextEditingController();
+  final TextEditingController _importantEventsController =
+      TextEditingController();
   final TextEditingController _solutionsController = TextEditingController();
-  final TextEditingController _suicidalThoughtsController = TextEditingController();
-  
+  final TextEditingController _suicidalThoughtsController =
+      TextEditingController();
+
   Map<int, int?> _answers = {};
   String? _story;
   String? _fatherPunishment;
@@ -84,7 +89,8 @@ class _DepressionTestFormState extends State<DepressionTest> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => TestResultPage(response, userid: widget.userId),
+            builder: (context) =>
+                TestResultPage(response, userid: widget.userId),
           ),
         );
       } catch (e) {
@@ -130,16 +136,23 @@ class _DepressionTestFormState extends State<DepressionTest> {
                     ),
                   ),
                 _buildAgeField(),
-                for (var question in questions) _buildRadioQuestion(question),                 
-                _buildTextField( _storyController,'Tell us your story'),
-                _buildTextField( _fatherPunishmentController,'How did your father and mother punish you?'),
-                _buildTextField( _houseAtmosphereController,'What is your impression of the atmosphere of the house?'),
-                _buildTextField( _importantPeopleController,'Who are the most important people in your life?'),
-                _buildTextField(_problemController,'Tell us your problem'),
-                _buildTextField(_importantEventsController,'Mention the most important events that you believe are related to this problem'),
-                _buildTextField( _solutionsController,'What solutions do you think will help solve your problem?'),
-                _buildTextField(_suicidalThoughtsController,'Tell us about your experience with suicidal thoughts or attempts if you have any (if you don\'t have any, leave it blank)',
-),
+                for (var question in questions) _buildRadioQuestion(question),
+                _buildTextField(_storyController, 'Tell us your story'),
+                _buildTextField(_fatherPunishmentController,
+                    'How did your father and mother punish you?'),
+                _buildTextField(_houseAtmosphereController,
+                    'What is your impression of the atmosphere of the house?'),
+                _buildTextField(_importantPeopleController,
+                    'Who are the most important people in your life?'),
+                _buildTextField(_problemController, 'Tell us your problem'),
+                _buildTextField(_importantEventsController,
+                    'Mention the most important events that you believe are related to this problem'),
+                _buildTextField(_solutionsController,
+                    'What solutions do you think will help solve your problem?'),
+                _buildTextField(
+                  _suicidalThoughtsController,
+                  'Tell us about your experience with suicidal thoughts or attempts if you have any (if you don\'t have any, leave it blank)',
+                ),
                 SizedBox(height: 20),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -305,48 +318,51 @@ class _DepressionTestFormState extends State<DepressionTest> {
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String questionText) {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(
-        questionText,
-        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-      ),
-      Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0),
-        child: SingleChildScrollView(
-          child: TextFormField(
-            controller: controller,
-            maxLines: 4,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+  Widget _buildTextField(
+      TextEditingController controller, String questionText) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          questionText,
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: SingleChildScrollView(
+            child: TextFormField(
+              controller: controller,
+              maxLines: 4,
+              decoration: InputDecoration(
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+              ),
+              validator: (value) => value == null || value.isEmpty
+                  ? 'Please enter $questionText'
+                  : null,
+              onSaved: (value) {
+                if (controller == _storyController) {
+                  _story = value;
+                } else if (controller == _fatherPunishmentController) {
+                  _fatherPunishment = value;
+                } else if (controller == _houseAtmosphereController) {
+                  _houseAtmosphere = value;
+                } else if (controller == _importantPeopleController) {
+                  _importantPeople = value;
+                } else if (controller == _problemController) {
+                  _problem = value;
+                } else if (controller == _importantEventsController) {
+                  _importantEvents = value;
+                } else if (controller == _solutionsController) {
+                  _solutions = value;
+                } else if (controller == _suicidalThoughtsController) {
+                  _suicidalThoughts = value;
+                }
+              },
             ),
-            validator: (value) =>
-                value == null || value.isEmpty ? 'Please enter $questionText' : null,
-            onSaved: (value) {
-              if (controller == _storyController) {
-                _story = value;
-              } else if (controller == _fatherPunishmentController) {
-                _fatherPunishment = value;
-              } else if (controller == _houseAtmosphereController) {
-                _houseAtmosphere = value;
-              } else if (controller == _importantPeopleController) {
-                _importantPeople = value;
-              } else if (controller == _problemController) {
-                _problem = value;
-              } else if (controller == _importantEventsController) {
-                _importantEvents = value;
-              } else if (controller == _solutionsController) {
-                _solutions = value;
-              } else if (controller == _suicidalThoughtsController) {
-                _suicidalThoughts = value;
-              }
-            },
           ),
         ),
-      ),
-    ],
-  );
-}
+      ],
+    );
+  }
 }

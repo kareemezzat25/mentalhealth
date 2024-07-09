@@ -222,22 +222,4 @@ class DoctorsApi {
       throw Exception('Failed to reject appointment: $error');
     }
   }
-
-  // Future<void> rejectAppointment(String appointmentId, String reason) async {
-  //   String? token = await Auth.getToken();
-
-  //   final response = await http.put(
-  //     Uri.parse(
-  //         'https://nexus-api-h3ik.onrender.com/api/appointments/$appointmentId/reject'),
-  //     headers: {
-  //       'Authorization': 'Bearer $token', // Add your authentication token here
-  //       'Content-Type': 'application/json',
-  //     },
-  //     body: json.encode(reason),
-  //   );
-
-  //   if (response.statusCode != 200) {
-  //     throw Exception('Failed to reject appointment');
-  //   }
-  // }
 }

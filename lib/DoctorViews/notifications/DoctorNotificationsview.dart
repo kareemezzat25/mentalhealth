@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:mentalhealthh/DoctorViews/Appointment/DoctorAppointmentsview.dart';
 import 'package:mentalhealthh/services/notificationsapi.dart';
 import 'package:provider/provider.dart';
-import 'package:mentalhealthh/views/appointments/DoctorAppointmentsview.dart';
 import 'package:mentalhealthh/views/posts/PostComment.dart';
 import 'package:mentalhealthh/providers/notification_count_provider.dart';
 import 'package:mentalhealthh/services/postsApi.dart';
@@ -50,7 +50,7 @@ class _DoctorNotificationsPageState extends State<DoctorNotificationsview> {
 
     try {
       final List<Map<String, dynamic>> newNotifications =
-          await NotificationsApi.fetchNotifications(pageNumber, pageSize);
+          await NotificationApi.fetchNotifications(pageNumber, pageSize);
 
       setState(() {
         if (newNotifications.isEmpty) {
@@ -81,7 +81,7 @@ class _DoctorNotificationsPageState extends State<DoctorNotificationsview> {
 
   Future<void> markAsRead(int id) async {
     try {
-      await NotificationsApi.markAsRead(id);
+      await NotificationApi.markAsRead(id);
       setState(() {
         notifications = notifications.map((notification) {
           if (notification['id'] == id) {
@@ -108,7 +108,7 @@ class _DoctorNotificationsPageState extends State<DoctorNotificationsview> {
 
   Future<void> markAllAsRead() async {
     try {
-      await NotificationsApi.markAllAsRead();
+      await NotificationApi.markAllAsRead();
       setState(() {
         notifications = notifications.map((notification) {
           notification['isRead'] = true;

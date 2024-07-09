@@ -92,7 +92,7 @@ class _CreateSchedulePageState extends State<CreateScheduleview> {
         }
       }
 
-      // Check for maximum session duration
+      // validation Check for maximum session duration
       for (var day in _weekDays) {
         if (sessionDurationToMinutes(day.sessionDuration) > 60) {
           _showErrorDialog('The maximum session duration is 60 minutes');

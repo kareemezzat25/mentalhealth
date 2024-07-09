@@ -171,14 +171,14 @@ class _SignupState extends State<Signup> {
                   hintText: "Password",
                   controller: passwordController,
                   isPassword: true),
-              if (passwordError.isNotEmpty)
-                Padding(
-                  padding: EdgeInsets.only(left: 12),
-                  child: Text(
-                    "Password Must be at least 8 characters , have ('0'-'9') & ('A'-'Z'),  ",
-                    style: TextStyle(color: Colors.red, fontSize: 14),
-                  ),
-                ),
+              // if (passwordError.isNotEmpty)
+              //   Padding(
+              //     padding: EdgeInsets.only(left: 12),
+              //     child: Text(
+              //       "Password Must be at least 8 characters , have ('0'-'9') & ('A'-'Z'),  ",
+              //       style: TextStyle(color: Colors.red, fontSize: 14),
+              //     ),
+              //   ),
               SizedBox(height: 5),
               const Padding(
                 padding: EdgeInsets.only(left: 12),

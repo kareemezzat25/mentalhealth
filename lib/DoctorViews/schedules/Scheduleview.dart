@@ -24,6 +24,7 @@ class _SchedulePageState extends State<SchedulePage> {
     futureSchedule = ScheduleApi().fetchDoctorSchedule(widget.doctorId);
   }
 
+  // delet day schedule
   void deleteSchedule(DaySchedule day) async {
     try {
       await ScheduleApi().deleteDoctorSchedule(widget.doctorId, day.dayOfWeek);
@@ -190,4 +191,3 @@ class _SchedulePageState extends State<SchedulePage> {
     );
   }
 }
-

@@ -1,13 +1,9 @@
-
 import 'package:flutter/material.dart';
 
 import 'package:mentalhealthh/services/loginApi.dart';
-import 'package:mentalhealthh/widgets/signinwithgoogle.dart';
 import 'package:mentalhealthh/models/button.dart';
 import 'package:mentalhealthh/views/authentication/signupview.dart';
 import 'package:mentalhealthh/widgets/textForm.dart';
-
-
 
 class Login extends StatefulWidget {
   @override
@@ -22,10 +18,6 @@ class _LoginState extends State<Login> {
   String emailError = '';
   String passwordError = '';
   String genericError = '';
-
-  void signInWithGoogle() {
-    LoginApi.signInWithGoogle(context);
-  }
 
   void login() {
     LoginApi.login(context, emailController.text, passwordController.text);
@@ -98,18 +90,14 @@ class _LoginState extends State<Login> {
               const Text("Login to your account",
                   style: TextStyle(fontSize: 15, color: Colors.grey)),
               SizedBox(height: 60),
-              Padding(
-                  padding: const EdgeInsets.only(left: 12, right: 120),
-                  child: GoogleSignInButton(onPressed: signInWithGoogle)),
-              SizedBox(height: 15),
-              if (genericError.isNotEmpty)
-                Padding(
-                  padding: EdgeInsets.only(left: 14),
-                  child: Text(
-                    genericError,
-                    style: TextStyle(color: Colors.red, fontSize: 14),
-                  ),
-                ),
+              // if (genericError.isNotEmpty)
+              //   Padding(
+              //     padding: EdgeInsets.only(left: 14),
+              //     child: Text(
+              //       genericError,
+              //       style: TextStyle(color: Colors.red, fontSize: 14),
+              //     ),
+              //   ),
               const Padding(
                 padding: EdgeInsets.only(left: 14),
                 child: Row(
